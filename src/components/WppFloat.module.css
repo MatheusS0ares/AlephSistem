@@ -1,0 +1,44 @@
+.float {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 60px;
+  height: 60px;
+  background: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+  z-index: 999;
+}
+
+.pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #25D366;
+}
+
+.icon { color: white; font-size: 1.8rem; position: relative; z-index: 1; }
+
+.tooltip {
+  position: absolute;
+  right: 72px;
+  background: var(--black-card);
+  border: 1px solid var(--black-border);
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 100px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+
+.float:hover .tooltip { opacity: 1; transform: translateX(0); }
+
+@media (max-width: 768px) { .float { bottom: 20px; right: 20px; } }

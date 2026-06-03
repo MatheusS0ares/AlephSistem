@@ -1,0 +1,126 @@
+.footer {
+  background: var(--black);
+  border-top: 1px solid var(--black-border);
+  padding: 80px 0 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 60px;
+  padding-bottom: 60px;
+  border-bottom: 1px solid var(--black-border);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  margin-bottom: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+}
+
+.switchBtn {
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--gold);
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.2s;
+}
+.switchBtn:hover { opacity: 0.75; }
+
+.crown { font-size: 1.75rem; color: var(--gold); }
+
+.logoMain {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--white);
+  line-height: 1;
+}
+
+.logoSub {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.tagline {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 28px;
+  max-width: 300px;
+}
+
+.social { display: flex; gap: 12px; }
+
+.socialWpp,
+.socialIg {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: background 0.3s, color 0.3s;
+}
+
+.socialWpp {
+  background: rgba(37,211,102,0.1);
+  border: 1px solid rgba(37,211,102,0.2);
+  color: #25D366;
+}
+
+.socialIg {
+  background: rgba(225,48,108,0.1);
+  border: 1px solid rgba(225,48,108,0.2);
+  color: #E1306C;
+}
+
+.links h4 {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--white);
+  margin-bottom: 20px;
+}
+
+.links ul { display: flex; flex-direction: column; gap: 12px; }
+
+.links a, .links span {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: color 0.3s;
+  display: inline-block;
+}
+
+.links a:hover { color: var(--gold); }
+
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.heart { color: var(--gold); }
+
+@media (max-width: 1024px) { .grid { grid-template-columns: 1fr 1fr; gap: 40px; } }
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr; gap: 32px; } }
+@media (max-width: 480px) { .bottom { flex-direction: column; gap: 8px; text-align: center; } }

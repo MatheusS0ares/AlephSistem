@@ -1,0 +1,118 @@
+.sobre {
+  padding: 100px 0;
+  background: var(--black-soft);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.imageWrap { display: flex; justify-content: center; }
+
+.imgFrame {
+  position: relative;
+  width: 380px;
+  height: 460px;
+}
+
+.imgPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--black-card) 0%, #1a1500 100%);
+  border: 1px solid var(--black-border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.imgPlaceholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(201,168,76,0.08) 0%, transparent 70%);
+}
+
+.crown {
+  font-size: 8rem;
+  color: var(--gold);
+  position: relative;
+  z-index: 1;
+}
+
+.badge {
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-light) 100%);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: var(--shadow-gold);
+}
+
+.badgeNum {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--black);
+  line-height: 1;
+}
+
+.badgeText {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--black);
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.content { padding: 20px 0; }
+
+.text {
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.stats {
+  display: flex;
+  gap: 40px;
+  margin: 40px 0;
+  padding: 32px 0;
+  border-top: 1px solid var(--black-border);
+  border-bottom: 1px solid var(--black-border);
+}
+
+.statNum {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: 1fr; }
+  .imageWrap { display: none; }
+  .stats { gap: 24px; flex-wrap: wrap; }
+}

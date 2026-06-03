@@ -1,0 +1,82 @@
+.page { display: flex; flex-direction: column; gap: 20px; }
+
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.monthPicker { background: var(--a-input); border: 1px solid var(--a-border2); border-radius: 8px; padding: 8px 12px; color: var(--a-text); font-size: 0.88rem; outline: none; }
+.monthPicker:focus { border-color: rgba(201,168,76,0.4); }
+.toolbarRight { display: flex; gap: 10px; }
+
+.btnEntrada { padding: 8px 16px; border-radius: 8px; background: rgba(86,209,143,0.12); border: 1px solid rgba(86,209,143,0.3); color: #56d18f; font-size: 0.84rem; font-weight: 600; cursor: pointer; }
+.btnEntrada:hover { background: rgba(86,209,143,0.2); }
+.btnSaida { padding: 8px 16px; border-radius: 8px; background: rgba(220,80,80,0.1); border: 1px solid rgba(220,80,80,0.3); color: #e05555; font-size: 0.84rem; font-weight: 600; cursor: pointer; }
+.btnSaida:hover { background: rgba(220,80,80,0.18); }
+
+.saldoCard { background: linear-gradient(135deg, var(--a-hero-from), var(--a-hero-to)); border: 1px solid rgba(201,168,76,0.2); border-radius: 16px; padding: 28px 32px; }
+.saldoLabel { display: block; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: #c9a84c; margin-bottom: 8px; }
+.saldoValue { display: block; font-size: 2.2rem; font-weight: 700; margin-bottom: 6px; }
+.saldoPos { color: #56d18f; }
+.saldoNeg { color: #e05555; }
+.saldoSub { font-size: 0.82rem; color: var(--a-muted2); }
+
+.bottomGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.section { background: var(--a-surface); border: 1px solid var(--a-border); border-radius: 12px; padding: 20px; }
+.sectionLabel { display: block; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: #c9a84c; margin-bottom: 4px; }
+.section h3 { font-size: 1rem; color: var(--a-text); margin: 0 0 16px; }
+
+.empty { color: var(--a-muted3); font-size: 0.85rem; padding: 8px 0; }
+
+.catList { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.catItem { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--a-input); font-size: 0.88rem; }
+.catItem:last-child { border-bottom: none; }
+.catItem span { color: var(--a-muted); }
+.catVal { color: #56d18f; font-weight: 600; }
+
+.transList { display: flex; flex-direction: column; gap: 2px; }
+.transRow { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; transition: background 0.15s; }
+.transRow:hover { background: rgba(255,255,255,0.03); }
+
+.transType { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
+.typeEntrada { background: rgba(86,209,143,0.15); color: #56d18f; }
+.typeSaida   { background: rgba(220,80,80,0.15); color: #e05555; }
+
+.transInfo { flex: 1; min-width: 0; }
+.transDesc { display: block; font-size: 0.85rem; color: var(--a-text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.transCat  { display: inline-block; font-size: 0.68rem; background: var(--a-border); border-radius: 6px; padding: 1px 5px; color: var(--a-muted); margin-top: 2px; }
+.transDate { display: block; font-size: 0.72rem; color: var(--a-muted3); margin-top: 1px; }
+
+.transAmt { font-size: 0.9rem; font-weight: 600; flex-shrink: 0; }
+.amtGreen { color: #56d18f; }
+.amtRed   { color: #e05555; }
+
+.btnDel { background: none; border: none; color: var(--a-muted3); cursor: pointer; font-size: 0.8rem; padding: 4px; }
+.btnDel:hover { color: #e05555; }
+
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal { background: var(--a-surface); border: 1px solid rgba(201,168,76,0.2); border-radius: 16px; width: 100%; max-width: 420px; }
+.modalHeader { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--a-border); }
+.modalHeader h3 { margin: 0; color: var(--a-text); font-size: 1.05rem; }
+.modalHeader button { background: none; border: none; color: var(--a-muted2); font-size: 1.2rem; cursor: pointer; }
+.modalBody { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+.modalFooter { display: flex; gap: 10px; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--a-border); }
+
+.formGroup { display: flex; flex-direction: column; gap: 6px; }
+.formGroup label { font-size: 0.72rem; color: var(--a-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.formGroup input, .formGroup select { background: var(--a-input); border: 1px solid var(--a-border2); border-radius: 8px; padding: 9px 12px; color: var(--a-text); font-size: 0.88rem; outline: none; }
+.formGroup input:focus, .formGroup select:focus { border-color: rgba(201,168,76,0.4); }
+.formGroup select option { background: var(--a-surface); }
+.btnOutline { padding: 9px 20px; border-radius: 8px; background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--a-muted); font-size: 0.88rem; cursor: pointer; }
+.btnEntrada:disabled, .btnSaida:disabled { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 700px) { .bottomGrid { grid-template-columns: 1fr; } }
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+  .saldoCard { padding: 20px; }
+  .saldoValue { font-size: 1.7rem; }
+  .bottomGrid { grid-template-columns: 1fr; }
+  .toolbar { flex-wrap: wrap; gap: 10px; }
+  .toolbarRight { width: 100%; justify-content: flex-end; }
+  .overlay { padding: 0; align-items: flex-end; }
+  .modal { max-width: 100%; border-radius: 20px 20px 0 0; border-left: none; border-right: none; border-bottom: none; }
+  .formGroup input, .formGroup select { font-size: 16px; }
+}
