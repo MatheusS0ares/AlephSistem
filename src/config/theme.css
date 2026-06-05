@@ -1,0 +1,25 @@
+/* ============================================================
+   TEMA DO CLIENTE — não sincronizar com upstream (Aleph)
+   Edite aqui: cores, fontes, bordas, sombras
+   ============================================================ */
+:root {
+  --gold: #C9A84C;
+  --gold-light: #E8C97A;
+  --gold-dark: #9A7A2E;
+  --black: #0A0A0A;
+  --black-soft: #111111;
+  --black-card: #161616;
+  --black-border: #222222;
+  --white: #FFFFFF;
+  --white-soft: #F5F0E8;
+  --white-muted: #A89E8C;
+  --text: #D4C9B0;
+  --text-muted: #7A7060;
+  --radius: 4px;
+  --radius-lg: 12px;
+  --shadow: 0 4px 30px rgba(0,0,0,0.5);
+  --shadow-gold: 0 4px 20px rgba(201,168,76,0.25);
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Jost', system-ui, sans-serif;
+}
