@@ -42,21 +42,19 @@ const NAV = [
   { key: 'inicio',        label: 'Início',        icon: '⊞' },
   { key: 'agendamentos',  label: 'Agendamentos',  icon: '📅' },
   { key: 'servicos',      label: 'Serviços',      icon: '✂️' },
-  { key: 'pedidos',       label: 'Pedidos',       icon: '📋' },
   { key: 'clientes',      label: 'Clientes',      icon: '👥' },
   { key: 'profissionais', label: 'Profissionais', icon: '💈' },
-  { key: 'galeria',       label: 'Galeria',        icon: '📸' },
-  { key: 'catalogo',      label: 'Catálogo',       icon: '📦' },
+  { key: 'galeria',       label: 'Galeria',       icon: '📸' },
   { key: 'caixa',         label: 'Caixa',         icon: '💰' },
   { key: 'ajustes',       label: 'Ajustes',       icon: '⚙️' },
 ]
 
 const BOTTOM_NAV = [
-  { key: 'inicio',       label: 'Início',       icon: '⊞' },
-  { key: 'agendamentos', label: 'Agenda',        icon: '📅' },
-  { key: 'pedidos',      label: 'Pedidos',      icon: '📋' },
-  { key: 'clientes',     label: 'Clientes',     icon: '👥' },
-  { key: 'mais',         label: 'Mais',         icon: '⋯' },
+  { key: 'inicio',       label: 'Início',   icon: '⊞' },
+  { key: 'agendamentos', label: 'Agenda',   icon: '📅' },
+  { key: 'servicos',     label: 'Serviços', icon: '✂️' },
+  { key: 'clientes',     label: 'Clientes', icon: '👥' },
+  { key: 'mais',         label: 'Mais',     icon: '⋯' },
 ]
 
 export default function AdminDashboard({ onLogout }) {
@@ -198,7 +196,7 @@ export default function AdminDashboard({ onLogout }) {
   }
 
   const pageLabel = NAV.find(n => n.key === page)?.label || ''
-  const isMorePage = ['caixa', 'ajustes', 'catalogo', 'profissionais', 'galeria', 'servicos'].includes(page)
+  const isMorePage = ['caixa', 'ajustes', 'profissionais', 'galeria'].includes(page)
 
   return (
     <div className={`${styles.layout} ${isDark ? '' : styles.light}`}>
@@ -431,9 +429,7 @@ export default function AdminDashboard({ onLogout }) {
               <button className={styles.moreItem} onClick={() => goTo('galeria')}>
                 <span>📸</span> Galeria de Trabalhos
               </button>
-              <button className={styles.moreItem} onClick={() => goTo('catalogo')}>
-                <span>📦</span> Catálogo
-              </button>
+
               <button className={styles.moreItem} onClick={() => goTo('caixa')}>
                 <span>💰</span> Caixa & Finanças
               </button>
