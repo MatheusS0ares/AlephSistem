@@ -15,7 +15,7 @@ export default function GaleriaHuds({ instagram = 'https://instagram.com/hudsbar
   useEffect(() => {
     supabase
       .from('gallery')
-      .select('*')
+      .select('*, customers(instagram, name)')
       .eq('store_id', STORE_ID)
       .eq('active', true)
       .order('order_index')
@@ -72,8 +72,17 @@ export default function GaleriaHuds({ instagram = 'https://instagram.com/hudsbar
                   {foto.service_tag && (
                     <span className={styles.cardTag}>{foto.service_tag}</span>
                   )}
-                  {foto.caption && (
-                    <p className={styles.cardCaption}>{foto.caption}</p>
+                  {(foto.customers?.instagram || foto.caption) && (
+                    <div className={styles.cardBottom}>
+                      {foto.customers?.instagram && (
+                        <span className={styles.cardIg}>
+                          @{foto.customers.instagram.replace('@', '')}
+                        </span>
+                      )}
+                      {foto.caption && !foto.customers?.instagram && (
+                        <p className={styles.cardCaption}>{foto.caption}</p>
+                      )}
+                    </div>
                   )}
                 </div>
               </motion.div>
