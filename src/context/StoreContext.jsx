@@ -39,6 +39,13 @@ const FALLBACK_STORES = {
     instagram_url: 'https://instagram.com/artemimo',
     address: 'Brasília - DF', active: true,
   },
+  'huds': {
+    id: 'fallback-huds', name: "Barbearia HUD'S", slug: 'huds',
+    tagline: 'Seu estilo, nossa arte.',
+    whatsapp: '5500000000006', instagram: '@hudsbarbearia',
+    instagram_url: 'https://instagram.com/hudsbarbearia',
+    address: 'Brasília - DF', active: true,
+  },
 }
 
 export function StoreProvider({ slug, children }) {

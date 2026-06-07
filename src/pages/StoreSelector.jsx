@@ -11,6 +11,7 @@ const FALLBACK_STORES = [
   { id: '3', name: 'Burguer Express',     slug: 'delivery-demo',       tagline: 'Os melhores burguers',          whatsapp: '5500000000003', instagram: '@burguerexpress',   address: 'Brasília - DF' },
   { id: '4', name: 'Studio Beauty',       slug: 'beleza-demo',         tagline: 'Beleza e bem-estar',            whatsapp: '5500000000004', instagram: '@studiobeauty',     address: 'Brasília - DF' },
   { id: '5', name: 'Arte e Mimo',         slug: 'personalizados-demo', tagline: 'Personalizados exclusivos',     whatsapp: '5500000000005', instagram: '@artemimo',         address: 'Brasília - DF' },
+  { id: '6', name: "Barbearia HUD'S",     slug: 'huds',                tagline: 'Seu estilo, nossa arte.',       whatsapp: '5500000000006', instagram: '@hudsbarbearia',    address: 'Brasília - DF', customRoute: '/huds' },
 ]
 
 export default function StoreSelector() {
@@ -46,7 +47,7 @@ export default function StoreSelector() {
             <motion.button
               key={store.id}
               className={styles.card}
-              onClick={() => navigate(`/loja/${store.slug}`)}
+              onClick={() => navigate(store.customRoute || `/loja/${store.slug}`)}
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 + i * 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}

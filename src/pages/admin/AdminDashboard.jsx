@@ -8,6 +8,7 @@ import ClientesPage from './pages/ClientesPage'
 import CatalogoPage from './pages/CatalogoPage'
 import CaixaPage from './pages/CaixaPage'
 import AjustesPage from './pages/AjustesPage'
+import AgendamentosPage from './pages/AgendamentosPage'
 import styles from './AdminDashboard.module.css'
 
 const FALLBACK_STORES = [
@@ -19,20 +20,21 @@ const FALLBACK_STORES = [
 ]
 
 const NAV = [
-  { key: 'inicio',   label: 'Início',   icon: '⊞' },
-  { key: 'pedidos',  label: 'Pedidos',  icon: '📋' },
-  { key: 'clientes', label: 'Clientes', icon: '👥' },
-  { key: 'catalogo', label: 'Catálogo', icon: '📦' },
-  { key: 'caixa',    label: 'Caixa',    icon: '💰' },
-  { key: 'ajustes',  label: 'Ajustes',  icon: '⚙️' },
+  { key: 'inicio',        label: 'Início',       icon: '⊞' },
+  { key: 'agendamentos',  label: 'Agendamentos', icon: '📅' },
+  { key: 'pedidos',       label: 'Pedidos',      icon: '📋' },
+  { key: 'clientes',      label: 'Clientes',     icon: '👥' },
+  { key: 'catalogo',      label: 'Catálogo',     icon: '📦' },
+  { key: 'caixa',         label: 'Caixa',        icon: '💰' },
+  { key: 'ajustes',       label: 'Ajustes',      icon: '⚙️' },
 ]
 
 const BOTTOM_NAV = [
-  { key: 'inicio',   label: 'Início',   icon: '⊞' },
-  { key: 'pedidos',  label: 'Pedidos',  icon: '📋' },
-  { key: 'clientes', label: 'Clientes', icon: '👥' },
-  { key: 'catalogo', label: 'Catálogo', icon: '📦' },
-  { key: 'mais',     label: 'Mais',     icon: '⋯' },
+  { key: 'inicio',       label: 'Início',       icon: '⊞' },
+  { key: 'agendamentos', label: 'Agenda',        icon: '📅' },
+  { key: 'pedidos',      label: 'Pedidos',      icon: '📋' },
+  { key: 'clientes',     label: 'Clientes',     icon: '👥' },
+  { key: 'mais',         label: 'Mais',         icon: '⋯' },
 ]
 
 export default function AdminDashboard({ onLogout }) {
@@ -141,16 +143,17 @@ export default function AdminDashboard({ onLogout }) {
   }
 
   const PAGE_MAP = {
-    inicio:   <DashboardHome onNavigate={goTo} store={activeStore} />,
-    pedidos:  <PedidosPage search={search} storeId={activeStore.id} storeName={activeStore.name} />,
-    clientes: <ClientesPage search={search} storeId={activeStore.id} />,
-    catalogo: <CatalogoPage />,
-    caixa:    <CaixaPage storeId={activeStore.id} />,
-    ajustes:  <AjustesPage storeId={activeStore.id} />,
+    inicio:        <DashboardHome onNavigate={goTo} store={activeStore} />,
+    agendamentos:  <AgendamentosPage search={search} storeId={activeStore.id} />,
+    pedidos:       <PedidosPage search={search} storeId={activeStore.id} storeName={activeStore.name} />,
+    clientes:      <ClientesPage search={search} storeId={activeStore.id} />,
+    catalogo:      <CatalogoPage />,
+    caixa:         <CaixaPage storeId={activeStore.id} />,
+    ajustes:       <AjustesPage storeId={activeStore.id} />,
   }
 
   const pageLabel = NAV.find(n => n.key === page)?.label || ''
-  const isMorePage = ['caixa', 'ajustes'].includes(page)
+  const isMorePage = ['caixa', 'ajustes', 'catalogo'].includes(page)
 
   return (
     <div className={`${styles.layout} ${isDark ? '' : styles.light}`}>
@@ -203,12 +206,12 @@ export default function AdminDashboard({ onLogout }) {
               {isDark ? '☀️' : '🌙'}
             </button>
 
-            {(page === 'pedidos' || page === 'clientes') && (
+            {(page === 'pedidos' || page === 'clientes' || page === 'agendamentos') && (
               <div className={styles.searchWrap}>
                 <span className={styles.searchIcon}>🔍</span>
                 <input
                   className={styles.searchInput}
-                  placeholder={page === 'pedidos' ? 'Buscar…' : 'Buscar cliente…'}
+                  placeholder={page === 'pedidos' ? 'Buscar…' : page === 'agendamentos' ? 'Buscar agendamento…' : 'Buscar cliente…'}
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                 />
@@ -223,6 +226,17 @@ export default function AdminDashboard({ onLogout }) {
                 onClick={() => window.__adminOpenNewOrder?.()}
               >
                 + Novo pedido
+              </motion.button>
+            )}
+
+            {page === 'agendamentos' && (
+              <motion.button
+                className={`${styles.newOrderBtn} ${styles.desktopOnly}`}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => window.__adminOpenNewAppointment?.()}
+              >
+                + Novo agendamento
               </motion.button>
             )}
           </div>
@@ -243,13 +257,23 @@ export default function AdminDashboard({ onLogout }) {
         </div>
       </div>
 
-      {/* ── Mobile FAB (novo pedido) ── */}
+      {/* ── Mobile FAB ── */}
       {page === 'pedidos' && (
         <motion.button
           className={styles.fab}
           whileTap={{ scale: 0.92 }}
           onClick={() => window.__adminOpenNewOrder?.()}
           aria-label="Novo pedido"
+        >
+          +
+        </motion.button>
+      )}
+      {page === 'agendamentos' && (
+        <motion.button
+          className={styles.fab}
+          whileTap={{ scale: 0.92 }}
+          onClick={() => window.__adminOpenNewAppointment?.()}
+          aria-label="Novo agendamento"
         >
           +
         </motion.button>
@@ -338,6 +362,9 @@ export default function AdminDashboard({ onLogout }) {
               exit={{ y: 80, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 340, damping: 28 }}
             >
+              <button className={styles.moreItem} onClick={() => goTo('catalogo')}>
+                <span>📦</span> Catálogo
+              </button>
               <button className={styles.moreItem} onClick={() => goTo('caixa')}>
                 <span>💰</span> Caixa & Finanças
               </button>
