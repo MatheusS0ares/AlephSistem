@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { supabase } from '../../../lib/supabase'
 import styles from './ClientesPage.module.css'
 
-const EMPTY_FORM = { name: '', whatsapp: '', notes: '', vip: false }
+const EMPTY_FORM = { name: '', whatsapp: '', notes: '', vip: false, walks_in: false }
 
 export default function ClientesPage({ search, storeId }) {
   const [customers, setCustomers] = useState([])
@@ -16,22 +16,28 @@ export default function ClientesPage({ search, storeId }) {
   const [customerOrders, setCustomerOrders] = useState({})
 
   const loadData = useCallback(async () => {
-    const [custRes, ordRes] = await Promise.all([
+    const [custRes, apptRes] = await Promise.all([
       supabase.from('customers').select('*').eq('store_id', storeId).order('name'),
-      supabase.from('orders').select('customer_id, total, status').eq('store_id', storeId),
+      supabase.from('appointments').select('customer_whatsapp, price, status').eq('store_id', storeId),
     ])
 
     setCustomers(custRes.data || [])
 
+    // Agrupa agendamentos pelo whatsapp do cliente
+    const apptMap = {}
+    ;(apptRes.data || []).forEach(a => {
+      const key = (a.customer_whatsapp || '').replace(/\D/g, '')
+      if (!key) return
+      if (!apptMap[key]) apptMap[key] = { total: 0, count: 0, pendentes: 0 }
+      apptMap[key].count++
+      apptMap[key].total += Number(a.price || 0)
+      if (['agendado', 'confirmado'].includes(a.status)) apptMap[key].pendentes++
+    })
+    // Reconstrói o mapa por customer.id usando o whatsapp como chave
     const ordMap = {}
-    ;(ordRes.data || []).forEach(o => {
-      if (!o.customer_id) return
-      if (!ordMap[o.customer_id]) ordMap[o.customer_id] = { total: 0, count: 0, abertos: 0 }
-      ordMap[o.customer_id].count++
-      ordMap[o.customer_id].total += Number(o.total || 0)
-      if (['orcamento','confirmado','encomendado','chegou'].includes(o.status)) {
-        ordMap[o.customer_id].abertos++
-      }
+    ;(custRes.data || []).forEach(c => {
+      const key = (c.whatsapp || '').replace(/\D/g, '')
+      ordMap[c.id] = apptMap[key] || { total: 0, count: 0, pendentes: 0 }
     })
     setCustomerOrders(ordMap)
   }, [storeId])
@@ -53,7 +59,7 @@ export default function ClientesPage({ search, storeId }) {
   function openEdit(c) {
     setEditCustomer(c)
     setSaveError(null)
-    setForm({ name: c.name, whatsapp: c.whatsapp || '', notes: c.notes || '', vip: c.vip || false })
+    setForm({ name: c.name, whatsapp: c.whatsapp || '', notes: c.notes || '', vip: c.vip || false, walks_in: c.walks_in || false })
     setShowForm(true)
   }
 
@@ -67,6 +73,7 @@ export default function ClientesPage({ search, storeId }) {
       whatsapp: form.whatsapp,
       notes: form.notes,
       vip: form.vip,
+      walks_in: form.walks_in,
       store_id: effectiveStoreId,
     }
     let error
@@ -134,16 +141,22 @@ export default function ClientesPage({ search, storeId }) {
                 <div className={styles.stats}>
                   <div className={styles.statItem}>
                     <strong>{stats.count}</strong>
-                    <span>Pedidos</span>
+                    <span>Cortes</span>
                   </div>
                   <div className={styles.statItem}>
                     <strong className={styles.statGold}>{fmt(stats.total)}</strong>
-                    <span>Total</span>
+                    <span>Total gasto</span>
                   </div>
                   <div className={styles.statItem}>
-                    <strong>{stats.abertos}</strong>
-                    <span>Abertos</span>
+                    <strong>{stats.pendentes}</strong>
+                    <span>Pendentes</span>
                   </div>
+                </div>
+                <div className={styles.habitBadge}>
+                  {c.walks_in
+                    ? <span className={styles.badgeWalk}>🚶 Vem sem agendar</span>
+                    : <span className={styles.badgeBook}>📅 Costuma agendar</span>
+                  }
                 </div>
 
                 <div className={styles.cardActions}>
@@ -188,10 +201,24 @@ export default function ClientesPage({ search, storeId }) {
                   <label>Observações</label>
                   <textarea rows="2" value={form.notes} onChange={e => setForm(f => ({...f, notes: e.target.value}))} placeholder="Preferências, histórico…" />
                 </div>
-                <label className={styles.checkLabel}>
-                  <input type="checkbox" checked={form.vip} onChange={e => setForm(f => ({...f, vip: e.target.checked}))} />
-                  Cliente VIP ⭐
-                </label>
+                <div className={styles.toggleRow}>
+                  <div className={styles.toggleGroup}>
+                    <span>Cliente VIP ⭐</span>
+                    <button
+                      type="button"
+                      className={`${styles.toggle} ${form.vip ? styles.toggleOn : ''}`}
+                      onClick={() => setForm(f => ({...f, vip: !f.vip}))}
+                    ><span className={styles.toggleThumb} /></button>
+                  </div>
+                  <div className={styles.toggleGroup}>
+                    <span>Vem sem agendar 🚶</span>
+                    <button
+                      type="button"
+                      className={`${styles.toggle} ${form.walks_in ? styles.toggleOn : ''}`}
+                      onClick={() => setForm(f => ({...f, walks_in: !f.walks_in}))}
+                    ><span className={styles.toggleThumb} /></button>
+                  </div>
+                </div>
                 {saveError && <p className={styles.saveError}>{saveError}</p>}
               </div>
               <div className={styles.modalFooter}>
