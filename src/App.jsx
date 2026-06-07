@@ -12,7 +12,13 @@ export default function App() {
       <Routes>
         <Route
           path="/"
-          element={CLIENT_SLUG ? <Navigate to={`/loja/${CLIENT_SLUG}`} replace /> : <StoreSelector />}
+          element={
+            CLIENT_SLUG === 'huds'
+              ? <Navigate to="/huds" replace />
+              : CLIENT_SLUG
+                ? <Navigate to={`/loja/${CLIENT_SLUG}`} replace />
+                : <StoreSelector />
+          }
         />
         <Route path="/loja/:slug" element={<StorePage />} />
         <Route path="/loja/:slug/*" element={<StorePage />} />
