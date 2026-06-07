@@ -105,7 +105,35 @@ export default function HudsDashboard({ onNavigate, store }) {
     cancelado: 'Cancelado',
   }
 
-  const storeName = store?.name || 'Barbearia HUD\'S'
+  const storeName = store?.name || "HUD'S Barbearia"
+
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.header}>
+          <div>
+            <div className={`${styles.skeletonLine} ${styles.skeletonLg}`} style={{ width: 220 }} />
+            <div className={`${styles.skeletonLine} ${styles.skeletonSm}`} style={{ width: 150, marginTop: 8 }} />
+          </div>
+        </div>
+        <div className={styles.statsRow}>
+          {[0,1,2,3].map(i => (
+            <div key={i} className={styles.statCard}>
+              <div className={`${styles.skeletonLine} ${styles.skeletonXl}`} />
+              <div className={`${styles.skeletonLine} ${styles.skeletonSm}`} style={{ width: '55%' }} />
+            </div>
+          ))}
+        </div>
+        <div className={styles.bento}>
+          <div className={styles.col}>
+            <div className={styles.skeletonCard} style={{ height: 220 }} />
+            <div className={styles.skeletonCard} style={{ height: 110 }} />
+          </div>
+          <div className={styles.skeletonCard} style={{ height: 340 }} />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.page}>
