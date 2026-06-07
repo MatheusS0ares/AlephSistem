@@ -1,75 +1,57 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, useInView } from 'motion/react'
 import { FaWhatsapp } from 'react-icons/fa'
+import { supabase } from '../../lib/supabase'
 import styles from './ServicosHuds.module.css'
 
-const SERVICOS = [
-  {
-    categoria: 'Corte',
-    nome: 'Corte Clássico',
-    desc: 'Corte tradicional com tesoura e pente, acabamento perfeito.',
-    preco: 'R$ 45',
-    duracao: '40 min',
-    icon: '✂',
-    destaque: false,
-  },
-  {
-    categoria: 'Corte',
-    nome: 'Degradê / Fade',
-    desc: 'Degradê moderno com máquina, perfeito para qualquer estilo.',
-    preco: 'R$ 50',
-    duracao: '45 min',
-    icon: '⚡',
-    destaque: true,
-  },
-  {
-    categoria: 'Barba',
-    nome: 'Barba Completa',
-    desc: 'Modelagem e acabamento de barba com navalha e produtos premium.',
-    preco: 'R$ 35',
-    duracao: '30 min',
-    icon: '🪒',
-    destaque: false,
-  },
-  {
-    categoria: 'Combo',
-    nome: 'Corte + Barba',
-    desc: 'O combo perfeito: corte e barba com todo o cuidado que você merece.',
-    preco: 'R$ 75',
-    duracao: '70 min',
-    icon: '👑',
-    destaque: true,
-  },
-  {
-    categoria: 'Tratamento',
-    nome: 'Hidratação Capilar',
-    desc: 'Tratamento profundo para nutrir, hidratar e revitalizar os fios.',
-    preco: 'R$ 40',
-    duracao: '30 min',
-    icon: '💧',
-    destaque: false,
-  },
-  {
-    categoria: 'Acabamento',
-    nome: 'Sobrancelha Masculina',
-    desc: 'Modelagem e acabamento de sobrancelha com linha e pinça.',
-    preco: 'R$ 20',
-    duracao: '15 min',
-    icon: '✦',
-    destaque: false,
-  },
+const STORE_ID = import.meta.env.VITE_CLIENT_SLUG || 'huds'
+
+const FALLBACK = [
+  { id: '1', categoria: 'Corte',      nome: 'Corte Clássico',       desc: 'Corte tradicional com tesoura e pente, acabamento perfeito.',                preco: 'R$ 45', duracao: '40 min', icon: '✂',  destaque: false },
+  { id: '2', categoria: 'Corte',      nome: 'Degradê / Fade',        desc: 'Degradê moderno com máquina, perfeito para qualquer estilo.',                  preco: 'R$ 50', duracao: '45 min', icon: '⚡', destaque: true  },
+  { id: '3', categoria: 'Barba',      nome: 'Barba Completa',        desc: 'Modelagem e acabamento de barba com navalha e produtos premium.',              preco: 'R$ 35', duracao: '30 min', icon: '🪒', destaque: false },
+  { id: '4', categoria: 'Combo',      nome: 'Corte + Barba',         desc: 'O combo perfeito: corte e barba com todo o cuidado que você merece.',          preco: 'R$ 75', duracao: '70 min', icon: '👑', destaque: true  },
+  { id: '5', categoria: 'Tratamento', nome: 'Hidratação Capilar',    desc: 'Tratamento profundo para nutrir, hidratar e revitalizar os fios.',            preco: 'R$ 40', duracao: '30 min', icon: '💧', destaque: false },
+  { id: '6', categoria: 'Acabamento', nome: 'Sobrancelha Masculina', desc: 'Modelagem e acabamento de sobrancelha com linha e pinça.',                   preco: 'R$ 20', duracao: '15 min', icon: '✦', destaque: false },
 ]
 
-const CATEGORIAS = ['Todos', 'Corte', 'Barba', 'Combo', 'Tratamento', 'Acabamento']
+function mapService(row) {
+  return {
+    id:        row.id,
+    categoria: row.category || 'Serviço',
+    nome:      row.name,
+    desc:      row.description || '',
+    preco:     row.price ? `R$ ${Number(row.price).toFixed(0)}` : '',
+    duracao:   row.duration_minutes ? `${row.duration_minutes} min` : '',
+    icon:      row.icon || '✂',
+    image_url: row.image_url || null,
+    destaque:  row.order_index <= 2,
+  }
+}
 
 export default function ServicosHuds({ whatsapp = '5500000000000' }) {
+  const [servicos, setServicos] = useState(FALLBACK)
   const [catAtiva, setCatAtiva] = useState('Todos')
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
+  const inView = useInView(ref, { once: true, margin: '-60px' })
+
+  useEffect(() => {
+    supabase
+      .from('services')
+      .select('*')
+      .eq('store_id', STORE_ID)
+      .eq('active', true)
+      .order('order_index')
+      .then(({ data }) => {
+        if (data?.length) setServicos(data.map(mapService))
+      })
+  }, [])
+
+  const categorias = ['Todos', ...new Set(servicos.map(s => s.categoria))]
 
   const filtrados = catAtiva === 'Todos'
-    ? SERVICOS
-    : SERVICOS.filter(s => s.categoria === catAtiva)
+    ? servicos
+    : servicos.filter(s => s.categoria === catAtiva)
 
   const wppLink = (nome) =>
     `https://wa.me/${whatsapp}?text=Ol%C3%A1!%20Gostaria%20de%20agendar%20${encodeURIComponent(nome)}%20na%20Barbearia%20HUD%27S.`
@@ -98,7 +80,7 @@ export default function ServicosHuds({ whatsapp = '5500000000000' }) {
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.15, duration: 0.5 }}
         >
-          {CATEGORIAS.map(cat => (
+          {categorias.map(cat => (
             <button
               key={cat}
               className={`${styles.filtroBtn} ${catAtiva === cat ? styles.filtroBtnAtivo : ''}`}
@@ -112,24 +94,40 @@ export default function ServicosHuds({ whatsapp = '5500000000000' }) {
         <div className={styles.grid}>
           {filtrados.map((s, i) => (
             <motion.div
-              key={s.nome}
+              key={s.id}
               className={`${styles.card} ${s.destaque ? styles.cardDestaque : ''}`}
               initial={{ opacity: 0, y: 24 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.2 + i * 0.08, duration: 0.5 }}
+              transition={{ delay: 0.2 + i * 0.07, duration: 0.5 }}
               whileHover={{ y: -4 }}
             >
               {s.destaque && <span className={styles.badge}>Popular</span>}
-              <div className={styles.cardTop}>
-                <span className={styles.cardIcon}>{s.icon}</span>
-                <span className={styles.cardCat}>{s.categoria}</span>
+
+              {s.image_url ? (
+                <div className={styles.cardImg}>
+                  <img src={s.image_url} alt={s.nome} loading="lazy" />
+                  <div className={styles.cardImgOverlay} />
+                </div>
+              ) : (
+                <div className={styles.cardIconWrap}>
+                  <span className={styles.cardIcon}>{s.icon}</span>
+                  <span className={styles.cardCat}>{s.categoria}</span>
+                </div>
+              )}
+
+              {s.image_url && (
+                <span className={styles.cardCatPill}>{s.categoria}</span>
+              )}
+
+              <div className={styles.cardBody}>
+                <h3 className={styles.cardNome}>{s.nome}</h3>
+                {s.desc && <p className={styles.cardDesc}>{s.desc}</p>}
               </div>
-              <h3 className={styles.cardNome}>{s.nome}</h3>
-              <p className={styles.cardDesc}>{s.desc}</p>
+
               <div className={styles.cardBottom}>
                 <div className={styles.cardMeta}>
-                  <span className={styles.preco}>{s.preco}</span>
-                  <span className={styles.duracao}>⏱ {s.duracao}</span>
+                  {s.preco && <span className={styles.preco}>{s.preco}</span>}
+                  {s.duracao && <span className={styles.duracao}>⏱ {s.duracao}</span>}
                 </div>
                 <a
                   href={wppLink(s.nome)}

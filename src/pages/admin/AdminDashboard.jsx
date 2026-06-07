@@ -12,6 +12,7 @@ import CaixaPage from './pages/CaixaPage'
 import AjustesPage from './pages/AjustesPage'
 import AgendamentosPage from './pages/AgendamentosPage'
 import ProfissionaisPage from './pages/ProfissionaisPage'
+import GaleriaPage from './pages/GaleriaPage'
 import styles from './AdminDashboard.module.css'
 
 const SLUG_NAMES = {
@@ -41,7 +42,8 @@ const NAV = [
   { key: 'pedidos',       label: 'Pedidos',       icon: '📋' },
   { key: 'clientes',      label: 'Clientes',      icon: '👥' },
   { key: 'profissionais', label: 'Profissionais', icon: '💈' },
-  { key: 'catalogo',      label: 'Catálogo',      icon: '📦' },
+  { key: 'galeria',       label: 'Galeria',        icon: '📸' },
+  { key: 'catalogo',      label: 'Catálogo',       icon: '📦' },
   { key: 'caixa',         label: 'Caixa',         icon: '💰' },
   { key: 'ajustes',       label: 'Ajustes',       icon: '⚙️' },
 ]
@@ -166,13 +168,14 @@ export default function AdminDashboard({ onLogout }) {
     pedidos:        <PedidosPage search={search} storeId={activeStore.id} storeName={activeStore.name} />,
     clientes:       <ClientesPage search={search} storeId={activeStore.id} />,
     profissionais:  <ProfissionaisPage search={search} storeId={activeStore.id} />,
+    galeria:        <GaleriaPage storeId={activeStore.id} />,
     catalogo:       <CatalogoPage />,
     caixa:          <CaixaPage storeId={activeStore.id} />,
     ajustes:        <AjustesPage storeId={activeStore.id} />,
   }
 
   const pageLabel = NAV.find(n => n.key === page)?.label || ''
-  const isMorePage = ['caixa', 'ajustes', 'catalogo', 'profissionais'].includes(page)
+  const isMorePage = ['caixa', 'ajustes', 'catalogo', 'profissionais', 'galeria'].includes(page)
 
   return (
     <div className={`${styles.layout} ${isDark ? '' : styles.light}`}>
@@ -390,6 +393,9 @@ export default function AdminDashboard({ onLogout }) {
             >
               <button className={styles.moreItem} onClick={() => goTo('profissionais')}>
                 <span>💈</span> Profissionais
+              </button>
+              <button className={styles.moreItem} onClick={() => goTo('galeria')}>
+                <span>📸</span> Galeria de Trabalhos
               </button>
               <button className={styles.moreItem} onClick={() => goTo('catalogo')}>
                 <span>📦</span> Catálogo

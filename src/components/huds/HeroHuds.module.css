@@ -2,10 +2,10 @@
 
 .hero {
   position: relative;
-  min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
-  background: #0a0a0a;
+  background: #0b0b0f;
   overflow: hidden;
 }
 
@@ -13,14 +13,17 @@
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity: 0.4;
+  opacity: 0.5;
   pointer-events: none;
 }
 
 .gradient {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(200, 150, 12, 0.08) 0%, transparent 70%);
+  background:
+    radial-gradient(ellipse 70% 55% at 25% 45%, rgba(200,150,12,0.09) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 80% 20%, rgba(200,150,12,0.04) 0%, transparent 60%),
+    linear-gradient(180deg, transparent 60%, rgba(11,11,15,0.7) 100%);
   pointer-events: none;
 }
 
@@ -86,38 +89,44 @@
 }
 
 .btnPrimary {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 32px;
-  background: #C8960C;
-  color: #0a0a0a;
+  padding: 16px 36px;
+  background: linear-gradient(135deg, #a8722a, #C8960C);
+  color: #0b0b0f;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   text-decoration: none;
-  transition: background 0.2s;
+  border-radius: 6px;
+  box-shadow: 0 4px 24px rgba(200,150,12,0.35);
+  transition: opacity 0.2s, transform 0.15s;
 }
-.btnPrimary:hover { background: #E8B020; }
+.btnPrimary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
 
 .btnSecondary {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   padding: 16px 32px;
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.85);
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   text-decoration: none;
+  border-radius: 6px;
   transition: border-color 0.2s, color 0.2s;
 }
 .btnSecondary:hover {
-  border-color: #C8960C;
+  border-color: rgba(200,150,12,0.6);
   color: #C8960C;
 }
 

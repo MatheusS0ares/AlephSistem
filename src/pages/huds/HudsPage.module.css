@@ -1,8 +1,9 @@
 .page {
-  background: #0a0a0a;
+  background: #0b0b0f;
   min-height: 100vh;
 }
 
+/* WhatsApp float — desktop only */
 .wppFloat {
   position: fixed;
   bottom: 28px;
@@ -28,18 +29,62 @@
   z-index: 90;
   width: 40px;
   height: 40px;
-  background: #1a1a1a;
-  border: 1px solid #333;
+  background: #18181b;
+  border: 1px solid #2e2e35;
   color: #C8960C;
   font-size: 16px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 8px;
   transition: border-color 0.2s, background 0.2s;
 }
 .backTop:hover {
   background: #C8960C;
   border-color: #C8960C;
-  color: #0a0a0a;
+  color: #0b0b0f;
+}
+
+/* Mobile sticky booking bar — thumb zone optimised */
+.stickyBar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+  background: rgba(11,11,15,0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(200,150,12,0.18);
+}
+
+.stickyBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #a8722a, #C8960C);
+  color: #0b0b0f;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(200,150,12,0.3);
+  transition: opacity 0.15s;
+}
+.stickyBtn:hover { opacity: 0.9; }
+.stickyBtn svg { font-size: 18px; }
+
+@media (max-width: 900px) {
+  .stickyBar { display: block; }
+  .wppFloat  { display: none; }
+  .backTop   { bottom: 86px; right: 16px; }
 }
