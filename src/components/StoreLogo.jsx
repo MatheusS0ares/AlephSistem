@@ -4,11 +4,13 @@ import styles from './StoreLogo.module.css'
 const LOGO_FILES = {
   'reino-imperial': '/logos/reino-imperial.png',
   'personalize':    '/logos/personalize.png',
+  'huds':           '/logos/huds.png',
 }
 
 const FALLBACK = {
   'reino-imperial': { symbol: '♛', text: 'REINO IMPERIAL', sub: 'BRINDES E PRESENTES' },
   'personalize':    { symbol: 'P+', text: 'Personalize+',  sub: 'BRINDES E PRESENTES' },
+  'huds':           { symbol: '✂', text: "HUD'S",          sub: 'BARBEARIA' },
 }
 
 export default function StoreLogo({ slug, size = 'md', dark = true, className = '' }) {
