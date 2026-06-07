@@ -325,6 +325,34 @@
 .formGroup input:focus,
 .formGroup select:focus { border-color: rgba(201,168,76,0.5); }
 
+.tagPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tagPill {
+  padding: 6px 14px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(63,63,70,0.5);
+  color: var(--a-muted, #a1a1aa);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.tagPill:hover {
+  border-color: rgba(201,168,76,0.4);
+  color: var(--a-text, #fafafa);
+}
+.tagPillActive {
+  background: rgba(201,168,76,0.15);
+  border-color: #C8960C;
+  color: #C8960C;
+}
+
 .error {
   font-size: 0.78rem;
   color: #e05555;
@@ -368,6 +396,15 @@
 /* Responsive */
 @media (max-width: 900px) {
   .grid { columns: 2; }
+}
+@media (max-width: 599px) {
+  /* Push bottom-sheet above the floating bottom nav (60px height + 10px gap) */
+  .overlay {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+  .modal {
+    max-height: calc(92vh - 80px - env(safe-area-inset-bottom));
+  }
 }
 @media (max-width: 480px) {
   .grid { columns: 2; column-gap: 8px; }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { supabase } from '../../../lib/supabase'
 import styles from './GaleriaPage.module.css'
@@ -74,13 +75,20 @@ export default function GaleriaPage({ storeId }) {
   }
 
   async function uploadImage(file) {
-    const ext = 'jpg'
-    const fileName = `gallery/${storeId}/${Date.now()}.${ext}`
+    const BUCKET = import.meta.env.VITE_STORAGE_BUCKET || 'Photos'
+    const fileName = `gallery/${storeId}/${Date.now()}.jpg`
     const { data, error } = await supabase.storage
-      .from('photos')
+      .from(BUCKET)
       .upload(fileName, file, { contentType: 'image/jpeg', upsert: false })
-    if (error) throw error
-    const { data: urlData } = supabase.storage.from('photos').getPublicUrl(data.path)
+    if (error) {
+      if (error.message?.toLowerCase().includes('bucket')) {
+        const { data: buckets } = await supabase.storage.listBuckets()
+        const names = buckets?.map(b => b.name).join(', ') || 'nenhum'
+        throw new Error(`Bucket "${BUCKET}" não encontrado. Buckets disponíveis: ${names}`)
+      }
+      throw error
+    }
+    const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(data.path)
     return urlData.publicUrl
   }
 
@@ -193,23 +201,24 @@ export default function GaleriaPage({ storeId }) {
         </div>
       )}
 
-      {/* Modal */}
-      <AnimatePresence>
-        {showModal && (
-          <motion.div
-            className={styles.overlay}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={e => e.target === e.currentTarget && setShowModal(false)}
-          >
+      {/* Modal — rendered via portal to escape motion.div stacking context */}
+      {createPortal(
+        <AnimatePresence>
+          {showModal && (
             <motion.div
-              className={styles.modal}
-              initial={{ scale: 0.94, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.94, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 340, damping: 28 }}
+              className={styles.overlay}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={e => e.target === e.currentTarget && setShowModal(false)}
             >
+              <motion.div
+                className={styles.modal}
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 40, opacity: 0 }}
+                transition={{ type: 'spring', stiffness: 340, damping: 28 }}
+              >
               <div className={styles.modalHeader}>
                 <h3>{editFoto ? 'Editar foto' : 'Adicionar foto'}</h3>
                 <button onClick={() => setShowModal(false)}>✕</button>
@@ -260,15 +269,18 @@ export default function GaleriaPage({ storeId }) {
                 {/* Service tag */}
                 <div className={styles.formGroup}>
                   <label>Serviço relacionado</label>
-                  <select
-                    value={form.service_tag}
-                    onChange={e => setForm(f => ({ ...f, service_tag: e.target.value }))}
-                  >
-                    <option value="">Selecionar serviço…</option>
+                  <div className={styles.tagPills}>
                     {SERVICE_TAGS.map(t => (
-                      <option key={t} value={t}>{t}</option>
+                      <button
+                        key={t}
+                        type="button"
+                        className={`${styles.tagPill} ${form.service_tag === t ? styles.tagPillActive : ''}`}
+                        onClick={() => setForm(f => ({ ...f, service_tag: f.service_tag === t ? '' : t }))}
+                      >
+                        {t}
+                      </button>
                     ))}
-                  </select>
+                  </div>
                 </div>
 
                 {saveError && <p className={styles.error}>{saveError}</p>}
@@ -285,10 +297,12 @@ export default function GaleriaPage({ storeId }) {
                   {saving ? 'Enviando…' : editFoto ? 'Salvar' : 'Publicar'}
                 </motion.button>
               </div>
+                </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   )
 }
