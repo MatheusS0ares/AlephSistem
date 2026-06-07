@@ -7,12 +7,12 @@ const INFO = [
   {
     icon: <FaMapMarkerAlt />,
     titulo: 'Endereço',
-    linhas: ['Setor Sul, QD 7, CJ C, LT 8', 'Brasília — DF, 72410-403'],
+    linhas: ['Gama — DF', 'Atendimento reservado'],
   },
   {
     icon: <FaClock />,
     titulo: 'Horário de Funcionamento',
-    linhas: ['Seg a Sex: Horário agendado', 'Sábado: Horário agendado', 'Domingo: Somente com hora marcada'],
+    linhas: ['Seg a Sáb — Só com horário', 'Domingo — Fechado'],
   },
   {
     icon: <FaWhatsapp />,
@@ -22,7 +22,7 @@ const INFO = [
   {
     icon: <FaInstagram />,
     titulo: 'Instagram',
-    linhas: ['@hudsbarbearia'],
+    linhas: ['@hudsbarbearia', '824 seguidores'],
   },
 ]
 
@@ -85,7 +85,7 @@ export default function ContatoHuds({ whatsapp = '5500000000000', instagram = 'h
             <iframe
               className={styles.mapIframe}
               title="Barbearia HUD'S"
-              src="https://maps.google.com/maps?q=Setor+Sul+QD+7+CJ+C+LT+8+Bras%C3%ADlia+DF+72410-403&t=&z=16&ie=UTF8&iwloc=&output=embed"
+              src="https://maps.google.com/maps?q=Gama+DF+Brasil&t=&z=14&ie=UTF8&iwloc=&output=embed"
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

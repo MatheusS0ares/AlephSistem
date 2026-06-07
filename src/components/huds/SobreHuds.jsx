@@ -37,7 +37,7 @@ export default function SobreHuds() {
           <p className={styles.text}>
             Especializado em técnicas modernas e clássicas — do degradê perfeito
             ao acabamento na navalha — garantindo que seu estilo seja único e
-            impecável. Localizado no <strong>Setor Sul, Brasília - DF</strong>.
+            impecável. Localizado em <strong>Gama — DF</strong>, com atendimento exclusivamente reservado.
           </p>
           <div className={styles.divider} />
           <p className={styles.quote}>
