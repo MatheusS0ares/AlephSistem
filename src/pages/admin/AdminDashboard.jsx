@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import { supabase } from '../../lib/supabase'
 import { CLIENT_SLUG, CLIENT_NAME } from '../../config/client'
@@ -13,6 +14,7 @@ import AjustesPage from './pages/AjustesPage'
 import AgendamentosPage from './pages/AgendamentosPage'
 import ProfissionaisPage from './pages/ProfissionaisPage'
 import GaleriaPage from './pages/GaleriaPage'
+import ServicosPage from './pages/ServicosPage'
 import styles from './AdminDashboard.module.css'
 
 const SLUG_NAMES = {
@@ -39,6 +41,7 @@ const FALLBACK_STORES = [
 const NAV = [
   { key: 'inicio',        label: 'Início',        icon: '⊞' },
   { key: 'agendamentos',  label: 'Agendamentos',  icon: '📅' },
+  { key: 'servicos',      label: 'Serviços',      icon: '✂️' },
   { key: 'pedidos',       label: 'Pedidos',       icon: '📋' },
   { key: 'clientes',      label: 'Clientes',      icon: '👥' },
   { key: 'profissionais', label: 'Profissionais', icon: '💈' },
@@ -70,6 +73,9 @@ export default function AdminDashboard({ onLogout }) {
   const [switchModal, setSwitchModal] = useState(false)
   const [switchPwd, setSwitchPwd] = useState('')
   const [switchError, setSwitchError] = useState(false)
+  const [notifToast, setNotifToast] = useState(null)
+  const [agendaBadge, setAgendaBadge] = useState(0)
+  const notifTimeout = useRef(null)
 
   useEffect(() => { localStorage.setItem('adminTheme', theme) }, [theme])
 
@@ -115,10 +121,26 @@ export default function AdminDashboard({ onLogout }) {
 
   const goTo = (key) => {
     setPage(key)
+    if (key === 'agendamentos') setAgendaBadge(0)
     setMobileOpen(false)
     setMoreOpen(false)
     setSearch('')
   }
+
+  useEffect(() => {
+    if (!activeStore) return
+    const channel = supabase
+      .channel('admin-new-appointments')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'appointments' }, payload => {
+        const a = payload.new
+        setAgendaBadge(n => n + 1)
+        setNotifToast({ name: a.customer_name, service: a.service_name, time: a.appointment_time, date: a.appointment_date })
+        clearTimeout(notifTimeout.current)
+        notifTimeout.current = setTimeout(() => setNotifToast(null), 6000)
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [activeStore])
 
   const isDark = theme === 'dark'
 
@@ -169,13 +191,14 @@ export default function AdminDashboard({ onLogout }) {
     clientes:       <ClientesPage search={search} storeId={activeStore.id} />,
     profissionais:  <ProfissionaisPage search={search} storeId={activeStore.id} />,
     galeria:        <GaleriaPage storeId={activeStore.id} />,
+    servicos:       <ServicosPage storeId={activeStore.id} />,
     catalogo:       <CatalogoPage />,
     caixa:          <CaixaPage storeId={activeStore.id} />,
     ajustes:        <AjustesPage storeId={activeStore.id} />,
   }
 
   const pageLabel = NAV.find(n => n.key === page)?.label || ''
-  const isMorePage = ['caixa', 'ajustes', 'catalogo', 'profissionais', 'galeria'].includes(page)
+  const isMorePage = ['caixa', 'ajustes', 'catalogo', 'profissionais', 'galeria', 'servicos'].includes(page)
 
   return (
     <div className={`${styles.layout} ${isDark ? '' : styles.light}`}>
@@ -326,7 +349,15 @@ export default function AdminDashboard({ onLogout }) {
               className={`${styles.bnItem} ${page === item.key ? styles.bnActive : ''}`}
               onClick={() => goTo(item.key)}
             >
-              <span className={styles.bnIcon}>{item.icon}</span>
+              <span className={styles.bnIcon} style={{ position: 'relative' }}>
+                {item.icon}
+                {item.key === 'agendamentos' && agendaBadge > 0 && (
+                  <span style={{
+                    position: 'absolute', top: -2, right: -4, width: 8, height: 8,
+                    borderRadius: '50%', background: '#C8960C', display: 'block',
+                  }} />
+                )}
+              </span>
               <span className={styles.bnLabel}>{item.label}</span>
               {page === item.key && (
                 <motion.div className={styles.bnIndicator} layoutId="bnIndicator" />
@@ -391,6 +422,9 @@ export default function AdminDashboard({ onLogout }) {
               exit={{ y: 80, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 340, damping: 28 }}
             >
+              <button className={styles.moreItem} onClick={() => goTo('servicos')}>
+                <span>✂️</span> Serviços
+              </button>
               <button className={styles.moreItem} onClick={() => goTo('profissionais')}>
                 <span>💈</span> Profissionais
               </button>
@@ -418,6 +452,42 @@ export default function AdminDashboard({ onLogout }) {
           </>
         )}
       </AnimatePresence>
+
+      {/* ── Real-time notification toast ── */}
+      {createPortal(
+        <AnimatePresence>
+          {notifToast && (
+            <motion.div
+              style={{
+                position: 'fixed', bottom: 'calc(90px + env(safe-area-inset-bottom))', right: '16px',
+                background: '#18181b', border: '1px solid rgba(200,150,12,0.4)',
+                borderRadius: '14px', padding: '14px 18px', zIndex: 9999,
+                maxWidth: '300px', boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+                display: 'flex', flexDirection: 'column', gap: '4px',
+              }}
+              initial={{ opacity: 0, x: 60 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 60 }}
+              transition={{ type: 'spring', stiffness: 340, damping: 28 }}
+            >
+              <span style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#C8960C' }}>
+                📅 Novo agendamento
+              </span>
+              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fafafa' }}>{notifToast.name}</span>
+              <span style={{ fontSize: '0.78rem', color: '#a1a1aa' }}>
+                {notifToast.service} · {notifToast.date ? notifToast.date.split('-').reverse().join('/') : ''} às {notifToast.time}
+              </span>
+              <button
+                onClick={() => { setNotifToast(null); goTo('agendamentos') }}
+                style={{ marginTop: '8px', padding: '6px 0', background: 'rgba(200,150,12,0.15)', border: '1px solid rgba(200,150,12,0.3)', borderRadius: '8px', color: '#C8960C', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Ver agendamentos →
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   )
 }

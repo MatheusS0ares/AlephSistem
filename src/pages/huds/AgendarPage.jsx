@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { FaWhatsapp, FaScissors, FaArrowLeft, FaCheck } from 'react-icons/fa6'
+import { FaWhatsapp, FaArrowLeft, FaCheck } from 'react-icons/fa6'
 import { supabase } from '../../lib/supabase'
 import styles from './AgendarPage.module.css'
 
@@ -13,14 +13,14 @@ const HORARIOS = [
   '17:00', '17:30', '18:00', '18:30', '19:00', '19:30',
 ]
 
-const EMPTY_FORM = {
-  name: '',
-  whatsapp: '',
-  service: '',
-  date: '',
-  time: '',
-  notes: '',
-}
+const FALLBACK_SERVICES = [
+  { id: 'fc1', icon: '✂️', name: 'Corte Clássico',      price: 40,  duration_minutes: 30 },
+  { id: 'fc2', icon: '💈', name: 'Degradê / Fade',       price: 45,  duration_minutes: 40 },
+  { id: 'fc3', icon: '🪒', name: 'Barba Completa',       price: 35,  duration_minutes: 30 },
+  { id: 'fc4', icon: '✂️', name: 'Corte + Barba',        price: 65,  duration_minutes: 60 },
+  { id: 'fc5', icon: '🧴', name: 'Hidratação Capilar',   price: 50,  duration_minutes: 45 },
+  { id: 'fc6', icon: '💆', name: 'Sobrancelha Masculina', price: 20, duration_minutes: 15 },
+]
 
 function fmtDate(d) {
   if (!d) return ''
@@ -28,67 +28,100 @@ function fmtDate(d) {
   return `${day}/${m}/${y}`
 }
 
+function fmtPrice(val) {
+  if (!val && val !== 0) return ''
+  return `R$ ${Number(val).toFixed(2).replace('.', ',')}`
+}
+
+function buildWppLink(data) {
+  const text = `Olá! Acabei de fazer meu agendamento pelo site. Meu nome é ${data.name}, para ${data.service} no dia ${fmtDate(data.date)} às ${data.time}.`
+  return `https://wa.me/${HUDS_WHATSAPP}?text=${encodeURIComponent(text)}`
+}
+
+const STEP_LABELS = ['Serviço', 'Data & Hora', 'Seus dados']
+
 export default function AgendarPage() {
+  const [step, setStep] = useState(1)
   const [services, setServices] = useState([])
-  const [form, setForm] = useState(EMPTY_FORM)
+  const [selectedService, setSelectedService] = useState(null)
+  const [date, setDate] = useState('')
+  const [time, setTime] = useState('')
+  const [name, setName] = useState('')
+  const [whatsapp, setWhatsapp] = useState('')
+  const [notes, setNotes] = useState('')
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState(null)
   const [success, setSuccess] = useState(false)
   const [successData, setSuccessData] = useState(null)
 
+  const todayStr = new Date().toISOString().split('T')[0]
+
   const loadServices = useCallback(async () => {
     const { data } = await supabase
       .from('services')
-      .select('id, name, price, duration_minutes')
+      .select('id, name, price, duration_minutes, icon, active')
+      .eq('store_id', 'huds')
       .eq('active', true)
-      .order('name')
-    setServices(data || [])
+      .order('order_index')
+    if (data?.length) setServices(data)
+    else setServices(FALLBACK_SERVICES)
   }, [])
 
   useEffect(() => { loadServices() }, [loadServices])
 
-  function set(field, value) {
-    setForm(f => ({ ...f, [field]: value }))
+  const isTimeDisabled = (t) => {
+    if (date !== todayStr) return false
+    const [h, m] = t.split(':').map(Number)
+    const now = new Date()
+    return h < now.getHours() || (h === now.getHours() && m <= now.getMinutes())
   }
 
-  const todayStr = new Date().toISOString().split('T')[0]
-
-  async function handleSubmit(e) {
-    e.preventDefault()
-    if (!form.name.trim()) { setSaveError('Informe seu nome.'); return }
-    if (!form.whatsapp.trim()) { setSaveError('Informe seu WhatsApp para contato.'); return }
-    if (!form.service) { setSaveError('Selecione um serviço.'); return }
-    if (!form.date) { setSaveError('Informe a data preferida.'); return }
-    if (!form.time) { setSaveError('Selecione o horário preferido.'); return }
-
+  async function handleSubmit() {
+    if (!name.trim()) { setSaveError('Informe seu nome.'); return }
+    if (!whatsapp.trim()) { setSaveError('Informe seu WhatsApp para contato.'); return }
     setSaving(true)
     setSaveError(null)
-
     const { error } = await supabase.from('appointments').insert({
-      customer_name: form.name.trim(),
-      customer_whatsapp: form.whatsapp.trim(),
-      service_name: form.service,
-      appointment_date: form.date,
-      appointment_time: form.time,
-      notes: form.notes,
+      customer_name: name.trim(),
+      customer_whatsapp: whatsapp.trim(),
+      service_name: selectedService.name,
+      appointment_date: date,
+      appointment_time: time,
+      notes: notes,
       status: 'agendado',
     })
-
     setSaving(false)
-
     if (error) {
       setSaveError(error.message || 'Erro ao registrar agendamento. Tente novamente.')
     } else {
-      setSuccessData({ ...form })
+      setSuccessData({ name: name.trim(), service: selectedService.name, date, time })
       setSuccess(true)
+      setStep(4)
     }
   }
 
-  function buildWppLink(data) {
-    const text = `Olá! Acabei de fazer meu agendamento pelo site. Meu nome é ${data.name}, para ${data.service} no dia ${fmtDate(data.date)} às ${data.time}.`
-    return `https://wa.me/${HUDS_WHATSAPP}?text=${encodeURIComponent(text)}`
+  /* ── Step indicator ── */
+  function StepIndicator() {
+    return (
+      <div className={styles.stepIndicator}>
+        {STEP_LABELS.map((label, idx) => {
+          const n = idx + 1
+          const isActive = step === n
+          const isDone = step > n
+          return (
+            <div key={n} style={{ display: 'flex', alignItems: 'center' }}>
+              <div className={`${styles.stepDot} ${isActive ? styles.stepDotActive : ''} ${isDone ? styles.stepDotDone : ''}`}>
+                {isDone ? '✓' : n}
+              </div>
+              {n < STEP_LABELS.length && <div className={styles.stepLine} />}
+            </div>
+          )
+        })}
+      </div>
+    )
   }
 
+  /* ── Success screen ── */
   if (success && successData) {
     return (
       <div className={styles.page}>
@@ -98,7 +131,6 @@ export default function AgendarPage() {
             <span className={styles.logoBarbearia}>BARBEARIA</span>
           </a>
         </header>
-
         <main className={styles.main}>
           <motion.div
             className={styles.successCard}
@@ -114,12 +146,10 @@ export default function AgendarPage() {
             >
               <FaCheck />
             </motion.div>
-
             <h2 className={styles.successTitle}>Agendamento Recebido!</h2>
             <p className={styles.successSub}>
-              Seu pedido foi registrado com sucesso. Confirme pelo WhatsApp para garantir seu horário.
+              Seu pedido foi registrado. Confirme pelo WhatsApp para garantir seu horário.
             </p>
-
             <div className={styles.successDetails}>
               <div className={styles.detailRow}>
                 <span className={styles.detailLabel}>Nome</span>
@@ -138,27 +168,20 @@ export default function AgendarPage() {
                 <span className={styles.detailValue}>{successData.time}</span>
               </div>
             </div>
-
             <motion.a
               href={buildWppLink(successData)}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.wppBtn}
-              whileHover={{ scale: 1.04 }}
+              whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >
               <FaWhatsapp />
               Confirmar pelo WhatsApp
             </motion.a>
-
-            <motion.a
-              href="/huds"
-              className={styles.backBtn}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-            >
+            <a href="/huds" className={styles.backBtn}>
               <FaArrowLeft /> Voltar para o site
-            </motion.a>
+            </a>
           </motion.div>
         </main>
       </div>
@@ -178,139 +201,169 @@ export default function AgendarPage() {
       </header>
 
       <main className={styles.main}>
-        <motion.div
-          className={styles.formCard}
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className={styles.formCardHeader}>
-            <FaScissors className={styles.formIcon} />
-            <div>
-              <h1 className={styles.formTitle}>AGENDAR HORÁRIO</h1>
-              <p className={styles.formSubtitle}>Barbearia HUD'S — Preencha os dados abaixo</p>
-            </div>
-          </div>
+        <StepIndicator />
+        <p className={styles.stepTitle}>{STEP_LABELS[step - 1]}</p>
 
-          <form className={styles.form} onSubmit={handleSubmit} noValidate>
-            <div className={styles.formRow}>
+        <AnimatePresence mode="wait">
+
+          {/* ── Step 1: Service selection ── */}
+          {step === 1 && (
+            <motion.div
+              key="step1"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.22 }}
+            >
+              <div className={styles.servicesGrid}>
+                {(services.length ? services : FALLBACK_SERVICES).map(svc => (
+                  <button
+                    key={svc.id}
+                    className={`${styles.serviceCard} ${selectedService?.id === svc.id ? styles.serviceCardActive : ''}`}
+                    onClick={() => setSelectedService(svc)}
+                    type="button"
+                  >
+                    <span className={styles.serviceIcon}>{svc.icon || '✂️'}</span>
+                    <span className={styles.serviceName}>{svc.name}</span>
+                    {svc.price != null && (
+                      <span className={styles.servicePrice}>{fmtPrice(svc.price)}</span>
+                    )}
+                    {svc.duration_minutes != null && (
+                      <span className={styles.serviceDur}>{svc.duration_minutes} min</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+              <div className={styles.btnRow}>
+                <button
+                  className={styles.btnNext}
+                  disabled={!selectedService}
+                  onClick={() => setStep(2)}
+                >
+                  Continuar →
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── Step 2: Date + Time ── */}
+          {step === 2 && (
+            <motion.div
+              key="step2"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.22 }}
+            >
               <div className={styles.formGroup}>
-                <label htmlFor="name">Seu nome *</label>
+                <label>Data</label>
                 <input
-                  id="name"
+                  type="date"
+                  className={styles.dateInput}
+                  min={todayStr}
+                  value={date}
+                  onChange={e => { setDate(e.target.value); setTime('') }}
+                />
+              </div>
+
+              {date && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  style={{ marginTop: 20 }}
+                >
+                  <div className={styles.formGroup} style={{ marginBottom: 12 }}>
+                    <label>Horário</label>
+                  </div>
+                  <div className={styles.timesGrid}>
+                    {HORARIOS.map(h => {
+                      const disabled = isTimeDisabled(h)
+                      return (
+                        <button
+                          key={h}
+                          type="button"
+                          disabled={disabled}
+                          className={`${styles.timeBtn} ${time === h ? styles.timeBtnActive : ''}`}
+                          style={disabled ? { opacity: 0.28, cursor: 'not-allowed' } : {}}
+                          onClick={() => !disabled && setTime(h)}
+                        >
+                          {h}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </motion.div>
+              )}
+
+              <div className={styles.btnRow}>
+                <button className={styles.btnBack} onClick={() => setStep(1)}>← Voltar</button>
+                <button
+                  className={styles.btnNext}
+                  disabled={!date || !time}
+                  onClick={() => setStep(3)}
+                >
+                  Continuar →
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── Step 3: Personal data ── */}
+          {step === 3 && (
+            <motion.div
+              key="step3"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.22 }}
+            >
+              <div className={styles.formGroup}>
+                <label>Seu nome *</label>
+                <input
                   type="text"
                   placeholder="Nome completo"
-                  value={form.name}
-                  onChange={e => set('name', e.target.value)}
-                  required
+                  value={name}
+                  onChange={e => setName(e.target.value)}
                 />
               </div>
+
               <div className={styles.formGroup}>
-                <label htmlFor="whatsapp">WhatsApp *</label>
+                <label>WhatsApp *</label>
                 <input
-                  id="whatsapp"
                   type="tel"
                   placeholder="61 9 9999-9999"
-                  value={form.whatsapp}
-                  onChange={e => set('whatsapp', e.target.value)}
-                  required
+                  value={whatsapp}
+                  onChange={e => setWhatsapp(e.target.value)}
                 />
               </div>
-            </div>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="service">Serviço *</label>
-              <select
-                id="service"
-                value={form.service}
-                onChange={e => set('service', e.target.value)}
-                required
-              >
-                <option value="">Selecione o serviço…</option>
-                {services.length > 0 ? (
-                  services.map(s => (
-                    <option key={s.id} value={s.name}>{s.name}{s.price ? ` — R$ ${Number(s.price).toFixed(2).replace('.', ',')}` : ''}</option>
-                  ))
-                ) : (
-                  <>
-                    <option value="Corte Clássico">Corte Clássico</option>
-                    <option value="Degradê / Fade">Degradê / Fade</option>
-                    <option value="Barba Completa">Barba Completa</option>
-                    <option value="Corte + Barba">Corte + Barba</option>
-                    <option value="Hidratação Capilar">Hidratação Capilar</option>
-                    <option value="Sobrancelha Masculina">Sobrancelha Masculina</option>
-                  </>
-                )}
-              </select>
-            </div>
-
-            <div className={styles.formRow}>
               <div className={styles.formGroup}>
-                <label htmlFor="date">Data preferida *</label>
-                <input
-                  id="date"
-                  type="date"
-                  min={todayStr}
-                  value={form.date}
-                  onChange={e => set('date', e.target.value)}
-                  required
+                <label>Observações (opcional)</label>
+                <textarea
+                  rows={3}
+                  placeholder="Referência de corte, preferências…"
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
                 />
               </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="time">Horário preferido *</label>
-                <select
-                  id="time"
-                  value={form.time}
-                  onChange={e => set('time', e.target.value)}
-                  required
+
+              {saveError && <p className={styles.error}>{saveError}</p>}
+
+              <div className={styles.btnRow}>
+                <button className={styles.btnBack} onClick={() => { setSaveError(null); setStep(2) }}>← Voltar</button>
+                <motion.button
+                  className={styles.btnNext}
+                  disabled={saving || !name.trim() || !whatsapp.trim()}
+                  onClick={handleSubmit}
+                  whileTap={{ scale: 0.97 }}
                 >
-                  <option value="">Selecione o horário…</option>
-                  {HORARIOS.map(h => (
-                    <option key={h} value={h}>{h}</option>
-                  ))}
-                </select>
+                  {saving ? 'Registrando…' : 'Solicitar Agendamento'}
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
+          )}
 
-            <div className={styles.formGroup}>
-              <label htmlFor="notes">Observações (opcional)</label>
-              <textarea
-                id="notes"
-                rows="3"
-                placeholder="Referência de corte, preferências…"
-                value={form.notes}
-                onChange={e => set('notes', e.target.value)}
-              />
-            </div>
-
-            <AnimatePresence>
-              {saveError && (
-                <motion.p
-                  className={styles.error}
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                >
-                  {saveError}
-                </motion.p>
-              )}
-            </AnimatePresence>
-
-            <motion.button
-              type="submit"
-              className={styles.submitBtn}
-              disabled={saving}
-              whileHover={{ scale: saving ? 1 : 1.03 }}
-              whileTap={{ scale: saving ? 1 : 0.97 }}
-            >
-              {saving ? 'Registrando…' : 'Solicitar Agendamento'}
-            </motion.button>
-
-            <p className={styles.submitNote}>
-              Após enviar, confirme pelo WhatsApp para garantir seu horário.
-            </p>
-          </form>
-        </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   )

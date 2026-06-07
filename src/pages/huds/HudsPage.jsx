@@ -5,6 +5,7 @@ import HeaderHuds from '../../components/huds/HeaderHuds'
 import HeroHuds from '../../components/huds/HeroHuds'
 import SobreHuds from '../../components/huds/SobreHuds'
 import ServicosHuds from '../../components/huds/ServicosHuds'
+import ProfissionalHuds from '../../components/huds/ProfissionalHuds'
 import ComoAgendarHuds from '../../components/huds/ComoAgendarHuds'
 import GaleriaHuds from '../../components/huds/GaleriaHuds'
 import DepoimentosHuds from '../../components/huds/DepoimentosHuds'
@@ -37,6 +38,7 @@ export default function HudsPage() {
         <HeroHuds whatsapp={HUDS.whatsapp} instagram={HUDS.instagram} />
         <SobreHuds />
         <ServicosHuds whatsapp={HUDS.whatsapp} />
+        <ProfissionalHuds />
         <ComoAgendarHuds setmore={HUDS.setmore} />
         <GaleriaHuds instagram={HUDS.instagram} />
         <DepoimentosHuds />
