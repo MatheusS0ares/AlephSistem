@@ -75,13 +75,20 @@ export default function GaleriaPage({ storeId }) {
   }
 
   async function uploadImage(file) {
-    const ext = 'jpg'
-    const fileName = `gallery/${storeId}/${Date.now()}.${ext}`
+    const BUCKET = import.meta.env.VITE_STORAGE_BUCKET || 'photos'
+    const fileName = `gallery/${storeId}/${Date.now()}.jpg`
     const { data, error } = await supabase.storage
-      .from('Photos')
+      .from(BUCKET)
       .upload(fileName, file, { contentType: 'image/jpeg', upsert: false })
-    if (error) throw error
-    const { data: urlData } = supabase.storage.from('Photos').getPublicUrl(data.path)
+    if (error) {
+      if (error.message?.toLowerCase().includes('bucket')) {
+        const { data: buckets } = await supabase.storage.listBuckets()
+        const names = buckets?.map(b => b.name).join(', ') || 'nenhum'
+        throw new Error(`Bucket "${BUCKET}" não encontrado. Buckets disponíveis: ${names}`)
+      }
+      throw error
+    }
+    const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(data.path)
     return urlData.publicUrl
   }
 
@@ -262,15 +269,18 @@ export default function GaleriaPage({ storeId }) {
                 {/* Service tag */}
                 <div className={styles.formGroup}>
                   <label>Serviço relacionado</label>
-                  <select
-                    value={form.service_tag}
-                    onChange={e => setForm(f => ({ ...f, service_tag: e.target.value }))}
-                  >
-                    <option value="">Selecionar serviço…</option>
+                  <div className={styles.tagPills}>
                     {SERVICE_TAGS.map(t => (
-                      <option key={t} value={t}>{t}</option>
+                      <button
+                        key={t}
+                        type="button"
+                        className={`${styles.tagPill} ${form.service_tag === t ? styles.tagPillActive : ''}`}
+                        onClick={() => setForm(f => ({ ...f, service_tag: f.service_tag === t ? '' : t }))}
+                      >
+                        {t}
+                      </button>
                     ))}
-                  </select>
+                  </div>
                 </div>
 
                 {saveError && <p className={styles.error}>{saveError}</p>}
