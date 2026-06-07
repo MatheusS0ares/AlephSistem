@@ -412,7 +412,44 @@
 }
 
 @media (max-width: 700px) {
-  .card { grid-template-columns: 100px 1fr; }
-  .cardRight { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start; }
+  .card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .cardLeft {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  .cardRight {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 10px;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+  }
+  .statusSelect {
+    flex: 1;
+    min-width: 110px;
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  .btnConfirm, .btnReminder {
+    flex: 1;
+    min-width: 90px;
+    justify-content: center;
+    height: 32px;
+  }
+  .btnIcon {
+    width: 32px;
+    height: 32px;
+  }
   .formRow { grid-template-columns: 1fr; }
 }
