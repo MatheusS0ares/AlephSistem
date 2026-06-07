@@ -4,177 +4,240 @@
 .total { color: var(--a-muted2); font-size: 0.85rem; }
 
 .btnGold {
-  padding: 8px 18px;
-  border-radius: 8px;
+  padding: 8px 18px; border-radius: 8px;
   background: linear-gradient(135deg, #a8722a, #c9a84c);
-  border: none;
-  color: #000;
-  font-size: 0.84rem;
-  font-weight: 600;
-  cursor: pointer;
+  border: none; color: #000; font-size: 0.84rem; font-weight: 600; cursor: pointer;
 }
+.btnGold:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .empty { color: var(--a-muted3); text-align: center; padding: 40px; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
 
+/* ── Card ── */
 .card {
   background: var(--a-surface);
   border: 1px solid var(--a-border);
-  border-radius: 12px;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
-
+.card:hover { border-color: rgba(201,168,76,0.25); box-shadow: 0 8px 28px rgba(0,0,0,0.35); transform: translateY(-2px); }
 .cardVip { border-color: rgba(201,168,76,0.3); }
 
-.cardHeader { display: flex; gap: 12px; align-items: center; }
+/* Cover — último corte */
+.cardCover { position: relative; height: 140px; overflow: hidden; }
+.cardCover img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.card:hover .cardCover img { transform: scale(1.06); }
+.cardCoverOverlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(9,9,11,0.85) 100%); }
 
+.cardHeader { display: flex; gap: 12px; align-items: center; padding: 14px 16px 0; }
 .avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(201,168,76,0.12);
-  color: #c9a84c;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.95rem;
-  flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(201,168,76,0.12); color: #c9a84c;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.95rem; flex-shrink: 0;
+  border: 2px solid rgba(201,168,76,0.2);
 }
+.avatarSmall { width: 36px; height: 36px; font-size: 0.8rem; }
 
 .cardInfo { flex: 1; min-width: 0; }
 .nameRow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .name { font-size: 0.95rem; font-weight: 600; color: var(--a-text2); }
-.vipBadge { font-size: 0.65rem; background: rgba(201,168,76,0.15); color: #c9a84c; padding: 1px 6px; border-radius: 8px; }
+.vipBadge { font-size: 0.65rem; color: #c9a84c; }
 .phone { font-size: 0.8rem; color: var(--a-muted2); }
+.igLink {
+  font-size: 0.78rem; color: #c9a84c; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 3px;
+}
+.igLink:hover { text-decoration: underline; }
 
-.notes { font-size: 0.78rem; color: var(--a-muted); font-style: italic; margin: 0; }
+.notes { font-size: 0.78rem; color: var(--a-muted); font-style: italic; margin: 0; padding: 0 16px; }
 
 .stats {
-  display: flex;
-  gap: 0;
-  border: 1px solid var(--a-border);
-  border-radius: 8px;
-  overflow: hidden;
+  display: flex; border-top: 1px solid var(--a-border); border-bottom: 1px solid var(--a-border);
+  margin-top: 10px;
 }
-
-.statItem {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px 6px;
-  border-right: 1px solid var(--a-border);
-}
+.statItem { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 6px; border-right: 1px solid var(--a-border); }
 .statItem:last-child { border-right: none; }
 .statItem strong { font-size: 0.95rem; color: var(--a-text2); }
-.statItem span { font-size: 0.68rem; color: var(--a-muted3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+.statItem span { font-size: 0.65rem; color: var(--a-muted3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
 .statGold { color: #c9a84c !important; }
 
-.cardActions { display: flex; gap: 6px; }
+.cardBottom { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px 14px; gap: 8px; }
 
-.btnWpp {
-  padding: 6px 10px;
-  border-radius: 7px;
-  background: rgba(37,211,102,0.1);
-  border: 1px solid rgba(37,211,102,0.25);
-  color: #25d366;
-  font-size: 0.85rem;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
+.badgeBook, .badgeWalk {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 0.68rem; font-weight: 600; padding: 3px 8px; border-radius: 100px;
 }
+.badgeBook { color: #C8960C; background: rgba(200,150,12,0.1); border: 1px solid rgba(200,150,12,0.2); }
+.badgeWalk { color: #a1a1aa; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); }
 
+.cardActions { display: flex; gap: 5px; }
+.btnWpp {
+  padding: 5px 8px; border-radius: 7px;
+  background: rgba(37,211,102,0.1); border: 1px solid rgba(37,211,102,0.25); color: #25d366;
+  font-size: 0.82rem; text-decoration: none; display: flex; align-items: center;
+}
 .btnIcon {
-  padding: 6px 10px;
-  border-radius: 7px;
-  background: var(--a-input);
-  border: 1px solid var(--a-border2);
-  color: var(--a-muted);
-  font-size: 0.82rem;
-  cursor: pointer;
-  transition: all 0.15s;
+  padding: 5px 8px; border-radius: 7px;
+  background: var(--a-input); border: 1px solid var(--a-border2); color: var(--a-muted);
+  font-size: 0.78rem; cursor: pointer; transition: all 0.15s;
 }
 .btnIcon:hover { background: var(--a-border2); color: var(--a-text2); }
 .btnIconDanger:hover { border-color: rgba(220,80,80,0.4); color: #e05555; }
 
-/* Modal */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 20px; }
-.modal { background: var(--a-surface); border: 1px solid rgba(201,168,76,0.2); border-radius: 16px; width: 100%; max-width: 440px; }
-.modalHeader { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--a-border); }
-.modalHeader h3 { margin: 0; font-size: 1.05rem; color: var(--a-text); }
-.modalHeader button { background: none; border: none; color: var(--a-muted2); font-size: 1.2rem; cursor: pointer; }
+/* ── Portfolio Sheet ── */
+.portfolioOverlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px); z-index: 400;
+  display: flex; justify-content: flex-end;
+}
+.portfolioSheet {
+  background: var(--a-bg, #09090b);
+  border-left: 1px solid rgba(255,255,255,0.08);
+  width: 100%; max-width: 520px;
+  height: 100%; display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+}
+
+.sheetHeader {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  flex-shrink: 0;
+}
+.sheetClientInfo { display: flex; flex-direction: column; gap: 3px; }
+.sheetName { font-size: 1.05rem; font-weight: 700; color: var(--a-text, #fafafa); }
+.sheetIg { font-size: 0.8rem; color: #C8960C; text-decoration: none; }
+.sheetIg:hover { text-decoration: underline; }
+
+.sheetHeaderActions { display: flex; gap: 8px; align-items: center; }
+.btnAddPhoto {
+  padding: 7px 16px; border-radius: 8px;
+  background: linear-gradient(135deg, #a8722a, #C8960C);
+  border: none; color: #0a0800; font-size: 0.82rem; font-weight: 700; cursor: pointer;
+}
+.btnClose {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(255,255,255,0.07); border: none; color: var(--a-muted, #a1a1aa);
+  font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+
+.sheetBody { flex: 1; overflow-y: auto; padding: 16px; }
+
+.sheetEmpty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; padding: 60px 20px; text-align: center; color: var(--a-muted, #a1a1aa);
+  font-size: 0.85rem;
+}
+.sheetEmpty span { font-size: 2.5rem; }
+.sheetEmpty p { margin: 0; }
+
+.sheetGrid { columns: 2; column-gap: 10px; }
+.photoCard {
+  break-inside: avoid; margin-bottom: 10px; border-radius: 10px; overflow: hidden;
+  position: relative; background: rgba(255,255,255,0.04);
+}
+.photoCard img { display: block; width: 100%; height: auto; object-fit: cover; }
+.photoInfo {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+  padding: 20px 10px 8px; display: flex; flex-direction: column; gap: 2px;
+}
+.photoCaption { font-size: 0.72rem; color: #fff; font-weight: 600; }
+.photoDate { font-size: 0.65rem; color: rgba(255,255,255,0.55); }
+.photoDelete {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(0,0,0,0.6); border: none; border-radius: 6px;
+  font-size: 0.75rem; padding: 4px 6px; cursor: pointer;
+  opacity: 0; transition: opacity 0.15s;
+}
+.photoCard:hover .photoDelete { opacity: 1; }
+
+.photoSkeleton {
+  break-inside: avoid; margin-bottom: 10px; border-radius: 10px;
+  background: rgba(255,255,255,0.05); height: 160px;
+  animation: shimmer 1.4s ease-in-out infinite;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 100%);
+  background-size: 600px 100%;
+}
+.photoSkeleton:nth-child(2n) { height: 120px; }
+
+@keyframes shimmer {
+  0% { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+/* Upload panel (desliza por baixo dentro do sheet) */
+.uploadPanel {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: var(--a-surface, #18181b);
+  border-top: 1px solid rgba(201,168,76,0.2);
+  border-radius: 20px 20px 0 0;
+  max-height: 85%;
+  overflow-y: auto;
+  z-index: 10;
+}
+.uploadHeader {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px 14px; border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-size: 0.9rem; font-weight: 600; color: var(--a-text, #fafafa);
+}
+.uploadHeader button { background: none; border: none; color: var(--a-muted, #a1a1aa); font-size: 1rem; cursor: pointer; }
+.uploadBody { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+.uploadFooter { display: flex; gap: 10px; justify-content: flex-end; padding: 14px 20px; border-top: 1px solid rgba(255,255,255,0.07); }
+
+.photoPicker {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  border: 2px dashed rgba(63,63,70,0.6); border-radius: 12px; padding: 28px 20px;
+  cursor: pointer; min-height: 120px; background: rgba(255,255,255,0.02);
+  transition: border-color 0.2s;
+}
+.photoPicker:hover { border-color: rgba(201,168,76,0.4); }
+.pickText { font-size: 0.85rem; font-weight: 600; color: var(--a-text, #fafafa); }
+.photoPreview { width: 100%; max-height: 240px; object-fit: cover; border-radius: 12px; display: block; }
+.btnTrocar {
+  background: none; border: 1px solid rgba(63,63,70,0.5); border-radius: 8px;
+  color: var(--a-muted, #a1a1aa); font-size: 0.78rem; padding: 5px 12px; cursor: pointer; align-self: center;
+}
+
+/* Modal form */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal { background: var(--a-surface, #18181b); border: 1px solid rgba(201,168,76,0.2); border-radius: 16px; width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; }
+.modalHeader { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--a-border, rgba(63,63,70,0.4)); }
+.modalHeader h3 { margin: 0; font-size: 1rem; color: var(--a-text, #fafafa); }
+.modalHeader button { background: none; border: none; color: var(--a-muted, #a1a1aa); font-size: 1.1rem; cursor: pointer; }
 .modalBody { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
-.modalFooter { display: flex; gap: 10px; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--a-border); }
+.modalFooter { display: flex; gap: 10px; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--a-border, rgba(63,63,70,0.4)); }
 
+.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .formGroup { display: flex; flex-direction: column; gap: 6px; }
-.formGroup label { font-size: 0.75rem; color: var(--a-muted); letter-spacing: 0.08em; text-transform: uppercase; }
-.formGroup input, .formGroup select, .formGroup textarea {
-  background: var(--a-input);
-  border: 1px solid var(--a-border2);
-  border-radius: 8px;
-  padding: 9px 12px;
-  color: var(--a-text);
-  font-size: 0.88rem;
-  outline: none;
-  resize: vertical;
+.formGroup label { font-size: 0.72rem; color: var(--a-muted, #a1a1aa); letter-spacing: 0.08em; text-transform: uppercase; }
+.formGroup input, .formGroup textarea {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(63,63,70,0.5);
+  border-radius: 9px; padding: 10px 13px; color: var(--a-text, #fafafa);
+  font-size: 0.9rem; outline: none; resize: vertical;
 }
-.formGroup input:focus, .formGroup select:focus, .formGroup textarea:focus { border-color: rgba(201,168,76,0.4); }
-.formGroup select option { background: var(--a-surface); }
+.formGroup input:focus, .formGroup textarea:focus { border-color: rgba(201,168,76,0.5); }
 
-/* habit badge */
-.habitBadge { margin-top: 4px; }
-.badgeBook, .badgeWalk {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  padding: 3px 10px;
-  border-radius: 100px;
-}
-.badgeBook {
-  color: #C8960C;
-  background: rgba(200,150,12,0.1);
-  border: 1px solid rgba(200,150,12,0.25);
-}
-.badgeWalk {
-  color: #a1a1aa;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
-}
-
-/* toggle switch */
 .toggleRow { display: flex; flex-direction: column; gap: 10px; padding: 4px 0; }
-.toggleGroup { display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: var(--a-muted); }
-.toggle {
-  width: 42px; height: 24px; border-radius: 100px;
-  background: rgba(255,255,255,0.1); border: none; position: relative;
-  cursor: pointer; transition: background 0.2s; flex-shrink: 0;
-}
+.toggleGroup { display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: var(--a-muted, #a1a1aa); }
+.toggle { width: 42px; height: 24px; border-radius: 100px; background: rgba(255,255,255,0.1); border: none; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
 .toggleOn { background: #C8960C; }
-.toggleThumb {
-  position: absolute; top: 3px; left: 3px;
-  width: 18px; height: 18px; border-radius: 50%; background: #fff;
-  transition: transform 0.2s; display: block;
-}
+.toggleThumb { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform 0.2s; display: block; }
 .toggleOn .toggleThumb { transform: translateX(18px); }
 
-.saveError { color: #e05555; background: rgba(220,80,80,0.08); border: 1px solid rgba(220,80,80,0.2); border-radius: 8px; padding: 10px 14px; font-size: 0.84rem; }
+.saveError { color: #e05555; background: rgba(220,80,80,0.08); border: 1px solid rgba(220,80,80,0.2); border-radius: 8px; padding: 10px 14px; font-size: 0.82rem; }
+.btnOutline { padding: 9px 20px; border-radius: 8px; background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--a-muted, #a1a1aa); font-size: 0.85rem; cursor: pointer; }
 
-.btnOutline { padding: 9px 20px; border-radius: 8px; background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--a-muted); font-size: 0.88rem; cursor: pointer; }
-.btnGold:disabled { opacity: 0.6; cursor: not-allowed; }
-
-/* ===== MOBILE ===== */
+/* Mobile */
 @media (max-width: 768px) {
   .grid { grid-template-columns: 1fr; }
-  .card { padding: 14px; }
   .overlay { padding: 0; padding-bottom: calc(80px + env(safe-area-inset-bottom)); align-items: flex-end; }
-  .modal { max-width: 100%; border-radius: 20px 20px 0 0; border-left: none; border-right: none; border-bottom: none; }
-  .formGroup input, .formGroup select, .formGroup textarea { font-size: 16px; }
+  .modal { max-width: 100%; border-radius: 20px 20px 0 0; }
+  .formGroup input, .formGroup textarea { font-size: 16px; }
+  .portfolioSheet { max-width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,0.08); }
+  .portfolioOverlay { align-items: flex-end; }
 }
