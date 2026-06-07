@@ -75,7 +75,7 @@ export default function GaleriaPage({ storeId }) {
   }
 
   async function uploadImage(file) {
-    const BUCKET = import.meta.env.VITE_STORAGE_BUCKET || 'photos'
+    const BUCKET = import.meta.env.VITE_STORAGE_BUCKET || 'Photos'
     const fileName = `gallery/${storeId}/${Date.now()}.jpg`
     const { data, error } = await supabase.storage
       .from(BUCKET)
