@@ -36,7 +36,7 @@ create table if not exists professionals (
 create table if not exists appointments (
   id                 uuid default gen_random_uuid() primary key,
   store_id           text,
-  customer_id        uuid references customers(id) on delete set null,
+  customer_id        uuid,
   customer_name      text not null,
   customer_whatsapp  text,
   service_id         uuid references services(id) on delete set null,
