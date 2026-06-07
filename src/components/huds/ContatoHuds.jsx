@@ -7,17 +7,17 @@ const INFO = [
   {
     icon: <FaMapMarkerAlt />,
     titulo: 'Endereço',
-    linhas: ['Rua Exemplo, 123', 'Bairro Centro — Cidade, UF'],
+    linhas: ['Setor Sul, QD 7, CJ C, LT 8', 'Brasília — DF, 72410-403'],
   },
   {
     icon: <FaClock />,
     titulo: 'Horário de Funcionamento',
-    linhas: ['Seg a Sex: 09h – 20h', 'Sábado: 08h – 18h', 'Domingo: Fechado'],
+    linhas: ['Seg a Sex: Horário agendado', 'Sábado: Horário agendado', 'Domingo: Somente com hora marcada'],
   },
   {
     icon: <FaWhatsapp />,
     titulo: 'WhatsApp',
-    linhas: ['(61) 9 9999-9999'],
+    linhas: ['(61) 99938-5296'],
   },
   {
     icon: <FaInstagram />,
@@ -82,13 +82,14 @@ export default function ContatoHuds({ whatsapp = '5500000000000', instagram = 'h
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className={styles.mapPlaceholder}>
-              <div className={styles.mapInner}>
-                <FaMapMarkerAlt className={styles.mapIcon} />
-                <span className={styles.mapText}>Barbearia HUD'S</span>
-                <span className={styles.mapSub}>Adicione seu endereço ao Google Maps</span>
-              </div>
-            </div>
+            <iframe
+              className={styles.mapIframe}
+              title="Barbearia HUD'S"
+              src="https://maps.google.com/maps?q=Setor+Sul+QD+7+CJ+C+LT+8+Bras%C3%ADlia+DF+72410-403&t=&z=16&ie=UTF8&iwloc=&output=embed"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </motion.div>
         </div>
       </div>

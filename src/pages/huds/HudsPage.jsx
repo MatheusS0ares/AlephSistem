@@ -12,8 +12,9 @@ import FooterHuds from '../../components/huds/FooterHuds'
 import styles from './HudsPage.module.css'
 
 const HUDS = {
-  whatsapp: '5500000000000',
+  whatsapp: '5561999385296',
   instagram: 'https://instagram.com/hudsbarbearia',
+  setmore: 'https://hudsbarbearia.setmore.com/',
 }
 
 export default function HudsPage() {
@@ -26,7 +27,7 @@ export default function HudsPage() {
         <HeroHuds whatsapp={HUDS.whatsapp} instagram={HUDS.instagram} />
         <SobreHuds />
         <ServicosHuds whatsapp={HUDS.whatsapp} />
-        <ComoAgendarHuds />
+        <ComoAgendarHuds setmore={HUDS.setmore} />
         <DepoimentosHuds />
         <AgendamentoHuds whatsapp={HUDS.whatsapp} instagram={HUDS.instagram} />
         <ContatoHuds whatsapp={HUDS.whatsapp} instagram={HUDS.instagram} />

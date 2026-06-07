@@ -11,9 +11,9 @@ const PASSOS = [
   },
   {
     num: '02',
-    titulo: 'Entre em contato',
-    desc: 'Mande uma mensagem pelo WhatsApp e nossa equipe confirma o melhor horário para você.',
-    icon: '💬',
+    titulo: 'Agende online ou pelo WhatsApp',
+    desc: 'Agende pelo nosso sistema online ou mande mensagem pelo WhatsApp — rápido e sem complicação.',
+    icon: '📅',
   },
   {
     num: '03',
@@ -23,7 +23,7 @@ const PASSOS = [
   },
 ]
 
-export default function ComoAgendarHuds() {
+export default function ComoAgendarHuds({ setmore = 'https://hudsbarbearia.setmore.com/' }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
@@ -40,6 +40,17 @@ export default function ComoAgendarHuds() {
           <h2 className={styles.title}>
             COMO <span className={styles.gold}>AGENDAR</span>
           </h2>
+        </motion.div>
+
+        <motion.div
+          className={styles.onlineCta}
+          initial={{ opacity: 0, y: 16 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.1, duration: 0.5 }}
+        >
+          <a href={setmore} target="_blank" rel="noopener noreferrer" className={styles.onlineBtn}>
+            📅 Agendar pelo sistema online
+          </a>
         </motion.div>
 
         <div className={styles.passos}>

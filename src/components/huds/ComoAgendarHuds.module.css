@@ -35,6 +35,30 @@
 }
 .gold { color: #C8960C; }
 
+.onlineCta {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.onlineBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  background: #C8960C;
+  color: #0a0a0a;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.onlineBtn:hover {
+  background: #E8B020;
+  transform: translateY(-2px);
+}
+
 .passos {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

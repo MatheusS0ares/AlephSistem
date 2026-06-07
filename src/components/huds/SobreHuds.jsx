@@ -29,15 +29,15 @@ export default function SobreHuds() {
             <span className={styles.gold}>uma experiência.</span>
           </h2>
           <p className={styles.text}>
-            A Barbearia HUD'S nasceu da paixão por transformar a autoestima
-            masculina através de cortes precisos e atendimento de qualidade.
-            Aqui, cada cliente recebe atenção individual e sai com mais
-            confiança do que entrou.
+            A Barbearia HUD'S nasceu da paixão de <strong>Fabrício Huds</strong> por
+            transformar a autoestima masculina através de cortes precisos e
+            atendimento de qualidade. Aqui, cada cliente recebe atenção individual
+            e sai com mais confiança do que entrou.
           </p>
           <p className={styles.text}>
-            Nossos profissionais são especializados em técnicas modernas e
-            clássicas — do degradê perfeito ao acabamento na navalha —
-            garantindo que seu estilo seja único e impecável.
+            Especializado em técnicas modernas e clássicas — do degradê perfeito
+            ao acabamento na navalha — garantindo que seu estilo seja único e
+            impecável. Localizado no <strong>Setor Sul, Brasília - DF</strong>.
           </p>
           <div className={styles.divider} />
           <p className={styles.quote}>
