@@ -77,10 +77,10 @@ export default function GaleriaPage({ storeId }) {
     const ext = 'jpg'
     const fileName = `gallery/${storeId}/${Date.now()}.${ext}`
     const { data, error } = await supabase.storage
-      .from('photos')
+      .from('Photos')
       .upload(fileName, file, { contentType: 'image/jpeg', upsert: false })
     if (error) throw error
-    const { data: urlData } = supabase.storage.from('photos').getPublicUrl(data.path)
+    const { data: urlData } = supabase.storage.from('Photos').getPublicUrl(data.path)
     return urlData.publicUrl
   }
 

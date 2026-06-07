@@ -369,6 +369,15 @@
 @media (max-width: 900px) {
   .grid { columns: 2; }
 }
+@media (max-width: 599px) {
+  /* Push bottom-sheet above the floating bottom nav (60px height + 10px gap) */
+  .overlay {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+  .modal {
+    max-height: calc(92vh - 80px - env(safe-area-inset-bottom));
+  }
+}
 @media (max-width: 480px) {
   .grid { columns: 2; column-gap: 8px; }
   .card { margin-bottom: 8px; }
