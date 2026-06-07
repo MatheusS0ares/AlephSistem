@@ -1,223 +1,327 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap');
 
 .page {
-  background: #0a0a0a;
+  background: #0b0b0f;
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
-  color: #fff;
+  color: #fafafa;
 }
 
 /* Header */
 .header {
+  padding: 16px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 32px;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(10, 10, 10, 0.95);
+  background: rgba(11, 11, 15, 0.95);
   backdrop-filter: blur(12px);
 }
 
 .logoLink {
-  display: flex;
-  flex-direction: column;
   text-decoration: none;
-  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
 }
 
 .logoText {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 1.6rem;
+  font-size: 24px;
   font-weight: 900;
   color: #C8960C;
-  letter-spacing: 0.08em;
   text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .logoBarbearia {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 0.65rem;
-  font-weight: 600;
-  color: #666;
-  letter-spacing: 0.25em;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: #555;
   text-transform: uppercase;
 }
 
 .backLink {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #666;
+  text-decoration: none;
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #888;
-  text-decoration: none;
-  font-size: 0.85rem;
   transition: color 0.2s;
 }
 .backLink:hover { color: #C8960C; }
 
 /* Main */
 .main {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 40px 20px 80px;
-  min-height: calc(100vh - 70px);
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
 }
 
-/* Form card */
-.formCard {
-  background: #111;
-  border: 1px solid #1e1e1e;
-  border-radius: 20px;
-  padding: 40px;
-  width: 100%;
-  max-width: 640px;
-}
-
-.formCardHeader {
+/* Step indicator */
+.stepIndicator {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #1a1a1a;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 16px;
 }
 
-.formIcon {
-  font-size: 2rem;
-  color: #C8960C;
+.stepDot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #18181b;
+  border: 1px solid #3f3f46;
+  color: #52525b;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
   flex-shrink: 0;
 }
 
-.formTitle {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  margin: 0;
-  color: #fff;
+.stepDotActive {
+  background: #C8960C;
+  border-color: #C8960C;
+  color: #0a0a0a;
 }
 
-.formSubtitle {
-  font-size: 0.82rem;
-  color: #555;
-  margin: 4px 0 0;
+.stepDotDone {
+  background: rgba(200, 150, 12, 0.15);
+  border-color: rgba(200, 150, 12, 0.4);
+  color: #C8960C;
 }
 
-/* Form elements */
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.stepLine {
+  flex: 1;
+  max-width: 48px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.formRow {
+.stepTitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #C8960C;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 24px;
+  margin-top: 0;
+}
+
+/* Services grid */
+.servicesGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
 
-.formGroup {
+.serviceCard {
+  background: #141418;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s, background 0.2s;
   display: flex;
   flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+.serviceCard:hover {
+  border-color: rgba(200, 150, 12, 0.3);
+  transform: translateY(-2px);
+}
+
+.serviceCardActive {
+  border-color: #C8960C;
+  background: rgba(200, 150, 12, 0.06);
+  box-shadow: 0 0 20px rgba(200, 150, 12, 0.12);
+}
+
+.serviceIcon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.serviceName {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fafafa;
+}
+
+.servicePrice {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #C8960C;
+  line-height: 1;
+}
+
+.serviceDur {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: #52525b;
+}
+
+/* Times grid */
+.timesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
 
-.formGroup label {
-  font-size: 0.72rem;
+.timeBtn {
+  padding: 8px 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(63, 63, 70, 0.5);
+  border-radius: 8px;
+  color: #a1a1aa;
+  font-size: 13px;
   font-weight: 600;
-  color: #888;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+}
+.timeBtn:hover:not(:disabled) {
+  border-color: rgba(200, 150, 12, 0.4);
+  color: #fafafa;
+}
+
+.timeBtnActive {
+  background: rgba(200, 150, 12, 0.12);
+  border-color: #C8960C;
+  color: #C8960C;
+}
+
+/* Form */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.formGroup label {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #a1a1aa;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
 }
 
 .formGroup input,
-.formGroup select,
 .formGroup textarea {
-  background: #0d0d0d;
-  border: 1px solid #222;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(63, 63, 70, 0.5);
   border-radius: 10px;
-  padding: 12px 16px;
-  color: #fff;
-  font-size: 0.95rem;
+  color: #fafafa;
+  font-size: 15px;
   font-family: 'Inter', sans-serif;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.15s;
   resize: vertical;
 }
-
 .formGroup input:focus,
-.formGroup select:focus,
 .formGroup textarea:focus {
-  border-color: #C8960C;
-  box-shadow: 0 0 0 3px rgba(200, 150, 12, 0.12);
+  border-color: rgba(200, 150, 12, 0.5);
 }
-
 .formGroup input::placeholder,
 .formGroup textarea::placeholder {
-  color: #333;
+  color: #3f3f46;
 }
 
-.formGroup select option {
-  background: #111;
-  color: #fff;
+.dateInput {
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(63, 63, 70, 0.5);
+  border-radius: 10px;
+  color: #fafafa;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+  color-scheme: dark;
+  box-sizing: border-box;
+}
+.dateInput:focus { border-color: rgba(200, 150, 12, 0.5); }
+
+/* Button row */
+.btnRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
 }
 
-/* Date input color fix */
-.formGroup input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.7);
+.btnBack {
+  flex: 1;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid rgba(63, 63, 70, 0.5);
+  border-radius: 10px;
+  color: #a1a1aa;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btnBack:hover { border-color: #C8960C; color: #C8960C; }
+
+.btnNext {
+  flex: 2;
+  padding: 14px;
+  background: linear-gradient(135deg, #a8722a, #C8960C);
+  border: none;
+  border-radius: 10px;
+  color: #0a0800;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 4px 20px rgba(200, 150, 12, 0.3);
+  transition: opacity 0.15s;
+}
+.btnNext:hover:not(:disabled) { opacity: 0.88; }
+.btnNext:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 /* Error */
 .error {
-  background: rgba(220, 80, 80, 0.08);
-  border: 1px solid rgba(220, 80, 80, 0.25);
-  border-radius: 10px;
-  padding: 12px 16px;
+  font-size: 0.82rem;
   color: #e05555;
-  font-size: 0.88rem;
-  margin: 0;
-}
-
-/* Submit button */
-.submitBtn {
-  padding: 16px 28px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #a8722a, #C8960C);
-  border: none;
-  color: #000;
-  font-size: 1rem;
-  font-weight: 700;
-  font-family: 'Barlow Condensed', sans-serif;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: opacity 0.2s;
-  margin-top: 4px;
-}
-.submitBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-.submitBtn:hover:not(:disabled) {
-  opacity: 0.9;
-}
-
-.submitNote {
-  text-align: center;
-  font-size: 0.78rem;
-  color: #444;
-  margin: -8px 0 0;
+  margin: 8px 0 0;
+  background: rgba(224, 85, 85, 0.07);
+  border: 1px solid rgba(224, 85, 85, 0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
 }
 
 /* Success */
 .successCard {
-  background: #111;
-  border: 1px solid #1e1e1e;
+  background: #141418;
+  border: 1px solid rgba(63, 63, 70, 0.4);
   border-radius: 20px;
-  padding: 48px 40px;
+  padding: 48px 36px;
   width: 100%;
   max-width: 480px;
   display: flex;
@@ -225,6 +329,7 @@
   align-items: center;
   text-align: center;
   gap: 16px;
+  margin: 0 auto;
 }
 
 .successIcon {
@@ -259,8 +364,8 @@
 }
 
 .successDetails {
-  background: #0d0d0d;
-  border: 1px solid #1a1a1a;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(63, 63, 70, 0.4);
   border-radius: 12px;
   padding: 16px 20px;
   width: 100%;
@@ -315,7 +420,7 @@
   padding: 11px 24px;
   border-radius: 12px;
   background: transparent;
-  border: 1px solid #222;
+  border: 1px solid rgba(63, 63, 70, 0.5);
   color: #666;
   font-size: 0.88rem;
   text-decoration: none;
@@ -325,13 +430,21 @@
 }
 .backBtn:hover { border-color: #C8960C; color: #C8960C; }
 
-/* Mobile */
-@media (max-width: 600px) {
-  .header { padding: 14px 20px; }
-  .formCard { padding: 28px 20px; border-radius: 16px; }
-  .formCardHeader { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .formTitle { font-size: 1.6rem; }
-  .formRow { grid-template-columns: 1fr; gap: 16px; }
-  .successCard { padding: 36px 24px; }
-  .main { padding: 24px 12px 60px; }
+/* Responsive */
+@media (max-width: 480px) {
+  .servicesGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .timesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .header { padding: 14px 16px; }
+  .main { padding: 24px 16px 60px; }
+  .successCard { padding: 36px 20px; }
+  .btnRow { flex-direction: column; }
+  .btnBack { flex: none; }
+  .btnNext { flex: none; }
 }
