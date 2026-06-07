@@ -3,6 +3,7 @@ import StoreSelector from './pages/StoreSelector'
 import StorePage from './pages/StorePage'
 import AdminPage from './pages/admin'
 import HudsPage from './pages/huds/HudsPage'
+import AgendarPage from './pages/huds/AgendarPage'
 import { CLIENT_SLUG } from './config/client'
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/loja/:slug" element={<StorePage />} />
         <Route path="/loja/:slug/*" element={<StorePage />} />
         <Route path="/huds" element={<HudsPage />} />
+        <Route path="/huds/agendar" element={<AgendarPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/admin/*" element={<AdminPage />} />
       </Routes>

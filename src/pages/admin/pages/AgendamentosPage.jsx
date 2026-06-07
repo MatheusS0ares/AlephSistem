@@ -294,6 +294,28 @@ export default function AgendamentosPage({ search, storeId }) {
                         <option key={k} value={k}>{v.label}</option>
                       ))}
                     </select>
+                    {a.customer_whatsapp && (
+                      <a
+                        href={`https://wa.me/55${a.customer_whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Olá ${a.customer_name || ''}! Confirmando seu agendamento na Barbearia HUD'S para ${a.service_name || ''} no dia ${fmtDate(a.appointment_date)} às ${a.appointment_time?.slice(0, 5) || ''}. Te esperamos! ✂️`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`${styles.btnIcon} ${styles.btnConfirm}`}
+                        title="Confirmar via WhatsApp"
+                      >
+                        ✓ Confirmar
+                      </a>
+                    )}
+                    {a.customer_whatsapp && (
+                      <a
+                        href={`https://wa.me/55${a.customer_whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(`Olá ${a.customer_name || ''}! Lembrando que seu horário na Barbearia HUD'S é hoje às ${a.appointment_time?.slice(0, 5) || ''} para ${a.service_name || ''}. Não se esqueça! 😊✂️`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`${styles.btnIcon} ${styles.btnReminder}`}
+                        title="Enviar lembrete via WhatsApp"
+                      >
+                        ⏰ Lembrete
+                      </a>
+                    )}
                     <button className={styles.btnIcon} onClick={() => openEdit(a)} title="Editar">✏️</button>
                     <button className={`${styles.btnIcon} ${styles.btnDanger}`} onClick={() => deleteItem(a.id)} title="Excluir">🗑</button>
                   </div>

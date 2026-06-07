@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'motion/react'
 import { supabase } from '../../lib/supabase'
 import StoreLogo from '../../components/StoreLogo'
 import DashboardHome from './pages/DashboardHome'
+import HudsDashboard from './pages/HudsDashboard'
 import PedidosPage from './pages/PedidosPage'
 import ClientesPage from './pages/ClientesPage'
 import CatalogoPage from './pages/CatalogoPage'
 import CaixaPage from './pages/CaixaPage'
 import AjustesPage from './pages/AjustesPage'
 import AgendamentosPage from './pages/AgendamentosPage'
+import ProfissionaisPage from './pages/ProfissionaisPage'
 import styles from './AdminDashboard.module.css'
 
 const FALLBACK_STORES = [
@@ -20,13 +22,14 @@ const FALLBACK_STORES = [
 ]
 
 const NAV = [
-  { key: 'inicio',        label: 'Início',       icon: '⊞' },
-  { key: 'agendamentos',  label: 'Agendamentos', icon: '📅' },
-  { key: 'pedidos',       label: 'Pedidos',      icon: '📋' },
-  { key: 'clientes',      label: 'Clientes',     icon: '👥' },
-  { key: 'catalogo',      label: 'Catálogo',     icon: '📦' },
-  { key: 'caixa',         label: 'Caixa',        icon: '💰' },
-  { key: 'ajustes',       label: 'Ajustes',      icon: '⚙️' },
+  { key: 'inicio',        label: 'Início',        icon: '⊞' },
+  { key: 'agendamentos',  label: 'Agendamentos',  icon: '📅' },
+  { key: 'pedidos',       label: 'Pedidos',       icon: '📋' },
+  { key: 'clientes',      label: 'Clientes',      icon: '👥' },
+  { key: 'profissionais', label: 'Profissionais', icon: '💈' },
+  { key: 'catalogo',      label: 'Catálogo',      icon: '📦' },
+  { key: 'caixa',         label: 'Caixa',         icon: '💰' },
+  { key: 'ajustes',       label: 'Ajustes',       icon: '⚙️' },
 ]
 
 const BOTTOM_NAV = [
@@ -143,17 +146,18 @@ export default function AdminDashboard({ onLogout }) {
   }
 
   const PAGE_MAP = {
-    inicio:        <DashboardHome onNavigate={goTo} store={activeStore} />,
-    agendamentos:  <AgendamentosPage search={search} storeId={activeStore.id} />,
-    pedidos:       <PedidosPage search={search} storeId={activeStore.id} storeName={activeStore.name} />,
-    clientes:      <ClientesPage search={search} storeId={activeStore.id} />,
-    catalogo:      <CatalogoPage />,
-    caixa:         <CaixaPage storeId={activeStore.id} />,
-    ajustes:       <AjustesPage storeId={activeStore.id} />,
+    inicio:         <HudsDashboard onNavigate={goTo} store={activeStore} />,
+    agendamentos:   <AgendamentosPage search={search} storeId={activeStore.id} />,
+    pedidos:        <PedidosPage search={search} storeId={activeStore.id} storeName={activeStore.name} />,
+    clientes:       <ClientesPage search={search} storeId={activeStore.id} />,
+    profissionais:  <ProfissionaisPage search={search} storeId={activeStore.id} />,
+    catalogo:       <CatalogoPage />,
+    caixa:          <CaixaPage storeId={activeStore.id} />,
+    ajustes:        <AjustesPage storeId={activeStore.id} />,
   }
 
   const pageLabel = NAV.find(n => n.key === page)?.label || ''
-  const isMorePage = ['caixa', 'ajustes', 'catalogo'].includes(page)
+  const isMorePage = ['caixa', 'ajustes', 'catalogo', 'profissionais'].includes(page)
 
   return (
     <div className={`${styles.layout} ${isDark ? '' : styles.light}`}>
@@ -206,12 +210,17 @@ export default function AdminDashboard({ onLogout }) {
               {isDark ? '☀️' : '🌙'}
             </button>
 
-            {(page === 'pedidos' || page === 'clientes' || page === 'agendamentos') && (
+            {(page === 'pedidos' || page === 'clientes' || page === 'agendamentos' || page === 'profissionais') && (
               <div className={styles.searchWrap}>
                 <span className={styles.searchIcon}>🔍</span>
                 <input
                   className={styles.searchInput}
-                  placeholder={page === 'pedidos' ? 'Buscar…' : page === 'agendamentos' ? 'Buscar agendamento…' : 'Buscar cliente…'}
+                  placeholder={
+                    page === 'pedidos' ? 'Buscar…' :
+                    page === 'agendamentos' ? 'Buscar agendamento…' :
+                    page === 'profissionais' ? 'Buscar profissional…' :
+                    'Buscar cliente…'
+                  }
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                 />
@@ -268,7 +277,7 @@ export default function AdminDashboard({ onLogout }) {
           +
         </motion.button>
       )}
-      {page === 'agendamentos' && (
+      {(page === 'agendamentos' || page === 'inicio') && (
         <motion.button
           className={styles.fab}
           whileTap={{ scale: 0.92 }}
@@ -362,6 +371,9 @@ export default function AdminDashboard({ onLogout }) {
               exit={{ y: 80, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 340, damping: 28 }}
             >
+              <button className={styles.moreItem} onClick={() => goTo('profissionais')}>
+                <span>💈</span> Profissionais
+              </button>
               <button className={styles.moreItem} onClick={() => goTo('catalogo')}>
                 <span>📦</span> Catálogo
               </button>
