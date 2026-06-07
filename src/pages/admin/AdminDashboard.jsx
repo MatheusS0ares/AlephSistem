@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { supabase } from '../../lib/supabase'
+import { CLIENT_SLUG, CLIENT_NAME } from '../../config/client'
 import StoreLogo from '../../components/StoreLogo'
 import DashboardHome from './pages/DashboardHome'
 import HudsDashboard from './pages/HudsDashboard'
@@ -12,6 +13,19 @@ import AjustesPage from './pages/AjustesPage'
 import AgendamentosPage from './pages/AgendamentosPage'
 import ProfissionaisPage from './pages/ProfissionaisPage'
 import styles from './AdminDashboard.module.css'
+
+const SLUG_NAMES = {
+  huds: "HUD'S Barbearia",
+}
+
+// Quando CLIENT_SLUG está definido, é um deploy dedicado — pula o seletor
+const DEDICATED_STORE = CLIENT_SLUG
+  ? {
+      id: CLIENT_SLUG,
+      name: CLIENT_NAME !== 'AlephSistem' ? CLIENT_NAME : (SLUG_NAMES[CLIENT_SLUG] || CLIENT_SLUG),
+      slug: CLIENT_SLUG,
+    }
+  : null
 
 const FALLBACK_STORES = [
   { id: 'fallback-1', name: 'Confeitaria da Mari',  slug: 'confeitaria-demo' },
@@ -48,6 +62,7 @@ export default function AdminDashboard({ onLogout }) {
   const [theme, setTheme] = useState(() => localStorage.getItem('adminTheme') || 'dark')
   const [storeList, setStoreList] = useState(FALLBACK_STORES)
   const [activeStore, setActiveStore] = useState(() => {
+    if (DEDICATED_STORE) return DEDICATED_STORE
     try { return JSON.parse(sessionStorage.getItem('adminActiveStore')) } catch { return null }
   })
   const [switchModal, setSwitchModal] = useState(false)
@@ -188,7 +203,9 @@ export default function AdminDashboard({ onLogout }) {
           ))}
         </nav>
 
-        <button className={styles.switchStoreBtn} onClick={promptSwitch}>⇄ Trocar loja</button>
+        {!DEDICATED_STORE && (
+          <button className={styles.switchStoreBtn} onClick={promptSwitch}>⇄ Trocar loja</button>
+        )}
         <button className={styles.logoutBtn} onClick={handleLogout}>↩ Sair</button>
       </aside>
 
@@ -383,9 +400,11 @@ export default function AdminDashboard({ onLogout }) {
               <button className={styles.moreItem} onClick={() => goTo('ajustes')}>
                 <span>⚙️</span> Ajustes
               </button>
-              <button className={styles.moreItem} onClick={() => { setMoreOpen(false); promptSwitch() }}>
-                <span>⇄</span> Trocar loja
-              </button>
+              {!DEDICATED_STORE && (
+                <button className={styles.moreItem} onClick={() => { setMoreOpen(false); promptSwitch() }}>
+                  <span>⇄</span> Trocar loja
+                </button>
+              )}
               <button className={styles.moreItemDanger} onClick={handleLogout}>
                 <span>↩</span> Sair
               </button>
