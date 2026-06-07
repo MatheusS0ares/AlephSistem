@@ -85,7 +85,7 @@ export default function ContatoHuds({ whatsapp = '5500000000000', instagram = 'h
             <iframe
               className={styles.mapIframe}
               title="Barbearia HUD'S"
-              src="https://maps.google.com/maps?q=Gama+DF+Brasil&t=&z=14&ie=UTF8&iwloc=&output=embed"
+              src="https://maps.google.com/maps?q=Setor+Sul+QD+7+CJ+C+LT+8+Gama+DF+72410-403+Brasil&t=&z=17&ie=UTF8&iwloc=&output=embed"
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
