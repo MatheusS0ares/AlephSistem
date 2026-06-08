@@ -42,6 +42,8 @@ function fmtMoney(v) {
 
 export default function AgendamentosPage({ search, storeId }) {
   const [appointments, setAppointments] = useState([])
+  const [professionals, setProfessionals] = useState([])
+  const [storeServices, setStoreServices] = useState([])
   const [filtroStatus, setFiltroStatus] = useState('todos')
   const [filtroData, setFiltroData] = useState('')
   const [showForm, setShowForm] = useState(false)
@@ -71,9 +73,29 @@ export default function AgendamentosPage({ search, storeId }) {
   useEffect(() => { loadData() }, [loadData])
 
   useEffect(() => {
+    async function loadMeta() {
+      const sid = storeId?.startsWith('fallback-') ? null : storeId
+      const [{ data: profs }, { data: svcs }] = await Promise.all([
+        sid
+          ? supabase.from('professionals').select('id, name').eq('store_id', sid).eq('active', true).order('name')
+          : supabase.from('professionals').select('id, name').eq('active', true).order('name'),
+        sid
+          ? supabase.from('services').select('id, name, price, duration_minutes').eq('store_id', sid).eq('active', true).order('order_index')
+          : supabase.from('services').select('id, name, price, duration_minutes').eq('active', true).order('order_index'),
+      ])
+      setProfessionals(profs || [])
+      setStoreServices(svcs || [])
+    }
+    loadMeta()
+  }, [storeId])
+
+  useEffect(() => {
     window.__adminOpenNewAppointment = () => openNew()
     return () => { delete window.__adminOpenNewAppointment }
   }, [])
+
+  const serviceOptions = storeServices.length ? storeServices.map(s => s.name) : SERVICOS_DEFAULT
+  const singleProfessional = professionals.length === 1 ? professionals[0].name : null
 
   const filtered = appointments.filter(a => {
     const q = (search || '').toLowerCase()
@@ -90,7 +112,7 @@ export default function AgendamentosPage({ search, storeId }) {
     setEditItem(null)
     setSaveError(null)
     const today = new Date().toISOString().split('T')[0]
-    setForm({ ...EMPTY_FORM, appointment_date: today })
+    setForm({ ...EMPTY_FORM, appointment_date: today, professional_name: singleProfessional || '' })
     setShowForm(true)
   }
 
@@ -101,7 +123,7 @@ export default function AgendamentosPage({ search, storeId }) {
       customer_name: a.customer_name || '',
       customer_whatsapp: a.customer_whatsapp || '',
       service_name: a.service_name || '',
-      professional_name: a.professional_name || '',
+      professional_name: a.professional_name || singleProfessional || '',
       appointment_date: a.appointment_date || '',
       appointment_time: a.appointment_time || '',
       duration_minutes: a.duration_minutes || 60,
@@ -395,18 +417,26 @@ export default function AgendamentosPage({ search, storeId }) {
                         onChange={e => setForm(f => ({ ...f, service_name: e.target.value }))}
                       >
                         <option value="">Selecionar…</option>
-                        {SERVICOS_DEFAULT.map(s => (
+                        {serviceOptions.map(s => (
                           <option key={s} value={s}>{s}</option>
                         ))}
                       </select>
                     </div>
                     <div className={styles.formGroup}>
                       <label>Profissional</label>
-                      <input
-                        value={form.professional_name}
-                        onChange={e => setForm(f => ({ ...f, professional_name: e.target.value }))}
-                        placeholder="Nome do profissional"
-                      />
+                      {singleProfessional ? (
+                        <div className={styles.profLocked}>{singleProfessional}</div>
+                      ) : (
+                        <select
+                          value={form.professional_name}
+                          onChange={e => setForm(f => ({ ...f, professional_name: e.target.value }))}
+                        >
+                          <option value="">Selecionar…</option>
+                          {professionals.map(p => (
+                            <option key={p.id} value={p.name}>{p.name}</option>
+                          ))}
+                        </select>
+                      )}
                     </div>
                   </div>
 
