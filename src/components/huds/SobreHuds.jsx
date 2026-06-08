@@ -6,8 +6,8 @@ import styles from './SobreHuds.module.css'
 const STATS = [
   { value: '5+', label: 'Anos de experiência' },
   { value: '2k+', label: 'Clientes atendidos' },
-  { value: '98%', label: 'Satisfação' },
-  { value: '3', label: 'Profissionais' },
+  { value: '98%', label: 'Satisfação garantida' },
+  { value: '100%', label: 'Dedicação a cada corte' },
 ]
 
 export default function SobreHuds() {
@@ -29,19 +29,14 @@ export default function SobreHuds() {
             <span className={styles.gold}>uma experiência.</span>
           </h2>
           <p className={styles.text}>
-            A Barbearia HUD'S nasceu da paixão de <strong>Fabrício Huds</strong> por
-            transformar a autoestima masculina através de cortes precisos e
-            atendimento de qualidade. Aqui, cada cliente recebe atenção individual
-            e sai com mais confiança do que entrou.
+            A HUD'S Barbearia é a assinatura de <strong>Fabrício Huds</strong> — barbeiro que transformou paixão em ofício e ofício em referência em <strong>Gama-DF</strong>. Com mais de 5 anos lapidando técnica e estilo, cada atendimento aqui é personalizado para realçar o melhor de quem senta na cadeira.
           </p>
           <p className={styles.text}>
-            Especializado em técnicas modernas e clássicas — do degradê perfeito
-            ao acabamento na navalha — garantindo que seu estilo seja único e
-            impecável. Localizado em <strong>Gama — DF</strong>, com atendimento exclusivamente reservado.
+            Do degradê cirúrgico ao acabamento preciso na navalha, Fabrício une habilidade técnica e senso estético para entregar resultados que vão além do corte. Você não sai apenas com um visual diferente — sai com mais confiança, identidade e autoestima no nível.
           </p>
           <div className={styles.divider} />
           <p className={styles.quote}>
-            "Cuidar da aparência é cuidar da autoestima."
+            "Cada corte é uma oportunidade de transformar como você se vê — e como o mundo te vê."
           </p>
         </motion.div>
 
