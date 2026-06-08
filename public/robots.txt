@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /huds
+Disallow: /admin
+Disallow: /api
+
+Sitemap: https://huds.vercel.app/sitemap.xml
