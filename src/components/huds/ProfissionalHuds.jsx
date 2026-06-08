@@ -1,27 +1,26 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, useInView } from 'motion/react'
-import { useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 import styles from './ProfissionalHuds.module.css'
 
 const FALLBACK = {
   name: 'Fabrício Huds',
-  role: 'Barbeiro',
-  bio: 'Especialista em cortes modernos e tradicionais, degradê e barba. Mais de 8 anos transformando estilos em Gama-DF.',
+  role: 'Barbeiro & Fundador',
+  bio: 'Mais de 8 anos transformando estilos e autoestima em Gama-DF. Especialista em degradê cirúrgico, navalha e técnicas modernas — cada atendimento é uma experiência única e personalizada.',
   instagram: 'hudsbarbearia',
   photo_url: null,
 }
 
 const STATS = [
-  { num: '8+', label: 'Anos' },
-  { num: '500+', label: 'Clientes' },
-  { num: 'Gama', label: 'DF' },
+  { num: '8+', label: 'Anos de experiência' },
+  { num: '2k+', label: 'Clientes atendidos' },
+  { num: '★', label: 'Referência em Gama-DF' },
 ]
 
 export default function ProfissionalHuds() {
   const [prof, setProf] = useState(FALLBACK)
   const ref = useRef(null)
-  const inView = useInView(ref, { once: true, amount: 0.2 })
+  const inView = useInView(ref, { once: true, amount: 0.15 })
 
   useEffect(() => {
     supabase
@@ -36,67 +35,126 @@ export default function ProfissionalHuds() {
       })
   }, [])
 
-  const firstLetter = prof.name ? prof.name.charAt(0).toUpperCase() : 'F'
+  const photoUrl = prof.photo_url || '/logos/FabricioHuds.png'
+  const nameParts = (prof.name || 'Fabrício Huds').split(' ')
+  const firstName = nameParts[0]
+  const lastName = nameParts.slice(1).join(' ')
 
   return (
     <section className={styles.section} id="barbeiro" ref={ref}>
-      <motion.div
-        className={styles.inner}
-        initial={{ opacity: 0, y: 32 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-      >
-        {/* Left — content */}
-        <div className={styles.content}>
-          <span className={styles.label}>O BARBEIRO</span>
 
-          <h2 className={styles.name}>
-            {prof.name.split(' ').map((part, i) => (
-              i === 0
-                ? <span key={i}>{part} </span>
-                : <span key={i} className={styles.gold}>{part}</span>
-            ))}
-          </h2>
+      {/* ── Photo background ── */}
+      <div className={styles.photoBg}>
+        <img src={photoUrl} alt={prof.name} className={styles.photoImg} />
+        <div className={styles.photoGrad} />
+        <div className={styles.photoVignette} />
+      </div>
 
-          <span className={styles.rolePill}>{prof.role || 'Barbeiro'}</span>
+      {/* ── Subtle grid decoration ── */}
+      <div className={styles.gridDeco} aria-hidden="true">
+        <span /><span /><span />
+      </div>
 
-          <p className={styles.bio}>{prof.bio || FALLBACK.bio}</p>
+      {/* ── Content ── */}
+      <div className={styles.container}>
+        <motion.div
+          className={styles.content}
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.4 }}
+        >
 
-          <div className={styles.stats}>
-            {STATS.map(s => (
-              <div key={s.label} className={styles.statItem}>
+          {/* Label */}
+          <motion.div
+            className={styles.labelRow}
+            initial={{ opacity: 0, x: -20 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.1, duration: 0.5 }}
+          >
+            <span className={styles.accentBar} />
+            <span className={styles.label}>O BARBEIRO</span>
+          </motion.div>
+
+          {/* Name */}
+          <motion.h2
+            className={styles.name}
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.2, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <span className={styles.nameWhite}>{firstName.toUpperCase()}</span>
+            <br />
+            <span className={styles.nameGold}>{lastName.toUpperCase()}</span>
+          </motion.h2>
+
+          {/* Role */}
+          <motion.span
+            className={styles.rolePill}
+            initial={{ opacity: 0, y: 10 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.35, duration: 0.45 }}
+          >
+            {prof.role || FALLBACK.role}
+          </motion.span>
+
+          {/* Bio */}
+          <motion.p
+            className={styles.bio}
+            initial={{ opacity: 0, y: 10 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.45, duration: 0.45 }}
+          >
+            {prof.bio || FALLBACK.bio}
+          </motion.p>
+
+          {/* Divider */}
+          <motion.div
+            className={styles.divider}
+            initial={{ scaleX: 0 }}
+            animate={inView ? { scaleX: 1 } : {}}
+            transition={{ delay: 0.55, duration: 0.6, ease: 'easeOut' }}
+            style={{ transformOrigin: 'left' }}
+          />
+
+          {/* Stats */}
+          <motion.div
+            className={styles.statsRow}
+            initial={{ opacity: 0, y: 10 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.6, duration: 0.45 }}
+          >
+            {STATS.map((s, i) => (
+              <div key={i} className={styles.stat}>
                 <span className={styles.statNum}>{s.num}</span>
                 <span className={styles.statLabel}>{s.label}</span>
               </div>
             ))}
-          </div>
+          </motion.div>
 
+          {/* Instagram */}
           {prof.instagram && (
-            <a
+            <motion.a
               href={`https://instagram.com/${prof.instagram}`}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.igBtn}
+              initial={{ opacity: 0, y: 10 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.7, duration: 0.45 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
                 <circle cx="12" cy="12" r="4"/>
                 <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
               </svg>
               @{prof.instagram}
-            </a>
+            </motion.a>
           )}
-        </div>
 
-        {/* Right — avatar */}
-        <div className={styles.avatar}>
-          {prof.photo_url ? (
-            <img src={prof.photo_url} alt={prof.name} />
-          ) : (
-            firstLetter
-          )}
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </section>
   )
 }
