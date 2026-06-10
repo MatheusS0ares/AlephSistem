@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import StoreSelector from './pages/StoreSelector'
 import StorePage from './pages/StorePage'
 import AdminPage from './pages/admin'
+import AlephControlePage from './pages/controle'
 import HudsPage from './pages/huds/HudsPage'
 import AgendarPage from './pages/huds/AgendarPage'
 import { CLIENT_SLUG } from './config/client'
@@ -26,6 +27,8 @@ export default function App() {
         <Route path="/huds/agendar" element={<AgendarPage />} />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/admin/*" element={<AdminPage />} />
+        <Route path="/controle" element={<AlephControlePage />} />
+        <Route path="/controle/*" element={<AlephControlePage />} />
       </Routes>
     </BrowserRouter>
   )
