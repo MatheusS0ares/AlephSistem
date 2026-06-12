@@ -13,6 +13,7 @@ import Contato from '../components/Contato'
 import Footer from '../components/Footer'
 import WppFloat from '../components/WppFloat'
 import BackToTop from '../components/BackToTop'
+import SazonalBanner from '../components/SazonalBanner'
 import styles from './StorePage.module.css'
 
 function StoreNotFound() {
@@ -41,7 +42,7 @@ function StoreNotFound() {
 }
 
 function StoreContent() {
-  const { store, loading } = useStore()
+  const { store, settings, loading } = useStore()
 
   if (loading) return (
     <div className={styles.loading}>
@@ -55,8 +56,11 @@ function StoreContent() {
 
   if (!store) return <StoreNotFound />
 
+  const theme = settings?.store_type || 'default'
+
   return (
-    <>
+    <div data-theme={theme}>
+      <SazonalBanner />
       <Header />
       <main>
         <Hero />
@@ -71,7 +75,7 @@ function StoreContent() {
       <Footer />
       <WppFloat />
       <BackToTop />
-    </>
+    </div>
   )
 }
 

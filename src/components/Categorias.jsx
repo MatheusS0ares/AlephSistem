@@ -1,17 +1,25 @@
 import { motion } from 'motion/react'
 import AnimateOnView from './AnimateOnView'
+import { useStore } from '../context/StoreContext'
 import styles from './Categorias.module.css'
 
-const cats = [
-  { icon: '🎉', title: 'Festas & Eventos', desc: 'Convites, toppers, tags, banners e painéis para sua festa dos sonhos.', cat: 'festas' },
-  { icon: '🍼', title: 'Chá de Bebê', desc: 'Lembrancinhas, kits personalizados e decoração completa.', cat: 'bebes' },
-  { icon: '🎁', title: 'Presentes', desc: 'Caixas surpresa, kits personalizados e mimos únicos.', cat: 'presentes' },
-  { icon: '👶', title: 'Maternidade', desc: 'Tags, kits bebê e frascos personalizados com carinho.', cat: 'maternidade' },
-  { icon: '🎂', title: 'Aniversários', desc: 'Kits festa, lembranças e convites para todos os estilos.', cat: 'aniversario' },
-  { icon: '✨', title: 'Corporativo', desc: 'Brindes e kits empresariais para clientes especiais.', cat: 'corporativo' },
+const DEFAULT_CATS = [
+  { icon: '🎉', title: 'Festas & Eventos',  desc: 'Convites, toppers, tags, banners e painéis para sua festa dos sonhos.', cat: 'festas'        },
+  { icon: '🍼', title: 'Chá de Bebê',       desc: 'Lembrancinhas, kits personalizados e decoração completa.',               cat: 'bebes'         },
+  { icon: '🎁', title: 'Presentes',         desc: 'Caixas surpresa, kits personalizados e mimos únicos.',                   cat: 'presentes'     },
+  { icon: '👶', title: 'Maternidade',       desc: 'Tags, kits bebê e frascos personalizados com carinho.',                  cat: 'maternidade'   },
+  { icon: '🎂', title: 'Aniversários',      desc: 'Kits festa, lembranças e convites para todos os estilos.',               cat: 'aniversario'   },
+  { icon: '✨', title: 'Corporativo',       desc: 'Brindes e kits empresariais para clientes especiais.',                   cat: 'corporativo'   },
 ]
 
 export default function Categorias() {
+  const { settings } = useStore() || {}
+
+  let cats = DEFAULT_CATS
+  if (settings?.categorias_json) {
+    try { cats = JSON.parse(settings.categorias_json) } catch {}
+  }
+
   return (
     <section className={styles.section} id="categorias">
       <div className="container">

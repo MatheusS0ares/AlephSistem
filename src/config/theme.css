@@ -23,3 +23,19 @@
   --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'Jost', system-ui, sans-serif;
 }
+
+/* ── Tema Confeitaria (Delicias da Emely) ── */
+[data-theme="confeitaria"] {
+  --gold: #d4006e;
+  --gold-light: #f06292;
+  --gold-dark: #9c0050;
+  --white-soft: #fff0f5;
+  --white-muted: #c9a0b0;
+  --text: #f0d8e4;
+  --text-muted: #8a5a6a;
+  --shadow-gold: 0 4px 20px rgba(212,0,110,0.28);
+  --black: #0e0508;
+  --black-soft: #160a0f;
+  --black-card: #1e0e16;
+  --black-border: #2e1a22;
+}
