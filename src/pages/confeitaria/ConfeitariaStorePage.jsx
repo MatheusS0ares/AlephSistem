@@ -301,7 +301,7 @@ export default function ConfeitariaStorePage() {
             <h1 className={styles.heroTitle} ref={heroTitleRef} aria-label={heroTitle}>
               {heroTitle.split(' ').map((word, i) => (
                 <span key={i} className={styles.hWrap}>
-                  <span data-w className={styles.hWord}>{word}</span>{' '}
+                  <span data-w className={styles.hWord}>{word}</span>
                 </span>
               ))}
             </h1>

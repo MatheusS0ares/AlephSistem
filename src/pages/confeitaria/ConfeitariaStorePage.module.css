@@ -326,11 +326,13 @@
   overflow:     visible;
 }
 .hWrap {
-  display:     inline-block;
-  overflow:    hidden;
+  display:      inline-block;
+  overflow:     hidden;
   vertical-align: top;
-  line-height: inherit;
+  line-height:  inherit;
+  margin-right: 0.26em; /* word spacing — whitespace inside overflow:hidden gets clipped */
 }
+.hWrap:last-child { margin-right: 0; }
 .hWord { display: inline-block; }
 
 .heroSub {
