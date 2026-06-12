@@ -6,6 +6,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import { useStore } from '../../context/StoreContext'
 import { useProducts, useTestimonials } from '../../hooks/useSupabase'
+import { trackEvent } from '../../lib/analytics'
 import SazonalBanner from '../../components/SazonalBanner'
 import WppFloat from '../../components/WppFloat'
 import BackToTop from '../../components/BackToTop'
@@ -71,7 +72,8 @@ function MagnetBtn({ children, className, onClick, href, target = '_blank' }) {
   if (href) {
     return (
       <a ref={ref} className={className} href={href} target={target}
-         rel="noopener noreferrer" onMouseMove={onMove} onMouseLeave={onLeave}>
+         rel="noopener noreferrer" onClick={onClick}
+         onMouseMove={onMove} onMouseLeave={onLeave}>
         {children}
       </a>
     )
@@ -88,6 +90,7 @@ function MagnetBtn({ children, className, onClick, href, target = '_blank' }) {
 function ProdCard({ product, wppNumber, storeName }) {
   const msg = encodeURIComponent(`Olá ${storeName}! Tenho interesse em: ${product.name} (${product.price}) 🍫`)
   const url = `https://wa.me/${wppNumber}?text=${msg}`
+  const handleClick = () => trackEvent('whatsapp_click', { store: storeName, source: 'product_card', product: product.name })
 
   return (
     <motion.article
@@ -106,7 +109,8 @@ function ProdCard({ product, wppNumber, storeName }) {
           </span>
         )}
         <div className={styles.prodOverlay}>
-          <a href={url} target="_blank" rel="noopener noreferrer" className={styles.prodOverlayBtn}>
+          <a href={url} target="_blank" rel="noopener noreferrer"
+             onClick={handleClick} className={styles.prodOverlayBtn}>
             <FaWhatsapp /> Pedir agora
           </a>
         </div>
@@ -118,6 +122,7 @@ function ProdCard({ product, wppNumber, storeName }) {
         <div className={styles.prodFoot}>
           <span className={styles.prodPrice}>{product.price}</span>
           <a href={url} target="_blank" rel="noopener noreferrer"
+             onClick={handleClick}
              className={styles.prodWppBtn} aria-label={`Pedir ${product.name} pelo WhatsApp`}>
             <FaWhatsapp />
           </a>
@@ -156,6 +161,7 @@ export default function ConfeitariaStorePage() {
   const marqueeItems   = [...testimonials, ...testimonials]
 
   const makeWpp = (text) => `https://wa.me/${wppNumber}?text=${encodeURIComponent(text)}`
+  const onWpp   = (source) => trackEvent('whatsapp_click', { store: storeName, source })
 
   // Document title
   useEffect(() => {
@@ -243,7 +249,7 @@ export default function ConfeitariaStorePage() {
             ))}
           </nav>
 
-          <MagnetBtn className={styles.hCta} href={makeWpp(wppMsg)}>
+          <MagnetBtn className={styles.hCta} href={makeWpp(wppMsg)} onClick={() => onWpp('header_nav')}>
             <FaWhatsapp /> Fazer Pedido
           </MagnetBtn>
 
@@ -275,7 +281,7 @@ export default function ConfeitariaStorePage() {
                   className={styles.mCta}
                   initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 4 * 0.07 }}
-                  onClick={() => setMenuOpen(false)}>
+                  onClick={() => { setMenuOpen(false); onWpp('mobile_menu') }}>
                   <FaWhatsapp /> Fazer Pedido
                 </motion.a>
               </motion.nav>
@@ -315,7 +321,7 @@ export default function ConfeitariaStorePage() {
             <motion.div className={styles.heroActions}
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.35, duration: 0.6 }}>
-              <MagnetBtn className={styles.btnWpp} href={makeWpp(wppMsg)}>
+              <MagnetBtn className={styles.btnWpp} href={makeWpp(wppMsg)} onClick={() => onWpp('hero')}>
                 <FaWhatsapp /> Pedir pelo WhatsApp
               </MagnetBtn>
               <a href="#cardapio" className={styles.btnGhost}>Ver Cardápio ↓</a>
@@ -410,7 +416,8 @@ export default function ConfeitariaStorePage() {
               </div>
               <div data-reveal>
                 <MagnetBtn className={styles.btnWpp}
-                  href={makeWpp(`Olá ${storeName}! Quero saber mais sobre vocês 😊`)}>
+                  href={makeWpp(`Olá ${storeName}! Quero saber mais sobre vocês 😊`)}
+                  onClick={() => onWpp('sobre')}>
                   <FaWhatsapp /> Falar com a Emely
                 </MagnetBtn>
               </div>
@@ -475,7 +482,7 @@ export default function ConfeitariaStorePage() {
           </div>
 
           <div className={styles.comoCtaWrap} data-reveal>
-            <MagnetBtn className={styles.btnWpp} href={makeWpp(wppMsg)}>
+            <MagnetBtn className={styles.btnWpp} href={makeWpp(wppMsg)} onClick={() => onWpp('como_funciona')}>
               <FaWhatsapp /> Começar meu pedido
             </MagnetBtn>
           </div>
@@ -520,7 +527,7 @@ export default function ConfeitariaStorePage() {
             Faça seu pedido agora e surpreenda com doces artesanais feitos com amor.
           </p>
           <div data-reveal>
-            <MagnetBtn className={styles.ctaBtn} href={makeWpp(wppMsg)}>
+            <MagnetBtn className={styles.ctaBtn} href={makeWpp(wppMsg)} onClick={() => onWpp('cta_final')}>
               <FaWhatsapp /> Fazer meu pedido agora →
             </MagnetBtn>
           </div>
@@ -540,6 +547,7 @@ export default function ConfeitariaStorePage() {
               </p>
               <div className={styles.ftSocial}>
                 <a href={makeWpp(wppMsg)} target="_blank" rel="noopener noreferrer"
+                   onClick={() => onWpp('footer_social')}
                    className={styles.ftSocialLink} aria-label="WhatsApp">
                   <FaWhatsapp />
                 </a>
@@ -559,7 +567,8 @@ export default function ConfeitariaStorePage() {
 
             <div className={styles.ftLinks}>
               <p className={styles.ftLinksTitle}>Contato</p>
-              <a href={makeWpp(wppMsg)} target="_blank" rel="noopener noreferrer" className={styles.ftLink}>WhatsApp</a>
+              <a href={makeWpp(wppMsg)} target="_blank" rel="noopener noreferrer"
+                 onClick={() => onWpp('footer_contato')} className={styles.ftLink}>WhatsApp</a>
               <a href={igUrl} target="_blank" rel="noopener noreferrer" className={styles.ftLink}>@deliciasdaemely</a>
               <span className={styles.ftLink}>Brasília-DF</span>
             </div>

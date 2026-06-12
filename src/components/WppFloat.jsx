@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { FaWhatsapp } from 'react-icons/fa'
 import { useStore } from '../context/StoreContext'
+import { trackEvent } from '../lib/analytics'
 import styles from './WppFloat.module.css'
 
 export default function WppFloat() {
@@ -11,6 +12,7 @@ export default function WppFloat() {
     <motion.a
       href={`https://wa.me/${wppNumber}?text=Olá!%20Quero%20fazer%20um%20pedido%20😊`}
       target="_blank" rel="noopener noreferrer"
+      onClick={() => trackEvent('whatsapp_click', { store: store?.name, source: 'float_button' })}
       className={styles.float} aria-label="WhatsApp"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}

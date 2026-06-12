@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { initGA4 } from '../lib/analytics'
 
 const StoreContext = createContext(null)
 
@@ -117,6 +118,7 @@ export function StoreProvider({ slug, children }) {
       setStore(resolved)
       setSettings(map)
       setLoading(false)
+      if (map.ga4_id) initGA4(map.ga4_id)
     }
     load()
   }, [slug])
