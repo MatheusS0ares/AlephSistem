@@ -9,7 +9,7 @@ export default function WppFloat() {
 
   return (
     <motion.a
-      href={`https://wa.me/${wppNumber}?text=Olá%20Reino%20Imperial!%20Quero%20fazer%20um%20pedido%20😊`}
+      href={`https://wa.me/${wppNumber}?text=Olá!%20Quero%20fazer%20um%20pedido%20😊`}
       target="_blank" rel="noopener noreferrer"
       className={styles.float} aria-label="WhatsApp"
       initial={{ scale: 0, opacity: 0 }}

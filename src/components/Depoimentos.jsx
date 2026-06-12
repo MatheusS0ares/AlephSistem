@@ -5,9 +5,9 @@ import { useStore } from '../context/StoreContext'
 import styles from './Depoimentos.module.css'
 
 const FALLBACK_DEFAULT = [
-  { id: 1, name: 'Ana Carolina',  role: 'Mamãe do Theo 👶',  text: 'Fiz meu chá de bebê com os produtos do Reino Imperial e ficou lindo demais! Tudo personalizado e entregue antes do prazo. Super recomendo!', stars: 5, featured: false },
-  { id: 2, name: 'Juliana Mendes',role: 'Aniversariante 🎂', text: 'Melhor investimento para minha festa! Os convites personalizados impressionaram todos os convidados. Atendimento maravilhoso!',              stars: 5, featured: true  },
-  { id: 3, name: 'Marina Santos', role: 'Cliente fiel 💛',   text: 'Comprei como presente para minha amiga e ela adorou! A caixa veio linda, toda personalizada. Com certeza vou comprar mais!',              stars: 5, featured: false },
+  { id: 1, name: 'Ana Carolina',  role: 'Mamãe do Theo 👶',  text: 'Fiz meu chá de bebê com os produtos daqui e ficou lindo demais! Tudo personalizado e entregue antes do prazo. Super recomendo!', stars: 5, featured: false },
+  { id: 2, name: 'Juliana Mendes',role: 'Aniversariante 🎂', text: 'Melhor investimento para minha festa! Os convites personalizados impressionaram todos os convidados. Atendimento maravilhoso!',     stars: 5, featured: true  },
+  { id: 3, name: 'Marina Santos', role: 'Cliente fiel 💛',   text: 'Comprei como presente para minha amiga e ela adorou! A caixa veio linda, toda personalizada. Com certeza vou comprar mais!',         stars: 5, featured: false },
 ]
 
 export default function Depoimentos() {

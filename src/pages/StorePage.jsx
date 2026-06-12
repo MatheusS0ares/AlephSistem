@@ -14,6 +14,7 @@ import Footer from '../components/Footer'
 import WppFloat from '../components/WppFloat'
 import BackToTop from '../components/BackToTop'
 import SazonalBanner from '../components/SazonalBanner'
+import ConfeitariaStorePage from './confeitaria/ConfeitariaStorePage'
 import styles from './StorePage.module.css'
 
 function StoreNotFound() {
@@ -56,10 +57,12 @@ function StoreContent() {
 
   if (!store) return <StoreNotFound />
 
-  const theme = settings?.store_type || 'default'
+  const storeType = settings?.store_type || 'default'
+
+  if (storeType === 'confeitaria') return <ConfeitariaStorePage />
 
   return (
-    <div data-theme={theme}>
+    <div data-theme={storeType}>
       <SazonalBanner />
       <Header />
       <main>
