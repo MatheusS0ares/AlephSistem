@@ -1,0 +1,272 @@
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--black);
+}
+
+/* ─── LOGO BACKGROUND SYSTEM ─── */
+.logoBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Bloom: blurred atmospheric halo cloud shaped as the logo */
+.logoBgBloom {
+  position: absolute;
+  width: 88vmin;
+  height: 88vmin;
+  max-width: none;
+  object-fit: contain;
+  opacity: 0.08;
+  filter: blur(72px) brightness(5) saturate(0.7);
+  animation: logoBloom 14s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+@keyframes logoBloom {
+  0%, 100% { opacity: 0.08; transform: scale(1); }
+  50%       { opacity: 0.14; transform: scale(1.1); }
+}
+
+/* Ghost: crisp identity presence at low opacity */
+.logoBgGhost {
+  position: absolute;
+  width: 74vmin;
+  height: 74vmin;
+  max-width: none;
+  object-fit: contain;
+  opacity: 0.09;
+  filter: brightness(1.9) saturate(0.28);
+  animation: logoGhost 14s ease-in-out infinite;
+  animation-delay: -7s;
+  will-change: opacity, transform;
+}
+
+@keyframes logoGhost {
+  0%, 100% { opacity: 0.09; transform: scale(1.03); }
+  50%       { opacity: 0.15; transform: scale(1); }
+}
+
+/* Pulsing golden halo */
+.logoBgGlow {
+  position: absolute;
+  width: 68vmin;
+  height: 68vmin;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(201, 168, 76, 0.20) 0%,
+    rgba(201, 168, 76, 0.07) 38%,
+    transparent 68%
+  );
+  animation: glowPulse 7s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.92); }
+  50%       { opacity: 1;    transform: scale(1.1); }
+}
+
+/* Expanding concentric rings */
+.logoBgRing,
+.logoBgRing2 {
+  position: absolute;
+  width: 64vmin;
+  height: 64vmin;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  will-change: transform, opacity;
+}
+
+.logoBgRing  { animation: ringExpand 7s ease-out infinite; }
+.logoBgRing2 { animation: ringExpand 7s ease-out infinite; animation-delay: -3.5s; }
+
+@keyframes ringExpand {
+  0%   { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 860px;
+  padding: 140px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 36px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.eyebrow::before,
+.eyebrow::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201, 168, 76, 0.6));
+}
+
+.eyebrow::after {
+  background: linear-gradient(to left, transparent, rgba(201, 168, 76, 0.6));
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: clamp(3rem, 9vw, 6rem);
+  font-weight: 300;
+  color: var(--white);
+  line-height: 1.08;
+  margin-bottom: 32px;
+  letter-spacing: -0.025em;
+  text-shadow: 0 2px 40px rgba(0, 0, 0, 0.6);
+}
+
+.title em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--gold-light);
+  display: block;
+  filter: drop-shadow(0 0 30px rgba(201, 168, 76, 0.25));
+}
+
+.desc {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-bottom: 52px;
+  line-height: 1.9;
+  max-width: 580px;
+  letter-spacing: 0.02em;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 56px;
+}
+
+.wppIcon {
+  font-size: 1.1rem;
+}
+
+.social {
+  display: flex;
+  gap: 24px;
+  font-size: 1.4rem;
+  color: var(--text-muted);
+}
+
+.social a {
+  transition: color 0.3s, transform 0.3s;
+}
+
+.social a:hover {
+  color: var(--white);
+  transform: translateY(-2px);
+}
+
+.scroll {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.scrollText {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+.scrollMouse {
+  width: 22px;
+  height: 36px;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+
+.scrollWheel {
+  width: 3px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+/* ─── LIGHT MODE OVERRIDES ─── */
+:global([data-theme="light"]) .logoBgBloom {
+  filter: blur(72px) brightness(1.4) saturate(1.1);
+  opacity: 0.20;
+}
+
+:global([data-theme="light"]) .logoBgGhost {
+  filter: brightness(0.5) saturate(0.6);
+  opacity: 0.11;
+}
+
+:global([data-theme="light"]) .logoBgGlow {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(201, 168, 76, 0.22) 0%,
+    rgba(201, 168, 76, 0.06) 40%,
+    transparent 70%
+  );
+}
+
+:global([data-theme="light"]) .logoBgRing,
+:global([data-theme="light"]) .logoBgRing2 {
+  border-color: rgba(201, 168, 76, 0.28);
+}
+
+@media (max-width: 768px) {
+  .actions {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  .actions a {
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+  }
+  .content {
+    padding-top: 120px;
+  }
+}
