@@ -103,8 +103,106 @@ from the left, shallow depth of field, bokeh dark background, luxury artisan
 confectionery aesthetic, dark marble surface, warm candlelight tones, romantic
 Brazilian sweet shop, 85mm lens equivalent, f/1.8, ultra sharp product,
 rose pink #d4006e accent lighting, editorial quality, high-end food magazine,
-[PROPS ESPECÍFICOS DO PRODUTO],
---ar [PROPORÇÃO] --style raw --v 6.1 --q 2
+[PROPS ESPECÍFICOS DO PRODUTO]
+```
+
+> **No Adapta:** selecione o formato na aba **Proporção** antes de gerar.  
+> **No Midjourney:** adicione `--ar [W]:[H] --style raw --v 6.1 --q 2` no final.
+
+---
+
+## Prompts prontos por imagem
+
+### 1. Hero Background → **16:9**
+```
+Editorial food photography of gourmet brigadeiros arranged artistically
+on dark black velvet surface, scattered rose petals, soft pink bokeh lights
+in background, moody romantic atmosphere, low-key lighting with one dramatic
+side light catching chocolate glaze, depth of field, 85mm portrait lens,
+f/1.8, ultra sharp foreground brigadeiros with dreamy blurred background,
+dark luxury aesthetic
+```
+
+### 2. Jogo do Prazer — Ferrero Rocher → **4:3**
+```
+Top-down flat lay product photography, elegant gift box open revealing
+12 Ferrero Rocher chocolates in golden wrappers arranged in perfect grid,
+two red dice with love symbols placed beside the box, dark charcoal marble
+surface, scattered golden glitter, soft pink accent light from left, white
+highlight reflections on chocolate wrappers, luxury packaging, macro details
+```
+
+### 3. Jogo do Prazer — Brigadeiros Gourmet → **4:3**
+```
+Close-up product photography of open pink gift box with 12 gourmet brigadeiros
+arranged in rows, each with different topping: white sprinkles, chocolate
+shavings, crushed pistachio, gold leaf, two red heart dice beside the box,
+dark wood background, romantic pink candlelight glow, shallow depth of field,
+macro details on chocolate texture
+```
+
+### 4. Caixa 9 Brigadeiros Gourmet → **4:3**
+```
+45-degree angle product photography of premium kraft paper box containing
+exactly 9 gourmet brigadeiros in paper cups, each with different decorative
+topping (pistachio, gold pearl, white chocolate, cocoa powder), black ribbon
+bow on corner of box, dark moody background with soft directional lighting,
+luxury artisan confectionery aesthetic, shallow DOF
+```
+
+### 5. Caixa 16 Brigadeiros Gourmet → **4:3**
+```
+Product photography of elegant black gift box lid partially open revealing
+16 perfectly arranged gourmet brigadeiros in 4x4 grid, each in individual
+gold paper cup with unique toppings, pink satin ribbon tied in bow, dark
+velvet background, dramatic chiaroscuro lighting, luxury confectionery,
+bokeh background, close-up angle
+```
+
+### 6. Kit Presente Romântico → **4:3**
+```
+Romantic gift kit product photography, premium matte black box closed with
+blush pink satin ribbon and bow, small handwritten gift card leaning against
+it, 12 brigadeiros visible in soft focus beside the box, dried rose petals
+scattered on dark marble surface, warm candlelight from behind, luxury
+Valentine's Day aesthetic, moody romantic lighting
+```
+
+### 7. Kit Festa 50 Unidades → **4:3**
+```
+Product flat lay of individually wrapped gourmet brigadeiros in small boxes
+with pink ribbon tags, arranged in beautiful scattered pattern on dark surface,
+some boxes open revealing chocolate inside, confetti and gold stars around,
+celebration aesthetic, overhead shot, soft studio lighting, shallow depth of
+field on front brigadeiros, event catering luxury style
+```
+
+### 8. Kit Corporativo 30 Caixinhas → **4:3**
+```
+Corporate gift product photography, 30 small premium white gift boxes neatly
+arranged in rows on dark grey surface, each with custom label and ribbon,
+professional studio lighting, one box open in foreground showing 4 brigadeiros
+inside, minimalist corporate aesthetic, soft shadows, sharp product photography,
+neutral elegant palette with gold accent details
+```
+
+### 9. Trufas Artesanais Caixa 12 → **4:3**
+```
+Macro product photography of artisan chocolate truffles in open luxury box,
+12 truffles with different coatings: dark cocoa powder, milk chocolate glaze,
+white chocolate drizzle, crushed hazelnut, one truffle cut in half showing
+creamy ganache filling, dark charcoal background, single dramatic spotlight,
+chocolate texture details sharp, bokeh background, premium Belgian chocolate
+aesthetic
+```
+
+### 10. Foto Sobre — Confeiteira → **4:5**
+```
+Warm editorial portrait lifestyle photo, female artisan confectioner hands
+carefully placing gourmet brigadeiros in gift box, natural window light from
+left, shallow depth of field on hands and chocolate, warm golden hour tones,
+rustic dark wood table, authentic artisan atmosphere, bokeh kitchen background
+with copper pots, Canon 5D style, 85mm f/1.4
 ```
 
 ---
@@ -123,13 +221,16 @@ rose pink #d4006e accent lighting, editorial quality, high-end food magazine,
 
 ## Proporções por uso no site
 
-| Seção              | Proporção | Pixels sugeridos |
-|--------------------|-----------|-----------------|
-| Hero background    | 16:9      | 1920 × 1080     |
-| Card de produto    | 4:3       | 800 × 600       |
-| Sobre (foto)       | 4:5       | 600 × 750       |
-| Banner sazonal     | 3:1       | 1200 × 400      |
-| Instagram (futuro) | 1:1       | 1080 × 1080     |
+> Formatos disponíveis no Adapta: **1:1 · 16:9 · 3:2 · 4:3 · 5:4 · 9:16 · 2:3 · 3:4 · 4:5**
+
+| Imagem                        | Formato no Adapta | Motivo                                   |
+|-------------------------------|-------------------|------------------------------------------|
+| Hero background               | **16:9**          | Ocupa largura total do site (desktop)    |
+| Todos os cards de produto (×8)| **4:3**           | Proporção do `.prodImgWrap` no código    |
+| Foto Sobre (Emely/produção)   | **4:5**           | Moldura vertical — coluna esquerda       |
+| Post Instagram quadrado       | **1:1**           | Feed padrão                              |
+| Story / Reels vertical        | **9:16**          | Stories e Reels                          |
+| Banner sazonal (promo)        | **3:2**           | Mais próximo de 3:1 disponível           |
 
 ---
 
