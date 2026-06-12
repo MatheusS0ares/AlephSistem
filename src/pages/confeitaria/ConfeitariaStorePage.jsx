@@ -8,15 +8,17 @@ import WppFloat from '../../components/WppFloat'
 import BackToTop from '../../components/BackToTop'
 import styles from './ConfeitariaStorePage.module.css'
 
+const IMG = 'https://uhxbnleyfowhpdbnrdqc.supabase.co/storage/v1/object/public/emely'
+
 const FALLBACK_PRODUCTS = [
-  { id: 1, category: 'namorados', icon: '🍫', name: 'Jogo do Prazer — Ferrero Rocher',      description: '12 Ferrero Rocher + 2 dados do prazer. Pedido sob encomenda.',              price: 'R$ 95,00',  badge: 'Hot'  },
-  { id: 2, category: 'namorados', icon: '❤️', name: 'Jogo do Prazer — Brigadeiros Gourmet', description: '12 brigadeiros sortidos + 2 dados do prazer.',                              price: 'R$ 80,00',  badge: 'Novo' },
-  { id: 3, category: 'presentes', icon: '🎁', name: 'Caixa 9 Brigadeiros Gourmet',          description: 'Ninho, Pistache, Morango, Chocolate Belga e mais.',                         price: 'R$ 45,00',  badge: null   },
-  { id: 4, category: 'presentes', icon: '🍫', name: 'Caixa 16 Brigadeiros Gourmet',         description: 'Perfeita para presentes e celebrações especiais.',                          price: 'R$ 75,00',  badge: null   },
-  { id: 5, category: 'presentes', icon: '🎁', name: 'Kit Presente Romântico',               description: '12 doces sortidos + embalagem premium + cartão personalizado.',             price: 'R$ 90,00',  badge: 'Hot'  },
-  { id: 6, category: 'festas',   icon: '🎂', name: 'Kit Festa 50 unidades',                 description: '50 brigadeiros sortidos com embalagem individual para eventos.',            price: 'R$ 180,00', badge: null   },
-  { id: 7, category: 'festas',   icon: '🏢', name: 'Kit Corporativo 30 caixinhas',          description: '30 caixinhas personalizadas com logotipo da empresa.',                      price: 'R$ 210,00', badge: null   },
-  { id: 8, category: 'presentes', icon: '🍬', name: 'Trufas Artesanais (caixa 12)',         description: 'Dark, Ao Leite, Limão Siciliano e Maracujá.',                               price: 'R$ 70,00',  badge: 'Novo' },
+  { id: 1, category: 'namorados', icon: '🍫', image_url: `${IMG}/jogo-ferrero.png`,    name: 'Jogo do Prazer — Ferrero Rocher',      description: '12 Ferrero Rocher + 2 dados do prazer. Pedido sob encomenda.',              price: 'R$ 95,00',  badge: 'Hot'  },
+  { id: 2, category: 'namorados', icon: '❤️', image_url: `${IMG}/jogo-brigadeiro.png`, name: 'Jogo do Prazer — Brigadeiros Gourmet', description: '12 brigadeiros sortidos + 2 dados do prazer.',                              price: 'R$ 80,00',  badge: 'Novo' },
+  { id: 3, category: 'presentes', icon: '🎁', image_url: `${IMG}/caixa-9.png`,         name: 'Caixa 9 Brigadeiros Gourmet',          description: 'Ninho, Pistache, Morango, Chocolate Belga e mais.',                         price: 'R$ 45,00',  badge: null   },
+  { id: 4, category: 'presentes', icon: '🍫', image_url: `${IMG}/caixa-16.png`,        name: 'Caixa 16 Brigadeiros Gourmet',         description: 'Perfeita para presentes e celebrações especiais.',                          price: 'R$ 75,00',  badge: null   },
+  { id: 5, category: 'presentes', icon: '🎁', image_url: `${IMG}/kit-romantico.png`,   name: 'Kit Presente Romântico',               description: '12 doces sortidos + embalagem premium + cartão personalizado.',             price: 'R$ 90,00',  badge: 'Hot'  },
+  { id: 6, category: 'festas',   icon: '🎂',  image_url: `${IMG}/kit-festa-50.png`,    name: 'Kit Festa 50 unidades',                description: '50 brigadeiros sortidos com embalagem individual para eventos.',            price: 'R$ 180,00', badge: null   },
+  { id: 7, category: 'festas',   icon: '🏢',  image_url: `${IMG}/kit-corporativo.png`, name: 'Kit Corporativo 30 caixinhas',         description: '30 caixinhas personalizadas com logotipo da empresa.',                      price: 'R$ 210,00', badge: null   },
+  { id: 8, category: 'presentes', icon: '🍬', image_url: `${IMG}/trufas.png`,          name: 'Trufas Artesanais (caixa 12)',         description: 'Dark, Ao Leite, Limão Siciliano e Maracujá.',                               price: 'R$ 70,00',  badge: 'Novo' },
 ]
 
 const CAT_LABELS = {
@@ -297,11 +299,7 @@ export default function ConfeitariaStorePage() {
               initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.7 }}>
               <div className={styles.sobreImgBox}>
-                <motion.span className={styles.sobreImgEmoji}
-                  animate={{ scale: [1, 1.06, 1], rotate: [0, 3, 0] }}
-                  transition={{ duration: 4.5, repeat: Infinity }}>
-                  🍫
-                </motion.span>
+                <img src={`${IMG}/sobre.png`} alt={storeName} className={styles.sobreImgReal} />
               </div>
               <motion.div className={styles.sobreBadge}
                 initial={{ scale: 0, rotate: -15 }}
