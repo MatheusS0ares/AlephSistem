@@ -31,11 +31,12 @@ const DEDICATED_STORE = CLIENT_SLUG
   : null
 
 const FALLBACK_STORES = [
-  { id: 'fallback-1', name: 'Confeitaria da Mari',  slug: 'confeitaria-demo' },
-  { id: 'fallback-2', name: 'Boutique Style',        slug: 'moda-demo' },
-  { id: 'fallback-3', name: 'Burguer Express',       slug: 'delivery-demo' },
-  { id: 'fallback-4', name: 'Studio Beauty',         slug: 'beleza-demo' },
-  { id: 'fallback-5', name: 'Arte & Mimo',           slug: 'personalizados-demo' },
+  { id: 'fallback-1',        name: 'Confeitaria da Mari',  slug: 'confeitaria-demo' },
+  { id: 'fallback-2',        name: 'Boutique Style',        slug: 'moda-demo' },
+  { id: 'fallback-3',        name: 'Burguer Express',       slug: 'delivery-demo' },
+  { id: 'fallback-4',        name: 'Studio Beauty',         slug: 'beleza-demo' },
+  { id: 'fallback-5',        name: 'Arte & Mimo',           slug: 'personalizados-demo' },
+  { id: 'delicias-da-emely', name: 'Delicias da Emely',     slug: 'delicias-da-emely' },
 ]
 
 const NAV = [

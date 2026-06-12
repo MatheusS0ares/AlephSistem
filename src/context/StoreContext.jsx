@@ -46,6 +46,13 @@ const FALLBACK_STORES = {
     instagram_url: 'https://instagram.com/hudsbarbearia',
     address: 'Brasília - DF', active: true,
   },
+  'delicias-da-emely': {
+    id: 'delicias-da-emely', name: 'Delicias da Emely', slug: 'delicias-da-emely',
+    tagline: 'Brigadeiros gourmet e doces especiais',
+    whatsapp: '5561992235201', instagram: '@deliciasdaemely',
+    instagram_url: 'https://instagram.com/deliciasdaemely',
+    address: 'Brasília - DF', active: true,
+  },
 }
 
 export function StoreProvider({ slug, children }) {
