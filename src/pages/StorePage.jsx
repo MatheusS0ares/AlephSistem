@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import { motion } from 'motion/react'
 import { StoreProvider, useStore } from '../context/StoreContext'
 import Header from '../components/Header'
@@ -44,6 +45,15 @@ function StoreNotFound() {
 
 function StoreContent() {
   const { store, settings, loading } = useStore()
+
+  useEffect(() => {
+    if (store?.name) {
+      const tagline = store.tagline || settings?.hero_desc?.slice(0, 60) || ''
+      document.title = tagline
+        ? `${store.name} — ${tagline}`
+        : store.name
+    }
+  }, [store, settings])
 
   if (loading) return (
     <div className={styles.loading}>

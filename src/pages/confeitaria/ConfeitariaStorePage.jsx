@@ -99,6 +99,12 @@ export default function ConfeitariaStorePage() {
     : allProducts.filter(p => p.category === activeFilter)
 
   useEffect(() => {
+    if (storeName) {
+      document.title = `${storeName} — Brigadeiros Gourmet & Doces Especiais`
+    }
+  }, [storeName])
+
+  useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 60)
     window.addEventListener('scroll', handler, { passive: true })
     return () => window.removeEventListener('scroll', handler)
