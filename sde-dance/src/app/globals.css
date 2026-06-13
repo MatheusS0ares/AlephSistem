@@ -31,6 +31,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Smooth scroll with offset for fixed header */
+  scroll-padding-top: 5rem;
 }
 
 body {
@@ -39,6 +41,9 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Persistent grain layer over every section */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
 }
 
 /* ── Focus visible — keyboard nav ── */
@@ -55,6 +60,28 @@ body {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--color-spot);
+  font-family: var(--font-mono);
+}
+
+/* ── Selection ── */
+::selection {
+  background-color: var(--color-vinho);
+  color: var(--color-bone);
+}
+
+/* ── Scrollbar — theatrical ── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-blackout);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-vinho);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-spot);
 }
 
 /* ── Reduced motion ── */

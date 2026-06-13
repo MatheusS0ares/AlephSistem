@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
+import CustomCursor from "@/components/ui/CustomCursor";
 import { site } from "@/config/site";
 
 const fraunces = Fraunces({
@@ -66,6 +67,7 @@ export default function RootLayout({
       className={`${fraunces.variable} ${inter.variable} ${geistMono.variable}`}
     >
       <body className="min-h-screen flex flex-col">
+        <CustomCursor />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
