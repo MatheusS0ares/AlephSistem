@@ -30,10 +30,16 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+// metadataBase: usa VERCEL_URL em preview/produção, fallback para domínio final
+// TODO-CLIENTE: substituir "sdedance.com.br" pelo domínio definitivo
+const baseUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "https://sdedance.com.br";
+
 export const metadata: Metadata = {
   title: site.seo.title,
   description: site.seo.description,
-  metadataBase: new URL("https://sdedance.com.br"), // TODO-CLIENTE: confirmar domínio final
+  metadataBase: new URL(baseUrl),
   openGraph: {
     title: site.seo.title,
     description: site.seo.description,
@@ -42,7 +48,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: site.seo.ogImage,
+        url: "/og",         // rota /og/route.tsx — OG gerado dinamicamente
         width: 1200,
         height: 630,
         alt: `${site.brand.short} — ${site.brand.tagline}`,
@@ -53,7 +59,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: site.seo.title,
     description: site.seo.description,
-    images: [site.seo.ogImage],
+    images: ["/og"],
   },
   robots: { index: true, follow: true },
 };
