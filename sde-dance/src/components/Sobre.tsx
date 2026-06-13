@@ -119,37 +119,16 @@ export default function Sobre() {
               </div>
             </ScrollReveal>
 
-            {/* Equipe */}
+            {/* Corpo docente agora na seção #professores */}
             <ScrollReveal delay={0.25}>
-              <div>
-                <h3
-                  className="text-sm tracking-[0.15em] uppercase mb-5"
-                  style={{ color: "var(--color-spot)", fontFamily: "var(--font-mono)" }}
-                >
-                  Corpo docente
-                </h3>
-                <ul className="flex flex-col divide-y" style={{ borderColor: "rgba(244,239,231,0.06)" }}>
-                  {site.sobre.equipe.map((membro) => (
-                    <li
-                      key={membro.nome}
-                      className="flex items-baseline justify-between gap-4 py-3"
-                    >
-                      <span
-                        className="font-medium"
-                        style={{ color: "var(--color-bone)", fontFamily: "var(--font-display)" }}
-                      >
-                        {membro.nome}
-                      </span>
-                      <span
-                        className="text-xs"
-                        style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}
-                      >
-                        {membro.papel}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <a
+                href="#professores"
+                className="inline-flex items-center gap-3 text-sm transition-colors duration-200 group"
+                style={{ color: "var(--color-spot)" }}
+              >
+                <span className="w-6 h-px transition-all duration-300 group-hover:w-10" style={{ backgroundColor: "var(--color-spot)" }} aria-hidden="true" />
+                Conheça nosso elenco de professores
+              </a>
             </ScrollReveal>
 
             {/* Destaque */}
