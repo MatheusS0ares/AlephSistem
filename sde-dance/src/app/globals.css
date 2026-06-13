@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Brand palette ── */
+  --color-blackout: #0b0a0c;
+  --color-vinho: #6e1023;
+  --color-vinho-deep: #3d0a16;
+  --color-spot: #e7b65c;
+  --color-bone: #f4efe7;
+  --color-ash: #8c8089;
+
+  /* ── Typography ── */
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+
+  /* ── Spacing / sizing ── */
+  --spacing-section: 7rem;
+}
+
+/* ── Base ── */
+:root {
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-blackout);
+  color: var(--color-bone);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Focus visible — keyboard nav ── */
+:focus-visible {
+  outline: 2px solid var(--color-spot);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── Eyebrow utility ── */
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-spot);
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
