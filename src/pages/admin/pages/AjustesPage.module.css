@@ -27,8 +27,12 @@
 
 .templateList { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
 
+.varRow { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+
 .templateGroup { display: flex; flex-direction: column; gap: 6px; }
-.templateGroup label { font-size: 0.75rem; color: var(--a-muted); letter-spacing: 0.06em; text-transform: uppercase; }
+.templateLabelRow { display: flex; flex-direction: column; gap: 2px; }
+.templateLabelRow label { font-size: 0.85rem; font-weight: 600; color: var(--a-text2, #e4e4e7); }
+.templateHint { font-size: 0.72rem; color: var(--a-muted3, #71717a); font-style: italic; }
 .templateGroup textarea {
   background: var(--a-input);
   border: 1px solid var(--a-border2);
@@ -43,6 +47,19 @@
 }
 .templateGroup textarea:focus { border-color: rgba(201,168,76,0.4); }
 
+.btnReset {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid var(--a-border2, rgba(63,63,70,0.5));
+  color: var(--a-muted, #a1a1aa);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btnReset:hover { border-color: rgba(201,168,76,0.4); color: #c9a84c; }
+
 .btnSave {
   padding: 9px 24px;
   border-radius: 8px;
@@ -52,9 +69,13 @@
   font-weight: 600;
   font-size: 0.88rem;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, background 0.2s;
 }
 .btnSave:hover { opacity: 0.9; }
+.btnSaved {
+  background: linear-gradient(135deg, #2d6a4f, #40916c) !important;
+  color: #fff !important;
+}
 
 @media (max-width: 600px) { .formGrid { grid-template-columns: 1fr; } }
 

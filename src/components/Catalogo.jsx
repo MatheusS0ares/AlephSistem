@@ -34,7 +34,8 @@ export default function Catalogo() {
   const visíveis    = filtro === 'all' ? allProducts : allProducts.filter(p => p.category === filtro)
 
   function pedirWhatsApp(produto) {
-    const msg = encodeURIComponent(`Olá Reino Imperial! Quero saber mais sobre: ${produto} 😊`)
+    const nome = store?.name || 'vocês'
+    const msg = encodeURIComponent(`Olá ${nome}! Quero saber mais sobre: ${produto} 😊`)
     window.open(`https://wa.me/${wppNumber}?text=${msg}`, '_blank')
   }
 
@@ -44,7 +45,7 @@ export default function Catalogo() {
         <AnimateOnView>
           <div className="section-header">
             <span className="section-eyebrow">Nossos produtos</span>
-            <h2 className="section-title">Catálogo <em>Imperial</em></h2>
+            <h2 className="section-title">Nosso <em>Catálogo</em></h2>
             <p className="section-desc">Clique em qualquer produto para fazer seu pedido pelo WhatsApp</p>
           </div>
         </AnimateOnView>

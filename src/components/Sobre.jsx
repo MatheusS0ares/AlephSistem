@@ -1,5 +1,6 @@
 import { motion } from 'motion/react'
 import AnimateOnView from './AnimateOnView'
+import { useStore } from '../context/StoreContext'
 import styles from './Sobre.module.css'
 
 const stats = [
@@ -9,6 +10,9 @@ const stats = [
 ]
 
 export default function Sobre() {
+  const { store, settings } = useStore() || {}
+  const storeName = store?.name || 'nossa loja'
+
   return (
     <section className={styles.sobre} id="sobre">
       <div className="container">
@@ -41,8 +45,8 @@ export default function Sobre() {
               <h2 className="section-title">
                 Transformamos momentos<br /><em>em memórias eternas</em>
               </h2>
-              <p className={styles.text}>No Reino Imperial, acreditamos que cada produto personalizado carrega uma emoção especial. Criamos peças únicas para festas, chás de bebê, aniversários e presentes que deixam quem recebe sem palavras.</p>
-              <p className={styles.text}>Do convite ao painel de bolo, tudo é pensado com cuidado para que seu evento seja inesquecível.</p>
+              <p className={styles.text}>{settings?.sobre_text1 || `Em ${storeName}, acreditamos que cada produto personalizado carrega uma emoção especial. Criamos peças únicas para festas, chás de bebê, aniversários e presentes que deixam quem recebe sem palavras.`}</p>
+              <p className={styles.text}>{settings?.sobre_text2 || 'Do convite ao painel de bolo, tudo é pensado com cuidado para que seu evento seja inesquecível.'}</p>
             </AnimateOnView>
 
             <AnimateOnView delay={0.2}>

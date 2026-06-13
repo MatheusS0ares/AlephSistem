@@ -1,15 +1,23 @@
 import { motion } from 'motion/react'
 import AnimateOnView from './AnimateOnView'
+import { useStore } from '../context/StoreContext'
 import styles from './ComoFunciona.module.css'
 
-const steps = [
+const DEFAULT_STEPS = [
   { num: '01', icon: '💬', title: 'Entre em contato', desc: 'Nos chame no WhatsApp ou Instagram e conte o que você precisa.' },
-  { num: '02', icon: '🎨', title: 'Personalizamos', desc: 'Nossa equipe cria o layout exclusivo com seu nome, tema e estilo.' },
-  { num: '03', icon: '✅', title: 'Você aprova', desc: 'Enviamos a arte para aprovação. Ajustamos até você amar.' },
-  { num: '04', icon: '🚀', title: 'Receba em casa', desc: 'Enviamos pelo correio ou você retira. Rápido e com segurança.' },
+  { num: '02', icon: '🎨', title: 'Personalizamos',   desc: 'Nossa equipe cria o layout exclusivo com seu nome, tema e estilo.' },
+  { num: '03', icon: '✅', title: 'Você aprova',       desc: 'Enviamos a arte para aprovação. Ajustamos até você amar.' },
+  { num: '04', icon: '🚀', title: 'Receba em casa',    desc: 'Enviamos pelo correio ou você retira. Rápido e com segurança.' },
 ]
 
 export default function ComoFunciona() {
+  const { settings } = useStore() || {}
+
+  let steps = DEFAULT_STEPS
+  if (settings?.como_funciona_steps) {
+    try { steps = JSON.parse(settings.como_funciona_steps) } catch {}
+  }
+
   return (
     <section className={styles.section}>
       <div className={styles.bgCrown}>♛</div>

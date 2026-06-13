@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Brand palette ── */
+  --color-blackout: #0b0a0c;
+  --color-vinho: #6e1023;
+  --color-vinho-deep: #3d0a16;
+  --color-spot: #e7b65c;
+  --color-bone: #f4efe7;
+  --color-ash: #8c8089;
+
+  /* ── Typography ── */
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+
+  /* ── Spacing / sizing ── */
+  --spacing-section: 7rem;
+}
+
+/* ── Base ── */
+:root {
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Smooth scroll with offset for fixed header */
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background-color: var(--color-blackout);
+  color: var(--color-bone);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Persistent grain layer over every section */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ── Focus visible — keyboard nav ── */
+:focus-visible {
+  outline: 2px solid var(--color-spot);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ── Eyebrow utility ── */
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-spot);
+  font-family: var(--font-mono);
+}
+
+/* ── Selection ── */
+::selection {
+  background-color: var(--color-vinho);
+  color: var(--color-bone);
+}
+
+/* ── Scrollbar — theatrical ── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-blackout);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-vinho);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-spot);
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

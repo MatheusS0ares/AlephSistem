@@ -7,8 +7,10 @@ export default function Hero() {
   const { store, settings } = useStore() || {}
   const wppNumber = store?.whatsapp || '5500000000000'
   const igUrl     = store?.instagram_url || 'https://instagram.com/reinoimperial'
-  const title     = settings?.hero_title || 'Cada detalhe conta uma história única'
-  const desc      = settings?.hero_desc  || 'Personalizados exclusivos para festas, presentes e bebês.'
+  const title     = settings?.hero_title   || 'Cada detalhe conta uma história única'
+  const desc      = settings?.hero_desc    || 'Personalizados exclusivos para festas, presentes e bebês.'
+  const eyebrow   = settings?.hero_eyebrow || '✦ Feito com amor, entregue com arte ✦'
+  const wppText   = settings?.hero_wpp_text || 'Olá! Quero fazer um pedido no Reino Imperial 😊'
 
   return (
     <section className={styles.hero} id="inicio">
@@ -19,7 +21,7 @@ export default function Hero() {
         <motion.p className={styles.eyebrow}
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}>
-          ✦ Feito com amor, entregue com arte ✦
+          {eyebrow}
         </motion.p>
 
         <motion.h1 className={styles.title}
@@ -43,7 +45,7 @@ export default function Hero() {
             Ver Catálogo
           </motion.a>
           <motion.a
-            href={`https://wa.me/${wppNumber}?text=Olá!%20Quero%20fazer%20um%20pedido%20no%20Reino%20Imperial%20😊`}
+            href={`https://wa.me/${wppNumber}?text=${encodeURIComponent(wppText)}`}
             target="_blank" rel="noopener noreferrer" className="btn btn--outline"
             whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
             <FaWhatsapp />

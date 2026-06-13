@@ -7,10 +7,10 @@ import styles from './Footer.module.css'
 
 export default function Footer() {
   const navigate = useNavigate()
-  const { store } = useStore() || {}
+  const { store, settings } = useStore() || {}
   const wppNumber = store?.whatsapp || '5500000000000'
-  const igUrl     = store?.instagram_url || 'https://instagram.com/reinoimperial'
-  const storeName = store?.name || 'Reino Imperial'
+  const igUrl     = store?.instagram_url || '#'
+  const storeName = store?.name || 'Nossa Loja'
 
   return (
     <footer className={styles.footer}>
@@ -20,7 +20,7 @@ export default function Footer() {
             <button className={styles.logo} onClick={() => navigate('/')}>
               <StoreLogo slug={store?.slug} size="md" />
             </button>
-            <p className={styles.tagline}>Transformando momentos em memórias eternas com produtos personalizados únicos.</p>
+            <p className={styles.tagline}>{store?.tagline || settings?.hero_desc?.slice(0, 80) || 'Transformando momentos em memórias eternas com produtos únicos.'}</p>
             <div className={styles.social}>
               <motion.a href={`https://wa.me/${wppNumber}`} target="_blank" rel="noopener noreferrer"
                 className={styles.socialWpp}
@@ -47,9 +47,15 @@ export default function Footer() {
           <div className={styles.links}>
             <h4>Categorias</h4>
             <ul>
-              {['Festas & Eventos','Chá de Bebê','Presentes','Aniversários','Maternidade'].map(cat => (
-                <li key={cat}><motion.a href="#catalogo" whileHover={{ color: 'var(--gold)', x: 4 }}>{cat}</motion.a></li>
-              ))}
+              {(() => {
+                let cats = ['Festas & Eventos','Chá de Bebê','Presentes','Aniversários','Maternidade']
+                if (settings?.categorias_json) {
+                  try { cats = JSON.parse(settings.categorias_json).slice(0,5).map(c => c.title) } catch {}
+                }
+                return cats.map(cat => (
+                  <li key={cat}><motion.a href="#catalogo" whileHover={{ color: 'var(--gold)', x: 4 }}>{cat}</motion.a></li>
+                ))
+              })()}
             </ul>
           </div>
 

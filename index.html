@@ -4,11 +4,45 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/crown.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="AlephSistem — Gestão completa para o seu negócio. Pedidos, clientes, catálogo e caixa em um só lugar." />
-    <title>AlephSistem | Gestão do seu negócio</title>
+
+    <!--
+      SEO & OG — configurar por deploy no Vercel via variáveis de ambiente:
+        VITE_OG_TITLE       → Título completo da loja (ex: Delícias da Emely — Brigadeiros Gourmet)
+        VITE_OG_DESC        → Descrição (ex: Brigadeiros artesanais em Brasília-DF...)
+        VITE_OG_IMAGE       → URL absoluta da imagem de preview (1200×630 recomendado)
+        VITE_OG_URL         → URL canônica do deploy (ex: https://delicias-da-emely.vercel.app)
+        VITE_THEME_COLOR    → Cor do tema do browser (ex: #d4006e)
+    -->
+
+    <title>%VITE_OG_TITLE%</title>
+    <meta name="description" content="%VITE_OG_DESC%" />
+    <meta name="author" content="AlephSistem" />
+    <meta name="theme-color" content="%VITE_THEME_COLOR%" />
+
+    <!-- Open Graph / WhatsApp / Facebook -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:locale"      content="pt_BR" />
+    <meta property="og:site_name"   content="%VITE_OG_TITLE%" />
+    <meta property="og:title"       content="%VITE_OG_TITLE%" />
+    <meta property="og:description" content="%VITE_OG_DESC%" />
+    <meta property="og:image"       content="%VITE_OG_IMAGE%" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url"         content="%VITE_OG_URL%" />
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="%VITE_OG_TITLE%" />
+    <meta name="twitter:description" content="%VITE_OG_DESC%" />
+    <meta name="twitter:image"       content="%VITE_OG_IMAGE%" />
+
+    <!-- Fontes Google -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Fontes Fontshare — Clash Display (títulos) + Satoshi (corpo) -->
+    <link rel="preconnect" href="https://api.fontshare.com" />
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>

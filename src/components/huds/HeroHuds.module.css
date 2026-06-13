@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;700;900&family=Inter:wght@400;500;600;700&display=swap');
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  background: #0b0b0f;
+  overflow: hidden;
+}
+
+.noise {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.gradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 25% 45%, rgba(200,150,12,0.09) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 80% 20%, rgba(200,150,12,0.04) 0%, transparent 60%),
+    linear-gradient(180deg, transparent 60%, rgba(11,11,15,0.7) 100%);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 120px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  color: #C8960C;
+  text-transform: uppercase;
+}
+.eyebrowLine {
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: #C8960C;
+}
+
+.title {
+  font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  font-size: clamp(64px, 10vw, 120px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  text-transform: uppercase;
+  margin: 0;
+}
+.titleGold {
+  color: #C8960C;
+}
+
+.subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: #888888;
+  max-width: 480px;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  background: linear-gradient(135deg, #a8722a, #C8960C);
+  color: #0b0b0f;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 6px;
+  box-shadow: 0 4px 24px rgba(200,150,12,0.35);
+  transition: opacity 0.2s, transform 0.15s;
+}
+.btnPrimary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 16px 32px;
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.85);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btnSecondary:hover {
+  border-color: rgba(200,150,12,0.6);
+  color: #C8960C;
+}
+
+.social {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+.social a {
+  font-size: 20px;
+  color: #555;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.social a:hover { color: #C8960C; }
+
+.decorIcon {
+  position: absolute;
+  right: -60px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-15deg);
+  font-size: 480px;
+  color: #C8960C;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.scrollHint {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #555;
+  text-transform: uppercase;
+}
+.scrollLine {
+  width: 1px;
+  height: 40px;
+  background: #555;
+  transform-origin: top;
+}
+
+@media (max-width: 768px) {
+  .content { padding: 100px 20px 60px; }
+  .decorIcon { display: none; }
+  .title { font-size: clamp(56px, 16vw, 80px); }
+}
