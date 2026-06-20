@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import CustomCursor from "@/components/ui/CustomCursor";
 import CookieBanner from "@/components/CookieBanner";
+import ThemeProvider from "@/components/ui/ThemeProvider";
 import { site } from "@/config/site";
 
 const fraunces = Fraunces({
@@ -65,6 +66,15 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+/* Inline script prevents flash of wrong theme before JS hydrates */
+const themeScript = `
+try {
+  var t = localStorage.getItem('sde_theme') ||
+    (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+  document.documentElement.dataset.theme = t;
+} catch(e) {}
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -73,14 +83,20 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${fraunces.variable} ${inter.variable} ${geistMono.variable}`}
     >
+      {/* Anti-flash: sets data-theme before first paint */}
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-screen flex flex-col">
-        <CustomCursor />
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <WhatsAppFloat />
-        <CookieBanner />
-        <Analytics />
+        <ThemeProvider>
+          <CustomCursor />
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <WhatsAppFloat />
+          <CookieBanner />
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );

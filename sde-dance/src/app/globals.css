@@ -18,9 +18,40 @@
   --spacing-section: 7rem;
 }
 
-/* ── Base ── */
-:root {
+/* ── Theme tokens ── */
+:root,
+[data-theme="dark"] {
   color-scheme: dark;
+  /* Runtime overrides matching @theme defaults */
+  --color-blackout: #0b0a0c;
+  --color-bone:     #f4efe7;
+  --color-ash:      #8c8089;
+  --color-spot:     #e7b65c;
+  --color-vinho:    #6e1023;
+  --color-vinho-deep: #3d0a16;
+
+  /* Semantic overlays for light/dark switching */
+  --bg-header:       rgba(11,10,12,0.95);
+  --bg-mobile-menu:  rgba(11,10,12,0.98);
+  --bg-card:         rgba(11,10,12,0.80);
+  --border-glass:    rgba(244,239,231,0.07);
+  --border-input:    rgba(244,239,231,0.15);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --color-blackout: #F5F0E8;
+  --color-bone:     #1A1118;
+  --color-ash:      #7A6C77;
+  --color-spot:     #B87D1A;
+  --color-vinho:    #7A1228;
+  --color-vinho-deep: #EDD5C8;
+
+  --bg-header:       rgba(245,240,232,0.95);
+  --bg-mobile-menu:  rgba(245,240,232,0.99);
+  --bg-card:         rgba(245,240,232,0.85);
+  --border-glass:    rgba(26,17,24,0.07);
+  --border-input:    rgba(26,17,24,0.15);
 }
 
 *,

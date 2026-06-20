@@ -28,7 +28,7 @@ export default function CookieBanner() {
       aria-label="Aviso de cookies e privacidade"
       className="fixed bottom-0 left-0 right-0 z-50 p-4 md:p-6"
       style={{
-        backgroundColor: "rgba(11,10,12,0.97)",
+        backgroundColor: "var(--bg-mobile-menu)",
         borderTop: "1px solid rgba(110,16,35,0.4)",
         backdropFilter: "blur(12px)",
       }}
