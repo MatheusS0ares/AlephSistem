@@ -112,7 +112,7 @@ export default function Galeria() {
         ) : (
           <div
             className="flex flex-col items-center justify-center py-20 border"
-            style={{ borderColor: "rgba(244,239,231,0.07)", borderStyle: "dashed" }}
+            style={{ borderColor: "var(--border-subtle)", borderStyle: "dashed" }}
           >
             <div
               className="w-12 h-12 mb-4 flex items-center justify-center rounded-full"
@@ -156,7 +156,7 @@ export default function Galeria() {
       {lightbox && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          style={{ backgroundColor: "rgba(11,10,12,0.95)", backdropFilter: "blur(8px)" }}
+          style={{ backgroundColor: "var(--bg-lightbox)", backdropFilter: "blur(8px)" }}
           onClick={() => setLightbox(null)}
           role="dialog"
           aria-modal="true"
@@ -165,7 +165,7 @@ export default function Galeria() {
           <button
             onClick={() => setLightbox(null)}
             className="absolute top-5 right-5 w-10 h-10 flex items-center justify-center border transition-colors duration-200 hover:border-spot"
-            style={{ borderColor: "rgba(244,239,231,0.2)", color: "var(--color-ash)" }}
+            style={{ borderColor: "var(--border-bold)", color: "var(--color-ash)" }}
             aria-label="Fechar"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">

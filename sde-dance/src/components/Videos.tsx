@@ -33,7 +33,7 @@ function VideoCard({ video }: { video: { youtubeId: string; titulo: string; desc
   return (
     <div className="flex flex-col gap-3">
       <div className="relative aspect-video overflow-hidden group cursor-pointer"
-        style={{ backgroundColor: "rgba(11,10,12,0.8)", border: "1px solid rgba(244,239,231,0.07)" }}
+        style={{ backgroundColor: "var(--bg-card)", border: "1px solid var(--border-subtle)" }}
         onClick={() => setPlaying(true)}>
         {playing ? (
           <iframe

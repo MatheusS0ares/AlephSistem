@@ -121,7 +121,7 @@ export default function GradeHoraria() {
                         style={{
                           color: "var(--color-ash)",
                           fontFamily: "var(--font-mono)",
-                          borderBottom: "1px solid rgba(244,239,231,0.08)",
+                          borderBottom: "1px solid var(--border-subtle)",
                         }}
                       >
                         Horário
@@ -131,7 +131,7 @@ export default function GradeHoraria() {
                         style={{
                           color: "var(--color-ash)",
                           fontFamily: "var(--font-mono)",
-                          borderBottom: "1px solid rgba(244,239,231,0.08)",
+                          borderBottom: "1px solid var(--border-subtle)",
                         }}
                       >
                         Turma
@@ -141,7 +141,7 @@ export default function GradeHoraria() {
                         style={{
                           color: "var(--color-ash)",
                           fontFamily: "var(--font-mono)",
-                          borderBottom: "1px solid rgba(244,239,231,0.08)",
+                          borderBottom: "1px solid var(--border-subtle)",
                         }}
                       >
                         Vagas
@@ -161,7 +161,7 @@ export default function GradeHoraria() {
                         >
                           <td
                             className="py-4 align-middle"
-                            style={{ borderBottom: "1px solid rgba(244,239,231,0.05)" }}
+                            style={{ borderBottom: "1px solid var(--border-subtle)" }}
                           >
                             <span
                               className="text-base tabular-nums"
@@ -173,7 +173,7 @@ export default function GradeHoraria() {
                           <td
                             className="py-4 pl-8 align-middle"
                             style={{
-                              borderBottom: "1px solid rgba(244,239,231,0.05)",
+                              borderBottom: "1px solid var(--border-subtle)",
                               color: item.vagas === "lotada" ? "var(--color-ash)" : "var(--color-bone)",
                               opacity: item.vagas === "lotada" ? 0.6 : 1,
                             }}
@@ -187,7 +187,7 @@ export default function GradeHoraria() {
                           </td>
                           <td
                             className="py-4 align-middle text-right"
-                            style={{ borderBottom: "1px solid rgba(244,239,231,0.05)" }}
+                            style={{ borderBottom: "1px solid var(--border-subtle)" }}
                           >
                             <span
                               className="inline-flex items-center gap-1.5 text-xs"
@@ -213,7 +213,7 @@ export default function GradeHoraria() {
 
         <div
           className="mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-6 pt-8 border-t"
-          style={{ borderColor: "rgba(244,239,231,0.08)" }}
+          style={{ borderColor: "var(--border-subtle)" }}
         >
           <p className="text-sm flex-1" style={{ color: "var(--color-ash)" }}>
             Grade sujeita a ajustes — confirme disponibilidade de vagas via WhatsApp.

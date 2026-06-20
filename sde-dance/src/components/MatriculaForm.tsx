@@ -18,6 +18,18 @@ const MODALIDADES = [
   "Não sei ainda — quero conversar",
 ];
 
+const INPUT_STYLE = {
+  borderColor: "var(--border-mid)",
+  color: "var(--color-bone)",
+} as const;
+
+const onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  e.target.style.borderColor = "var(--color-spot)";
+};
+const onBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  e.target.style.borderColor = "var(--border-mid)";
+};
+
 export default function MatriculaForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const [status, setStatus] = useState<Status>("idle");
@@ -27,7 +39,6 @@ export default function MatriculaForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!isFormspreeConfigured) {
-      // Fallback: abre WhatsApp com os dados preenchidos
       const data = new FormData(e.currentTarget);
       const nome = data.get("nome");
       const modalidade = data.get("modalidade");
@@ -96,12 +107,9 @@ export default function MatriculaForm() {
                 id="nome" name="nome" type="text" required
                 placeholder="Seu nome ou nome do aluno"
                 className="w-full px-4 py-3 text-sm bg-transparent border outline-none transition-colors duration-200 placeholder:opacity-40"
-                style={{
-                  borderColor: "rgba(244,239,231,0.15)",
-                  color: "var(--color-bone)",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = "var(--color-spot)")}
-                onBlur={(e) => (e.target.style.borderColor = "rgba(244,239,231,0.15)")}
+                style={INPUT_STYLE}
+                onFocus={onFocus}
+                onBlur={onBlur}
               />
             </div>
 
@@ -114,9 +122,9 @@ export default function MatriculaForm() {
                 id="whatsapp" name="whatsapp" type="tel" required
                 placeholder="(61) 9 0000-0000"
                 className="w-full px-4 py-3 text-sm bg-transparent border outline-none transition-colors duration-200 placeholder:opacity-40"
-                style={{ borderColor: "rgba(244,239,231,0.15)", color: "var(--color-bone)" }}
-                onFocus={(e) => (e.target.style.borderColor = "var(--color-spot)")}
-                onBlur={(e) => (e.target.style.borderColor = "rgba(244,239,231,0.15)")}
+                style={INPUT_STYLE}
+                onFocus={onFocus}
+                onBlur={onBlur}
               />
             </div>
 
@@ -128,13 +136,13 @@ export default function MatriculaForm() {
               <select
                 id="modalidade" name="modalidade" required
                 className="w-full px-4 py-3 text-sm bg-transparent border outline-none transition-colors duration-200 appearance-none cursor-pointer"
-                style={{ borderColor: "rgba(244,239,231,0.15)", color: "var(--color-bone)", backgroundColor: "var(--color-blackout)" }}
-                onFocus={(e) => (e.target.style.borderColor = "var(--color-spot)")}
-                onBlur={(e) => (e.target.style.borderColor = "rgba(244,239,231,0.15)")}
+                style={{ borderColor: "var(--border-mid)", color: "var(--color-bone)", backgroundColor: "var(--color-blackout)" }}
+                onFocus={onFocus}
+                onBlur={onBlur}
               >
                 <option value="" disabled selected style={{ color: "var(--color-ash)" }}>Selecione…</option>
                 {MODALIDADES.map((m) => (
-                  <option key={m} value={m} style={{ backgroundColor: "#0b0a0c" }}>{m}</option>
+                  <option key={m} value={m} style={{ backgroundColor: "var(--color-blackout)" }}>{m}</option>
                 ))}
               </select>
             </div>
@@ -148,9 +156,9 @@ export default function MatriculaForm() {
                 id="mensagem" name="mensagem" rows={3}
                 placeholder="Alguma dúvida ou informação adicional?"
                 className="w-full px-4 py-3 text-sm bg-transparent border outline-none transition-colors duration-200 resize-none placeholder:opacity-40"
-                style={{ borderColor: "rgba(244,239,231,0.15)", color: "var(--color-bone)" }}
-                onFocus={(e) => (e.target.style.borderColor = "var(--color-spot)")}
-                onBlur={(e) => (e.target.style.borderColor = "rgba(244,239,231,0.15)")}
+                style={{ borderColor: "var(--border-mid)", color: "var(--color-bone)" }}
+                onFocus={onFocus}
+                onBlur={onBlur}
               />
             </div>
 
@@ -174,17 +182,11 @@ export default function MatriculaForm() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 py-4 text-sm font-medium text-center border transition-all duration-200 hover:bg-white/5"
-                style={{ borderColor: "rgba(244,239,231,0.2)", color: "var(--color-bone)" }}
+                style={{ borderColor: "var(--border-bold)", color: "var(--color-bone)" }}
               >
                 Falar direto no WhatsApp
               </a>
             </div>
-
-            {!isFormspreeConfigured && (
-              <p className="text-xs text-center" style={{ color: "rgba(140,128,137,0.5)", fontFamily: "var(--font-mono)" }}>
-                {/* TODO-CLIENTE: criar conta em formspree.io e configurar site.contact.formEndpoint */}
-              </p>
-            )}
           </form>
         )}
       </div>

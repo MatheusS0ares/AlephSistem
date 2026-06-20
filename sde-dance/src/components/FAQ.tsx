@@ -51,7 +51,7 @@ function FAQItem({ item, index, isOpen, onToggle }: {
   const bodyRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="border-b" style={{ borderColor: "rgba(244,239,231,0.07)" }}>
+    <div className="border-b" style={{ borderColor: "var(--border-subtle)" }}>
       <dt>
         <button
           type="button"

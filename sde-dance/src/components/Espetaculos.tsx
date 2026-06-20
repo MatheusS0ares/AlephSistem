@@ -95,10 +95,10 @@ export default function Espetaculos() {
                 className="relative flex flex-col overflow-hidden"
                 style={{
                   opacity: 0,
-                  border: "1px solid rgba(244,239,231,0.07)",
+                  border: "1px solid var(--border-subtle)",
                   backgroundColor: isHistorico
-                    ? "rgba(11,10,12,0.6)"
-                    : "rgba(61,10,22,0.4)",
+                    ? "var(--bg-dark-card)"
+                    : "var(--bg-vinho-card)",
                   backdropFilter: "blur(4px)",
                 }}
               >

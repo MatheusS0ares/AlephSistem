@@ -100,9 +100,9 @@ export default function Hero() {
             ? "linear-gradient(180deg, rgba(11,10,12,0.75) 0%, rgba(11,10,12,0.5) 40%, rgba(11,10,12,0.85) 100%)"
             : [
                 "radial-gradient(ellipse 85% 65% at 50% 28%, rgba(110,16,35,0.28) 0%, transparent 65%)",
-                "radial-gradient(ellipse 45% 55% at 15% 80%, rgba(61,10,22,0.35) 0%, transparent 55%)",
-                "radial-gradient(ellipse 30% 40% at 85% 70%, rgba(61,10,22,0.2) 0%, transparent 55%)",
-                "linear-gradient(180deg, var(--color-blackout) 0%, #0d060f 50%, var(--color-blackout) 100%)",
+                "radial-gradient(ellipse 45% 55% at 15% 80%, rgba(61,10,22,0.22) 0%, transparent 55%)",
+                "radial-gradient(ellipse 30% 40% at 85% 70%, rgba(61,10,22,0.14) 0%, transparent 55%)",
+                "linear-gradient(180deg, var(--color-blackout) 0%, var(--color-vinho-deep) 50%, var(--color-blackout) 100%)",
               ].join(", "),
         }}
       />
@@ -182,7 +182,7 @@ export default function Hero() {
             </a>
             <a href={site.contact.whatsapp} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium border transition-all duration-300 hover:bg-white/5 hover:-translate-y-px"
-              style={{ borderColor: "rgba(244,239,231,0.22)", color: "var(--color-bone)", minWidth: "230px" }}>
+              style={{ borderColor: "var(--border-bold)", color: "var(--color-bone)", minWidth: "230px" }}>
               {site.hero.ctaSecondary.label}
             </a>
           </div>

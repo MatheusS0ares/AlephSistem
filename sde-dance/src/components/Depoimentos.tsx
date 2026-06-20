@@ -54,7 +54,7 @@ export default function Depoimentos() {
         <div className="relative text-center min-h-[220px] flex flex-col items-center justify-center">
           {/* Large quotation mark */}
           <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-8xl leading-none select-none pointer-events-none"
-            style={{ color: "rgba(110,16,35,0.25)", fontFamily: "var(--font-display)" }} aria-hidden="true">"</span>
+            style={{ color: "var(--quote-mark-color)", fontFamily: "var(--font-display)" }} aria-hidden="true">"</span>
 
           <blockquote key={active} className="relative z-10 transition-all duration-500">
             <p className="text-xl md:text-2xl italic leading-relaxed mb-8"
