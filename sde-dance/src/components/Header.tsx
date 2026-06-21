@@ -59,6 +59,17 @@ export default function Header() {
         <div className="hidden md:flex items-center gap-3">
           <ThemeToggle />
           <a
+            href="/portal/login"
+            className="text-xs tracking-[0.12em] uppercase px-3 py-2 border transition-colors duration-200 hover:border-spot hover:text-bone"
+            style={{
+              borderColor: "var(--border-mid)",
+              color: "var(--color-ash)",
+              fontFamily: "var(--font-mono)",
+            }}
+          >
+            Entrar
+          </a>
+          <a
             href={site.contact.whatsapp}
             target="_blank"
             rel="noopener noreferrer"
@@ -128,6 +139,14 @@ export default function Header() {
               {item.label}
             </a>
           ))}
+          <a
+            href="/portal/login"
+            className="py-2 text-sm border-b text-center"
+            style={{ color: "var(--color-spot)", borderColor: "rgba(110,16,35,0.2)" }}
+            onClick={() => setMenuOpen(false)}
+          >
+            Entrar no portal
+          </a>
           <a
             href={site.contact.whatsapp}
             target="_blank"

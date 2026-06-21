@@ -81,9 +81,18 @@ export default function Footer() {
           <p className="text-xs" style={{ color: "var(--color-ash)" }}>
             © {year} SDE Dance · Escola de Dança Sala de Ensaio · desde {site.brand.since}
           </p>
-          <p className="text-xs" style={{ color: "var(--color-ash)" }}>
-            {site.contact.address}
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-xs" style={{ color: "var(--color-ash)" }}>
+              {site.contact.address}
+            </p>
+            <a
+              href="/portal/login"
+              className="text-xs tracking-[0.12em] uppercase transition-colors duration-200 hover:opacity-80"
+              style={{ color: "var(--color-spot)", fontFamily: "var(--font-mono)" }}
+            >
+              Portal →
+            </a>
+          </div>
         </div>
       </div>
     </footer>
