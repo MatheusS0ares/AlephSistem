@@ -126,7 +126,10 @@ export default async function AdminAlunosPage({
                 return (
                   <tr key={a.id} style={{ borderBottom: "1px solid var(--border-subtle)" }}>
                     <td className="py-3 pr-4 font-medium" style={{ color: "var(--color-bone)" }}>
-                      {a.nome}
+                      <a href={`/portal/admin/alunos/${a.id}`}
+                        className="hover:underline underline-offset-2">
+                        {a.nome}
+                      </a>
                     </td>
                     <td className="py-3 pr-4 whitespace-nowrap"
                       style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>

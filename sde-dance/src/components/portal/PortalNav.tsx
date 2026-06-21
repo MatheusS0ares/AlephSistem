@@ -14,7 +14,7 @@ const NAV_PROFESSOR = [
   { label: "Links de Matrícula", href: "/portal/professor/links" },
 ];
 const NAV_ADMIN = [
-  { label: "Turmas", href: "/portal/professor" },
+  { label: "Turmas", href: "/portal/admin/turmas" },
   { label: "Alunos", href: "/portal/admin/alunos" },
   { label: "Financeiro", href: "/portal/admin/financeiro" },
   { label: "Links", href: "/portal/professor/links" },
