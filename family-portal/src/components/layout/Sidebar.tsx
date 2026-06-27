@@ -5,22 +5,27 @@ import {
   MdHome, MdAttachMoney, MdDescription, MdShoppingCart,
   MdCheckBox, MdCalendarMonth, MdFavorite, MdDirectionsCar,
   MdContactPhone, MdKitchen, MdSettings, MdLogout, MdClose,
-  MdPeople,
+  MdPeople, MdRestaurant, MdBuild, MdLock, MdPhotoLibrary, MdPets,
 } from "react-icons/md";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
 const navItems = [
-  { href: "/dashboard", icon: MdHome, label: "Início" },
-  { href: "/dashboard/financeiro", icon: MdAttachMoney, label: "Financeiro" },
-  { href: "/dashboard/documentos", icon: MdDescription, label: "Documentos" },
-  { href: "/dashboard/mantimentos", icon: MdKitchen, label: "Mantimentos" },
-  { href: "/dashboard/compras", icon: MdShoppingCart, label: "Compras" },
-  { href: "/dashboard/tarefas", icon: MdCheckBox, label: "Tarefas" },
-  { href: "/dashboard/calendario", icon: MdCalendarMonth, label: "Calendário" },
-  { href: "/dashboard/saude", icon: MdFavorite, label: "Saúde" },
-  { href: "/dashboard/veiculos", icon: MdDirectionsCar, label: "Veículos" },
-  { href: "/dashboard/contatos", icon: MdContactPhone, label: "Emergência" },
+  { href: "/dashboard", icon: MdHome, label: "Início", group: "" },
+  { href: "/dashboard/financeiro", icon: MdAttachMoney, label: "Financeiro", group: "Casa" },
+  { href: "/dashboard/documentos", icon: MdDescription, label: "Documentos", group: "Casa" },
+  { href: "/dashboard/mantimentos", icon: MdKitchen, label: "Mantimentos", group: "Casa" },
+  { href: "/dashboard/compras", icon: MdShoppingCart, label: "Compras", group: "Casa" },
+  { href: "/dashboard/cardapio", icon: MdRestaurant, label: "Cardápio", group: "Casa" },
+  { href: "/dashboard/reformas", icon: MdBuild, label: "Obras", group: "Casa" },
+  { href: "/dashboard/tarefas", icon: MdCheckBox, label: "Tarefas", group: "Família" },
+  { href: "/dashboard/calendario", icon: MdCalendarMonth, label: "Calendário", group: "Família" },
+  { href: "/dashboard/saude", icon: MdFavorite, label: "Saúde", group: "Família" },
+  { href: "/dashboard/pets", icon: MdPets, label: "Pets", group: "Família" },
+  { href: "/dashboard/memorias", icon: MdPhotoLibrary, label: "Memórias", group: "Família" },
+  { href: "/dashboard/veiculos", icon: MdDirectionsCar, label: "Veículos", group: "Outros" },
+  { href: "/dashboard/contatos", icon: MdContactPhone, label: "Emergência", group: "Outros" },
+  { href: "/dashboard/senhas", icon: MdLock, label: "Cofre", group: "Outros" },
 ];
 
 interface SidebarProps {
@@ -129,29 +134,43 @@ export function Sidebar({ open, onClose, familyName }: SidebarProps) {
 
         {/* Nav */}
         <nav style={{ flex: 1, padding: "0.75rem 0.5rem", overflowY: "auto" }}>
-          {navItems.map(({ href, icon: Icon, label }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={onClose}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.75rem",
-                padding: "0.625rem 0.75rem",
-                borderRadius: "0.5rem",
-                marginBottom: "0.125rem",
-                textDecoration: "none",
-                color: isActive(href) ? "#22c55e" : "var(--text-secondary)",
-                background: isActive(href) ? "rgba(34, 197, 94, 0.1)" : "transparent",
-                fontWeight: isActive(href) ? 600 : 400,
-                fontSize: "0.875rem",
-                transition: "all 0.15s",
-              }}
-            >
-              <Icon size={20} />
-              {label}
-            </Link>
+          {(() => {
+            let lastGroup = "";
+            return navItems.map(({ href, icon: Icon, label, group }) => {
+              const showHeader = group && group !== lastGroup;
+              if (group) lastGroup = group;
+              return (
+                <div key={href}>
+                  {showHeader && (
+                    <div style={{ fontSize: "0.65rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "0.75rem 0.75rem 0.25rem" }}>
+                      {group}
+                    </div>
+                  )}
+                  <Link
+                    href={href}
+                    onClick={onClose}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                      padding: "0.55rem 0.75rem",
+                      borderRadius: "0.5rem",
+                      marginBottom: "0.1rem",
+                      textDecoration: "none",
+                      color: isActive(href) ? "#22c55e" : "var(--text-secondary)",
+                      background: isActive(href) ? "rgba(34, 197, 94, 0.1)" : "transparent",
+                      fontWeight: isActive(href) ? 600 : 400,
+                      fontSize: "0.85rem",
+                      transition: "all 0.15s",
+                    }}
+                  >
+                    <Icon size={18} />
+                    {label}
+                  </Link>
+                </div>
+              );
+            });
+          })()}
           ))}
         </nav>
 

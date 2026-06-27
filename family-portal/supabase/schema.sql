@@ -345,3 +345,253 @@ CREATE POLICY "vehicle_maintenances_delete" ON vehicle_maintenances FOR DELETE
 -- ('{family_id}', 'Roupas', 'checkroom', '#ec4899', 'expense'),
 -- ('{family_id}', 'Salário', 'account_balance', '#22c55e', 'income'),
 -- ('{family_id}', 'Freelance', 'work', '#3b82f6', 'income');
+
+-- ============================================================
+-- CARDÁPIO SEMANAL
+-- ============================================================
+CREATE TABLE recipes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  family_id UUID REFERENCES families(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  category TEXT DEFAULT 'Refeição',
+  prep_time INTEGER,
+  servings INTEGER DEFAULT 2,
+  ingredients JSONB DEFAULT '[]',
+  instructions TEXT,
+  emoji TEXT DEFAULT '🍽️',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE meal_plan (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  family_id UUID REFERENCES families(id) ON DELETE CASCADE,
+  week_start DATE NOT NULL,
+  day_of_week INTEGER CHECK (day_of_week BETWEEN 0 AND 6),
+  meal_type TEXT CHECK (meal_type IN ('breakfast', 'lunch', 'dinner', 'snack')),
+  recipe_id UUID REFERENCES recipes(id),
+  custom_name TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- OBRAS E REFORMAS
+-- ============================================================
+CREATE TABLE reforms (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  family_id UUID REFERENCES families(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  room TEXT,
+  emoji TEXT DEFAULT '🔧',
+  budget NUMERIC(10, 2) NOT NULL DEFAULT 0,
+  status TEXT DEFAULT 'planning' CHECK (status IN ('planning', 'executing', 'done')),
+  start_date DATE,
+  end_date DATE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE reform_items (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  reform_id UUID REFERENCES reforms(id) ON DELETE CASCADE,
+  description TEXT NOT NULL,
+  category TEXT,
+  supplier TEXT,
+  budgeted NUMERIC(10, 2) NOT NULL DEFAULT 0,
+  actual NUMERIC(10, 2),
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'done')),
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- COFRE DE SENHAS (senha armazenada criptografada)
+-- ============================================================
+CREATE TABLE password_vault (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  family_id UUID REFERENCES families(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  username TEXT,
+  -- senha criptografada com AES-256 no lado do cliente antes do insert
+  encrypted_password TEXT NOT NULL,
+  url TEXT,
+  category TEXT DEFAULT 'Outros',
+  emoji TEXT DEFAULT '🔑',
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- MEMÓRIAS FAMILIARES
+-- ============================================================
+CREATE TABLE memories (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  family_id UUID REFERENCES families(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  date DATE NOT NULL,
+  location TEXT,
+  description TEXT,
+  color TEXT DEFAULT '#22c55e',
+  emoji TEXT DEFAULT '📸',
+  tags TEXT[] DEFAULT '{}',
+  created_by UUID REFERENCES family_members(id),
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE memory_photos (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  memory_id UUID REFERENCES memories(id) ON DELETE CASCADE,
+  file_url TEXT NOT NULL,
+  caption TEXT,
+  taken_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- PETS
+-- ============================================================
+CREATE TABLE pets (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  family_id UUID REFERENCES families(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  species TEXT NOT NULL,
+  breed TEXT,
+  birth_date DATE,
+  weight NUMERIC(6, 2),
+  color TEXT DEFAULT '#f59e0b',
+  emoji TEXT DEFAULT '🐾',
+  chip TEXT,
+  vet TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE pet_vaccines (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  pet_id UUID REFERENCES pets(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  date DATE NOT NULL,
+  next_date DATE,
+  vet TEXT,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE pet_health_records (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  pet_id UUID REFERENCES pets(id) ON DELETE CASCADE,
+  type TEXT NOT NULL CHECK (type IN ('consulta', 'vermifugo', 'pulgas', 'exame', 'outros')),
+  title TEXT NOT NULL,
+  date DATE NOT NULL,
+  next_date DATE,
+  cost NUMERIC(10, 2),
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- CONFIGURAÇÕES DE FAMÍLIA (2FA, PIN, preferências)
+-- ============================================================
+CREATE TABLE family_settings (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  family_id UUID REFERENCES families(id) ON DELETE CASCADE UNIQUE,
+  vault_pin_hash TEXT,
+  two_factor_required BOOLEAN DEFAULT FALSE,
+  notifications_enabled BOOLEAN DEFAULT TRUE,
+  theme TEXT DEFAULT 'dark',
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- AUDIT LOG (segurança — quem fez o quê)
+-- ============================================================
+CREATE TABLE audit_logs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  family_id UUID REFERENCES families(id) ON DELETE CASCADE,
+  member_id UUID REFERENCES family_members(id),
+  action TEXT NOT NULL,
+  table_name TEXT,
+  record_id UUID,
+  ip_address INET,
+  user_agent TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================================
+-- RLS para novos módulos
+-- ============================================================
+ALTER TABLE recipes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE meal_plan ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reforms ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reform_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE password_vault ENABLE ROW LEVEL SECURITY;
+ALTER TABLE memories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE memory_photos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pet_vaccines ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pet_health_records ENABLE ROW LEVEL SECURITY;
+ALTER TABLE family_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
+
+DO $$
+DECLARE
+  t TEXT;
+BEGIN
+  FOREACH t IN ARRAY ARRAY['recipes','meal_plan','reforms','password_vault','memories','pets','family_settings','audit_logs']
+  LOOP
+    EXECUTE format('CREATE POLICY "%s_select" ON %s FOR SELECT USING (family_id = get_user_family_id())', t, t);
+    EXECUTE format('CREATE POLICY "%s_insert" ON %s FOR INSERT WITH CHECK (family_id = get_user_family_id())', t, t);
+    EXECUTE format('CREATE POLICY "%s_update" ON %s FOR UPDATE USING (family_id = get_user_family_id())', t, t);
+    EXECUTE format('CREATE POLICY "%s_delete" ON %s FOR DELETE USING (family_id = get_user_family_id())', t, t);
+  END LOOP;
+END $$;
+
+-- Reform items via reform
+CREATE POLICY "reform_items_select" ON reform_items FOR SELECT
+  USING (reform_id IN (SELECT id FROM reforms WHERE family_id = get_user_family_id()));
+CREATE POLICY "reform_items_insert" ON reform_items FOR INSERT
+  WITH CHECK (reform_id IN (SELECT id FROM reforms WHERE family_id = get_user_family_id()));
+CREATE POLICY "reform_items_update" ON reform_items FOR UPDATE
+  USING (reform_id IN (SELECT id FROM reforms WHERE family_id = get_user_family_id()));
+CREATE POLICY "reform_items_delete" ON reform_items FOR DELETE
+  USING (reform_id IN (SELECT id FROM reforms WHERE family_id = get_user_family_id()));
+
+-- Memory photos via memory
+CREATE POLICY "memory_photos_select" ON memory_photos FOR SELECT
+  USING (memory_id IN (SELECT id FROM memories WHERE family_id = get_user_family_id()));
+CREATE POLICY "memory_photos_insert" ON memory_photos FOR INSERT
+  WITH CHECK (memory_id IN (SELECT id FROM memories WHERE family_id = get_user_family_id()));
+CREATE POLICY "memory_photos_delete" ON memory_photos FOR DELETE
+  USING (memory_id IN (SELECT id FROM memories WHERE family_id = get_user_family_id()));
+
+-- Pet sub-records via pet
+CREATE POLICY "pet_vaccines_select" ON pet_vaccines FOR SELECT
+  USING (pet_id IN (SELECT id FROM pets WHERE family_id = get_user_family_id()));
+CREATE POLICY "pet_vaccines_insert" ON pet_vaccines FOR INSERT
+  WITH CHECK (pet_id IN (SELECT id FROM pets WHERE family_id = get_user_family_id()));
+CREATE POLICY "pet_vaccines_update" ON pet_vaccines FOR UPDATE
+  USING (pet_id IN (SELECT id FROM pets WHERE family_id = get_user_family_id()));
+CREATE POLICY "pet_vaccines_delete" ON pet_vaccines FOR DELETE
+  USING (pet_id IN (SELECT id FROM pets WHERE family_id = get_user_family_id()));
+
+CREATE POLICY "pet_health_select" ON pet_health_records FOR SELECT
+  USING (pet_id IN (SELECT id FROM pets WHERE family_id = get_user_family_id()));
+CREATE POLICY "pet_health_insert" ON pet_health_records FOR INSERT
+  WITH CHECK (pet_id IN (SELECT id FROM pets WHERE family_id = get_user_family_id()));
+CREATE POLICY "pet_health_update" ON pet_health_records FOR UPDATE
+  USING (pet_id IN (SELECT id FROM pets WHERE family_id = get_user_family_id()));
+CREATE POLICY "pet_health_delete" ON pet_health_records FOR DELETE
+  USING (pet_id IN (SELECT id FROM pets WHERE family_id = get_user_family_id()));
+
+-- ============================================================
+-- STORAGE — SIGNED URLS (execute via Supabase Dashboard > Storage)
+-- ============================================================
+-- Bucket: family-documents (private)
+-- Política: somente membros da mesma família podem ler/escrever
+-- Signed URLs expiram em 1 hora (gerados server-side)
+--
+-- Bucket: memory-photos (private)  
+-- Bucket: avatars (public)
+--
+-- No código Next.js, gere signed URLs assim:
+-- const { data } = await supabase.storage
+--   .from('family-documents')
+--   .createSignedUrl(filePath, 3600); // expira em 1h

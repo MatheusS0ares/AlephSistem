@@ -5,7 +5,8 @@ import {
   MdAttachMoney, MdDescription, MdShoppingCart,
   MdCheckBox, MdCalendarMonth, MdFavorite, MdDirectionsCar,
   MdContactPhone, MdKitchen, MdTrendingUp, MdTrendingDown,
-  MdAdd, MdArrowForward, MdWarning,
+  MdAdd, MdArrowForward, MdWarning, MdRestaurant, MdBuild,
+  MdLock, MdPhotoLibrary, MdPets,
 } from "react-icons/md";
 import { createClient } from "@/lib/supabase/client";
 
@@ -29,15 +30,20 @@ interface Module {
 }
 
 const modules: Module[] = [
-  { href: "/dashboard/financeiro", icon: MdAttachMoney, label: "Financeiro", desc: "Controle de gastos e receitas", color: "#22c55e" },
+  { href: "/dashboard/financeiro", icon: MdAttachMoney, label: "Financeiro", desc: "Gastos, cartões, planejamento", color: "#22c55e" },
   { href: "/dashboard/documentos", icon: MdDescription, label: "Documentos", desc: "Armazenamento seguro de docs", color: "#3b82f6" },
   { href: "/dashboard/mantimentos", icon: MdKitchen, label: "Mantimentos", desc: "Estoque da dispensa", color: "#f59e0b", badge: "3 em falta", badgeColor: "yellow" },
-  { href: "/dashboard/compras", icon: MdShoppingCart, label: "Compras", desc: "Lista e histórico de compras", color: "#8b5cf6" },
-  { href: "/dashboard/tarefas", icon: MdCheckBox, label: "Tarefas", desc: "Divisão de tarefas da casa", color: "#06b6d4", badge: "5 pendentes", badgeColor: "blue" },
+  { href: "/dashboard/compras", icon: MdShoppingCart, label: "Compras", desc: "Lista colaborativa + histórico", color: "#8b5cf6" },
+  { href: "/dashboard/cardapio", icon: MdRestaurant, label: "Cardápio", desc: "Planejamento de refeições", color: "#f97316" },
+  { href: "/dashboard/reformas", icon: MdBuild, label: "Obras", desc: "Orçamento por ambiente", color: "#6366f1" },
+  { href: "/dashboard/tarefas", icon: MdCheckBox, label: "Tarefas", desc: "Divisão com pontuação", color: "#06b6d4", badge: "5 pendentes", badgeColor: "blue" },
   { href: "/dashboard/calendario", icon: MdCalendarMonth, label: "Calendário", desc: "Agenda familiar", color: "#ec4899" },
   { href: "/dashboard/saude", icon: MdFavorite, label: "Saúde", desc: "Consultas e medicamentos", color: "#ef4444" },
-  { href: "/dashboard/veiculos", icon: MdDirectionsCar, label: "Veículos", desc: "Manutenção e documentos", color: "#6366f1" },
+  { href: "/dashboard/pets", icon: MdPets, label: "Pets", desc: "Vacinas, rotina, saúde", color: "#a3e635" },
+  { href: "/dashboard/memorias", icon: MdPhotoLibrary, label: "Memórias", desc: "Álbum de fotos e marcos", color: "#ec4899" },
+  { href: "/dashboard/veiculos", icon: MdDirectionsCar, label: "Veículos", desc: "IPVA, revisão, seguro", color: "#94a3b8" },
   { href: "/dashboard/contatos", icon: MdContactPhone, label: "Emergência", desc: "Contatos rápidos", color: "#f97316" },
+  { href: "/dashboard/senhas", icon: MdLock, label: "Cofre", desc: "Senhas criptografadas", color: "#6366f1" },
 ];
 
 export default function DashboardPage() {
