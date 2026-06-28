@@ -53,7 +53,7 @@ export default function ConfiguracoesPage() {
             {title}
           </h2>
           <div className="card" style={{ overflow: "hidden", padding: 0 }}>
-            {items.map(({ icon: Icon, label, desc, action, actionLabel }, i) => (
+            {items.map(({ icon: Icon, label, desc, action, actionLabel }: { icon: React.ElementType; label: string; desc: string; action?: () => void; actionLabel?: string }, i) => (
               <div
                 key={label}
                 style={{

@@ -171,7 +171,6 @@ export function Sidebar({ open, onClose, familyName }: SidebarProps) {
               );
             });
           })()}
-          ))}
         </nav>
 
         {/* Footer */}

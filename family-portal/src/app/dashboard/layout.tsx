@@ -22,7 +22,7 @@ function DashboardShell({ children }: { children: React.ReactNode }) {
         .single();
       if (member) {
         setMemberName(member.name);
-        const fam = member.families as { name: string } | null;
+        const fam = member.families as unknown as { name: string } | null;
         if (fam) setFamilyName(fam.name);
       }
     }

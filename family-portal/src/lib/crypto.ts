@@ -8,13 +8,13 @@ const ITERATIONS = 310_000; // PBKDF2 — OWASP 2024
 async function deriveKey(pin: string, salt: Uint8Array): Promise<CryptoKey> {
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
-    new TextEncoder().encode(pin),
+    new TextEncoder().encode(pin) as unknown as ArrayBuffer,
     "PBKDF2",
     false,
     ["deriveKey"]
   );
   return crypto.subtle.deriveKey(
-    { name: "PBKDF2", salt, iterations: ITERATIONS, hash: "SHA-256" },
+    { name: "PBKDF2", salt: salt as unknown as ArrayBuffer, iterations: ITERATIONS, hash: "SHA-256" },
     keyMaterial,
     { name: ALGO, length: KEY_LENGTH },
     false,
