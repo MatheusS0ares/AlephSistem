@@ -113,13 +113,15 @@ export default function ReformasPage() {
 
   return (
     <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-        <div>
-          <h1 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.2rem" }}>Obras e Reformas</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}>Controle de orçamento por ambiente</p>
-        </div>
-        <button className="btn-primary"><MdAdd size={18} /> Nova obra</button>
+      <div style={{ marginBottom: "1.5rem" }}>
+        <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.35rem" }}>
+          🔨 Obras e Reformas
+        </h1>
+        <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>Acompanhe o orçamento e andamento das obras da casa.</p>
       </div>
+      <button className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "1rem", borderRadius: 16, fontSize: "1.05rem", fontWeight: 800, marginBottom: "1.5rem" }}>
+        <MdAdd size={24} /> Adicionar nova obra
+      </button>
 
       <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", gap: "1.5rem" }} className="reform-grid">
         {/* Lista de obras */}

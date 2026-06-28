@@ -1,84 +1,52 @@
 "use client";
 import { useState } from "react";
-import { MdAdd, MdVaccines, MdMedicalServices, MdClose, MdCalendarToday, MdWarning } from "react-icons/md";
+import { MdAdd, MdClose } from "react-icons/md";
 
-type Tab = "saude" | "vacinas" | "rotina";
+type Section = "saude" | "vacinas" | "rotina";
 
 interface Pet {
-  id: string;
-  name: string;
-  species: string;
-  breed: string;
-  birthDate: string;
-  weight: number;
-  color: string;
-  emoji: string;
-  chip?: string;
-  vet?: string;
+  id: string; name: string; species: string; breed: string;
+  birthDate: string; weight: number; color: string; emoji: string;
+  vet?: string; chip?: string;
 }
 
-interface VaccineRecord {
-  id: string;
-  petId: string;
-  name: string;
-  date: string;
-  nextDate?: string;
-  vet?: string;
-}
+const mockPets: Pet[] = [{
+  id: "1", name: "Pedro", species: "Cachorro", breed: "Golden Retriever",
+  birthDate: "2024-03-15", weight: 28, color: "#c99a40", emoji: "🐕",
+  chip: "900250000012345", vet: "Dr. Rodrigo (Clínica Pet Vida)",
+}];
 
-interface HealthRecord {
-  id: string;
-  petId: string;
-  type: "consulta" | "vermifugo" | "pulgas" | "exame" | "outros";
-  title: string;
-  date: string;
-  nextDate?: string;
-  notes?: string;
-  cost?: number;
-}
-
-const mockPets: Pet[] = [
-  {
-    id: "1",
-    name: "Pedro",
-    species: "Cachorro",
-    breed: "Golden Retriever",
-    birthDate: "2024-03-15",
-    weight: 28,
-    color: "#f59e0b",
-    emoji: "🐕",
-    chip: "900250000012345",
-    vet: "Dr. Rodrigo (Clínica Pet Vida)",
-  },
+const mockVaccines = [
+  { id: "1", name: "V10 (Múltipla)", date: "2025-08-05", nextDate: "2026-08-05", vet: "Dr. Rodrigo" },
+  { id: "2", name: "Antirrábica", date: "2025-08-05", nextDate: "2026-08-05", vet: "Dr. Rodrigo" },
+  { id: "3", name: "Giardia", date: "2025-09-10", nextDate: "2026-09-10" },
 ];
 
-const mockVaccines: VaccineRecord[] = [
-  { id: "1", petId: "1", name: "V10 (Múltipla)", date: "2025-08-05", nextDate: "2026-08-05", vet: "Dr. Rodrigo" },
-  { id: "2", petId: "1", name: "Antirrábica", date: "2025-08-05", nextDate: "2026-08-05", vet: "Dr. Rodrigo" },
-  { id: "3", petId: "1", name: "Giardia", date: "2025-09-10", nextDate: "2026-09-10" },
+const mockHealth = [
+  { id: "1", type: "vermifugo", title: "Vermífugo mensal", date: "2026-06-01", nextDate: "2026-07-01", cost: 35, emoji: "💊" },
+  { id: "2", type: "pulgas", title: "Antipulgas (Nexgard)", date: "2026-06-01", nextDate: "2026-07-01", cost: 65, emoji: "🪲" },
+  { id: "3", type: "consulta", title: "Consulta de rotina", date: "2026-05-20", cost: 120, notes: "Tudo ok! Peso ideal.", emoji: "🩺" },
 ];
 
-const mockHealth: HealthRecord[] = [
-  { id: "1", petId: "1", type: "vermifugo", title: "Vermífugo mensal", date: "2026-06-01", nextDate: "2026-07-01", cost: 35 },
-  { id: "2", petId: "1", type: "pulgas", title: "Antipulgas (Nexgard)", date: "2026-06-01", nextDate: "2026-07-01", cost: 65 },
-  { id: "3", petId: "1", type: "consulta", title: "Consulta de rotina", date: "2026-05-20", cost: 120, notes: "Tudo ok! Peso ideal." },
-  { id: "4", petId: "1", type: "exame", title: "Hemograma completo", date: "2026-05-20", cost: 180 },
+const rotina = [
+  { label: "Ração diária", desc: "3x por dia — 150g cada", icon: "🍖" },
+  { label: "Banho", desc: "A cada 15 dias", icon: "🛁" },
+  { label: "Escovação dos dentes", desc: "3x por semana", icon: "🦷" },
+  { label: "Escovação do pelo", desc: "Diária", icon: "🪮" },
+  { label: "Passeio", desc: "2x por dia — manhã e tarde", icon: "🦮" },
 ];
-
-const typeConfig = {
-  consulta: { label: "Consulta", color: "#3b82f6", emoji: "🩺" },
-  vermifugo: { label: "Vermífugo", color: "#22c55e", emoji: "💊" },
-  pulgas: { label: "Antipulgas", color: "#8b5cf6", emoji: "🪲" },
-  exame: { label: "Exame", color: "#f59e0b", emoji: "🔬" },
-  outros: { label: "Outros", color: "#6b7280", emoji: "📋" },
-};
 
 export default function PetsPage() {
   const [pets] = useState<Pet[]>(mockPets);
   const [selectedPet, setSelectedPet] = useState<Pet>(mockPets[0]);
-  const [tab, setTab] = useState<Tab>("saude");
-  const [addModal, setAddModal] = useState(false);
+  const [section, setSection] = useState<Section>("saude");
   const [addPetModal, setAddPetModal] = useState(false);
+  const [toast, setToast] = useState("");
+
+  function showToast(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(""), 2500);
+  }
 
   const petAge = (() => {
     const birth = new Date(selectedPet.birthDate);
@@ -88,130 +56,92 @@ export default function PetsPage() {
   })();
 
   const nextAlerts = [
-    ...mockVaccines
-      .filter((v) => v.nextDate)
-      .map((v) => ({ label: v.name, date: v.nextDate!, type: "Vacina", color: "#22c55e" })),
-    ...mockHealth
-      .filter((h) => h.nextDate)
-      .map((h) => ({ label: h.title, date: h.nextDate!, type: typeConfig[h.type].label, color: typeConfig[h.type].color })),
-  ]
-    .filter((a) => new Date(a.date) >= new Date())
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(0, 4);
+    ...mockVaccines.filter((v) => v.nextDate).map((v) => ({ label: v.name, date: v.nextDate!, type: "Vacina 💉", color: "var(--brand)" })),
+    ...mockHealth.filter((h) => h.nextDate).map((h) => ({ label: h.title, date: h.nextDate!, type: "Cuidado", color: "#c99a40" })),
+  ].filter((a) => new Date(a.date) >= new Date()).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 3);
 
-  const tabs = [
-    { id: "saude" as Tab, label: "Saúde", icon: MdMedicalServices },
-    { id: "vacinas" as Tab, label: "Vacinas", icon: MdVaccines },
-    { id: "rotina" as Tab, label: "Rotina", icon: MdCalendarToday },
+  const sections: { id: Section; label: string; icon: string }[] = [
+    { id: "saude",   label: "Saúde",   icon: "🩺" },
+    { id: "vacinas", label: "Vacinas", icon: "💉" },
+    { id: "rotina",  label: "Rotina",  icon: "📋" },
   ];
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto" }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-        <div>
-          <h1 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.2rem" }}>Pets</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}>Cuidado e saúde dos seus animais</p>
+    <div style={{ maxWidth: 720, margin: "0 auto" }}>
+      {toast && (
+        <div style={{ position: "fixed", top: 24, left: "50%", transform: "translateX(-50%)", background: "#2a5a3a", color: "#fff", padding: "0.875rem 1.5rem", borderRadius: 14, zIndex: 999, fontWeight: 700, fontSize: "1rem", boxShadow: "0 4px 20px rgba(0,0,0,0.35)", whiteSpace: "nowrap" }}>
+          {toast}
         </div>
-        <button onClick={() => setAddPetModal(true)} className="btn-primary"><MdAdd size={18} /> Adicionar pet</button>
+      )}
+
+      {/* Header */}
+      <div style={{ marginBottom: "1.5rem" }}>
+        <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.35rem" }}>
+          🐾 Pets da Família
+        </h1>
+        <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>
+          Saúde, vacinas e rotina dos seus animais.
+        </p>
       </div>
 
-      {/* Seletor de pet */}
+      {/* Seletor de pets */}
       <div style={{ display: "flex", gap: "0.875rem", marginBottom: "1.5rem", overflowX: "auto", paddingBottom: "0.25rem" }}>
         {pets.map((pet) => (
           <button
             key={pet.id}
             onClick={() => setSelectedPet(pet)}
             style={{
-              display: "flex", alignItems: "center", gap: "0.75rem",
-              padding: "0.875rem 1.25rem",
-              background: selectedPet.id === pet.id ? `${pet.color}20` : "var(--bg-card)",
-              border: `1px solid ${selectedPet.id === pet.id ? `${pet.color}60` : "var(--border)"}`,
-              borderRadius: "0.875rem",
-              cursor: "pointer",
-              flexShrink: 0,
+              display: "flex", alignItems: "center", gap: "0.875rem",
+              padding: "1rem 1.25rem", borderRadius: 16, cursor: "pointer", flexShrink: 0,
+              border: `2px solid ${selectedPet.id === pet.id ? pet.color : "var(--border)"}`,
+              background: selectedPet.id === pet.id ? `${pet.color}18` : "var(--bg-card)",
             }}
           >
-            <span style={{ fontSize: "2rem" }}>{pet.emoji}</span>
+            <span style={{ fontSize: "2.25rem" }}>{pet.emoji}</span>
             <div style={{ textAlign: "left" }}>
-              <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--text-primary)" }}>{pet.name}</div>
-              <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>{pet.breed} · {petAge}</div>
+              <div style={{ fontWeight: 800, fontSize: "1rem", color: "var(--text-primary)" }}>{pet.name}</div>
+              <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{pet.breed} · {petAge}</div>
             </div>
           </button>
         ))}
-
         <button
           onClick={() => setAddPetModal(true)}
-          style={{
-            display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem",
-            padding: "0.875rem 1.25rem",
-            border: "1px dashed var(--border)",
-            borderRadius: "0.875rem",
-            background: "transparent",
-            cursor: "pointer",
-            color: "var(--text-muted)",
-            fontSize: "0.85rem",
-            flexShrink: 0,
-          }}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", padding: "1rem 1.25rem", border: "2px dashed var(--border)", borderRadius: 16, background: "transparent", cursor: "pointer", color: "var(--text-muted)", fontSize: "0.875rem", fontWeight: 600, flexShrink: 0, minWidth: 120 }}
         >
-          <MdAdd size={18} /> Novo pet
+          <MdAdd size={20} /> Novo pet
         </button>
       </div>
 
       {/* Card do pet */}
-      <div
-        style={{
-          background: `linear-gradient(135deg, ${selectedPet.color}25, ${selectedPet.color}10)`,
-          border: `1px solid ${selectedPet.color}30`,
-          borderRadius: "1rem",
-          padding: "1.25rem",
-          display: "flex",
-          alignItems: "center",
-          gap: "1.25rem",
-          marginBottom: "1.5rem",
-          flexWrap: "wrap",
-        }}
-      >
-        <span style={{ fontSize: "4rem", flexShrink: 0 }}>{selectedPet.emoji}</span>
-        <div style={{ flex: 1, minWidth: 180 }}>
-          <h2 style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.25rem" }}>{selectedPet.name}</h2>
-          <div style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.5rem" }}>
-            {selectedPet.species} · {selectedPet.breed} · {petAge}
-          </div>
-          {selectedPet.vet && (
-            <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>🩺 {selectedPet.vet}</div>
-          )}
+      <div style={{ background: `linear-gradient(135deg, ${selectedPet.color}22, ${selectedPet.color}0a)`, border: `1.5px solid ${selectedPet.color}40`, borderRadius: 16, padding: "1.25rem", display: "flex", alignItems: "center", gap: "1.25rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
+        <span style={{ fontSize: "4rem" }}>{selectedPet.emoji}</span>
+        <div style={{ flex: 1, minWidth: 160 }}>
+          <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.3rem" }}>{selectedPet.name}</h2>
+          <div style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "0.35rem" }}>{selectedPet.species} · {selectedPet.breed} · {petAge}</div>
+          {selectedPet.vet && <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>🩺 {selectedPet.vet}</div>}
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "1.25rem", fontWeight: 800, color: "var(--text-primary)" }}>{selectedPet.weight} kg</div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Peso</div>
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <div style={{ fontSize: "1rem", fontWeight: 800, color: "var(--text-primary)" }}>
-              {new Date(selectedPet.birthDate + "T12:00:00").toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}
-            </div>
-            <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Aniversário</div>
-          </div>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "var(--text-primary)" }}>{selectedPet.weight} kg</div>
+          <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Peso</div>
         </div>
       </div>
 
-      {/* Próximos eventos */}
+      {/* Alertas próximos */}
       {nextAlerts.length > 0 && (
-        <div style={{ marginBottom: "1.5rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
-            <MdWarning size={16} color="#f59e0b" />
-            <h3 style={{ fontSize: "0.875rem", fontWeight: 600, color: "#f59e0b" }}>Próximos cuidados</h3>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "0.75rem" }}>
+        <div style={{ marginBottom: "1.75rem" }}>
+          <h3 style={{ fontSize: "0.95rem", fontWeight: 700, color: "#c99a40", marginBottom: "0.875rem" }}>⚠️ Próximos cuidados</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
             {nextAlerts.map((a, i) => {
               const days = Math.ceil((new Date(a.date).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
               return (
-                <div key={i} className="card" style={{ padding: "0.875rem", borderLeft: `3px solid ${a.color}` }}>
-                  <div style={{ fontSize: "0.75rem", fontWeight: 600, color: a.color, marginBottom: "0.25rem" }}>{a.type}</div>
-                  <div style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: "0.2rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.label}</div>
-                  <div style={{ fontSize: "0.72rem", color: days <= 7 ? "#f87171" : "var(--text-muted)" }}>
-                    Em {days} dias · {new Date(a.date + "T12:00:00").toLocaleDateString("pt-BR")}
+                <div key={i} className="card" style={{ padding: "0.875rem 1rem", display: "flex", alignItems: "center", gap: "1rem", borderLeft: `4px solid ${a.color}` }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--text-primary)" }}>{a.label}</div>
+                    <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>{a.type}</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontSize: "0.85rem", fontWeight: 700, color: days <= 7 ? "#d06a6a" : "var(--text-muted)" }}>Em {days} dias</div>
+                    <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{new Date(a.date + "T12:00:00").toLocaleDateString("pt-BR")}</div>
                   </div>
                 </div>
               );
@@ -220,161 +150,124 @@ export default function PetsPage() {
         </div>
       )}
 
-      {/* Tabs */}
-      <div style={{ display: "flex", gap: "0.25rem", borderBottom: "1px solid var(--border)", marginBottom: "1.25rem" }}>
-        {tabs.map(({ id, label, icon: Icon }) => (
-          <button key={id} onClick={() => setTab(id)}
-            style={{
-              display: "flex", alignItems: "center", gap: "0.4rem",
-              padding: "0.625rem 1rem",
-              background: "none", border: "none", cursor: "pointer",
-              color: tab === id ? selectedPet.color : "var(--text-muted)",
-              borderBottom: tab === id ? `2px solid ${selectedPet.color}` : "2px solid transparent",
-              fontSize: "0.875rem", fontWeight: tab === id ? 600 : 400,
-              whiteSpace: "nowrap", marginBottom: "-1px",
-            }}>
-            <Icon size={16} /> {label}
+      {/* Seletor de seção */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "0.625rem", marginBottom: "1.5rem" }}>
+        {sections.map(({ id, label, icon }) => (
+          <button key={id} onClick={() => setSection(id)}
+            style={{ padding: "0.875rem", borderRadius: 14, border: `2px solid ${section === id ? selectedPet.color : "var(--border)"}`, background: section === id ? `${selectedPet.color}12` : "var(--bg-card)", cursor: "pointer", fontWeight: 700, fontSize: "0.95rem", color: section === id ? selectedPet.color : "var(--text-secondary)" }}>
+            {icon} {label}
           </button>
         ))}
       </div>
 
-      {tab === "saude" && (
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-            <h3 style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)" }}>Histórico de saúde</h3>
-            <button onClick={() => setAddModal(true)} className="btn-secondary" style={{ fontSize: "0.8rem" }}>
-              <MdAdd size={14} /> Novo registro
-            </button>
-          </div>
-          <div className="card" style={{ overflow: "hidden", padding: 0 }}>
-            {mockHealth.map((h, i) => {
-              const cfg = typeConfig[h.type];
-              return (
-                <div key={h.id} style={{ display: "flex", alignItems: "center", gap: "0.875rem", padding: "0.875rem 1rem", borderBottom: i < mockHealth.length - 1 ? "1px solid var(--border-light)" : "none" }}>
-                  <span style={{ fontSize: "1.4rem", flexShrink: 0 }}>{cfg.emoji}</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, fontSize: "0.875rem", color: "var(--text-primary)", marginBottom: "0.15rem" }}>{h.title}</div>
-                    <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
-                      {new Date(h.date + "T12:00:00").toLocaleDateString("pt-BR")}
-                      {h.notes ? ` · ${h.notes}` : ""}
-                    </div>
-                  </div>
-                  <div style={{ textAlign: "right", flexShrink: 0 }}>
-                    {h.cost && <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-primary)" }}>R$ {h.cost}</div>}
-                    <span style={{ fontSize: "0.7rem", padding: "0.15rem 0.5rem", borderRadius: "9999px", background: `${cfg.color}15`, color: cfg.color }}>{cfg.label}</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {tab === "vacinas" && (
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-            <h3 style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)" }}>Carteirinha de vacinas</h3>
-            <button onClick={() => setAddModal(true)} className="btn-secondary" style={{ fontSize: "0.8rem" }}>
-              <MdAdd size={14} /> Registrar vacina
-            </button>
-          </div>
-          <div className="card" style={{ overflow: "hidden", padding: 0 }}>
-            {mockVaccines.map((v, i) => {
-              const daysToNext = v.nextDate
-                ? Math.ceil((new Date(v.nextDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-                : null;
-              return (
-                <div key={v.id} style={{ display: "flex", alignItems: "center", gap: "0.875rem", padding: "0.875rem 1rem", borderBottom: i < mockVaccines.length - 1 ? "1px solid var(--border-light)" : "none" }}>
-                  <span style={{ fontSize: "1.4rem" }}>💉</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, fontSize: "0.875rem", color: "var(--text-primary)", marginBottom: "0.15rem" }}>{v.name}</div>
-                    <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
-                      Aplicada em {new Date(v.date + "T12:00:00").toLocaleDateString("pt-BR")}
-                      {v.vet ? ` · ${v.vet}` : ""}
-                    </div>
-                  </div>
-                  {v.nextDate && (
-                    <div style={{ textAlign: "right", flexShrink: 0 }}>
-                      <div style={{ fontSize: "0.75rem", fontWeight: 600, color: daysToNext! <= 30 ? "#f87171" : "#22c55e" }}>
-                        Reforço em {daysToNext} dias
-                      </div>
-                      <div style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>
-                        {new Date(v.nextDate + "T12:00:00").toLocaleDateString("pt-BR")}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {tab === "rotina" && (
+      {/* Saúde */}
+      {section === "saude" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          {[
-            { label: "Ração diária", desc: "3x por dia — 150g cada", icon: "🍖" },
-            { label: "Banho", desc: "A cada 15 dias", icon: "🛁" },
-            { label: "Escovação dos dentes", desc: "3x por semana", icon: "🦷" },
-            { label: "Escovação do pelo", desc: "Diária", icon: "🪮" },
-            { label: "Passeio", desc: "2x por dia — manhã e tarde", icon: "🦮" },
-          ].map((r, i) => (
-            <div key={i} className="card" style={{ padding: "0.875rem 1rem", display: "flex", alignItems: "center", gap: "0.875rem" }}>
-              <span style={{ fontSize: "1.5rem" }}>{r.icon}</span>
-              <div>
-                <div style={{ fontWeight: 600, fontSize: "0.875rem", color: "var(--text-primary)" }}>{r.label}</div>
-                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{r.desc}</div>
+          {mockHealth.map((h) => (
+            <div key={h.id} className="card" style={{ padding: "1rem 1.125rem", display: "flex", alignItems: "center", gap: "1rem", minHeight: 72 }}>
+              <span style={{ fontSize: "1.75rem" }}>{h.emoji}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.25rem" }}>{h.title}</div>
+                <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>📅 {new Date(h.date + "T12:00:00").toLocaleDateString("pt-BR")}{h.notes ? ` · ${h.notes}` : ""}</div>
+                {h.nextDate && <div style={{ fontSize: "0.82rem", color: "#c99a40" }}>🔔 Próximo: {new Date(h.nextDate + "T12:00:00").toLocaleDateString("pt-BR")}</div>}
               </div>
+              {h.cost && <div style={{ fontWeight: 800, fontSize: "0.9rem", color: "var(--text-primary)", flexShrink: 0 }}>R$ {h.cost}</div>}
             </div>
           ))}
-          <button className="btn-secondary" style={{ fontSize: "0.85rem", justifyContent: "center" }}>
-            <MdAdd size={16} /> Editar rotina do {selectedPet.name}
+          <button onClick={() => showToast("✅ Registro salvo!")} className="btn-secondary" style={{ justifyContent: "center", padding: "0.875rem", fontSize: "0.95rem" }}>
+            <MdAdd size={18} /> Novo registro de saúde
           </button>
         </div>
       )}
 
-      {/* Modal add pet */}
+      {/* Vacinas */}
+      {section === "vacinas" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          {mockVaccines.map((v) => {
+            const daysToNext = v.nextDate ? Math.ceil((new Date(v.nextDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : null;
+            return (
+              <div key={v.id} className="card" style={{ padding: "1rem 1.125rem", display: "flex", alignItems: "center", gap: "1rem", minHeight: 72 }}>
+                <span style={{ fontSize: "1.75rem" }}>💉</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.25rem" }}>{v.name}</div>
+                  <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>✅ Aplicada em {new Date(v.date + "T12:00:00").toLocaleDateString("pt-BR")}{v.vet ? ` · ${v.vet}` : ""}</div>
+                </div>
+                {v.nextDate && daysToNext !== null && (
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                    <div style={{ fontSize: "0.82rem", fontWeight: 700, color: daysToNext <= 30 ? "#d06a6a" : "var(--brand)" }}>Reforço em {daysToNext}d</div>
+                    <div style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>{new Date(v.nextDate + "T12:00:00").toLocaleDateString("pt-BR")}</div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          <button onClick={() => showToast("✅ Vacina registrada!")} className="btn-secondary" style={{ justifyContent: "center", padding: "0.875rem", fontSize: "0.95rem" }}>
+            <MdAdd size={18} /> Registrar nova vacina
+          </button>
+        </div>
+      )}
+
+      {/* Rotina */}
+      {section === "rotina" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          {rotina.map((r, i) => (
+            <div key={i} className="card" style={{ padding: "1rem 1.125rem", display: "flex", alignItems: "center", gap: "1rem", minHeight: 72 }}>
+              <span style={{ fontSize: "1.75rem" }}>{r.icon}</span>
+              <div>
+                <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.2rem" }}>{r.label}</div>
+                <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>{r.desc}</div>
+              </div>
+            </div>
+          ))}
+          <button onClick={() => showToast("✅ Rotina atualizada!")} className="btn-secondary" style={{ justifyContent: "center", padding: "0.875rem", fontSize: "0.95rem" }}>
+            Editar rotina do {selectedPet.name}
+          </button>
+        </div>
+      )}
+
+      {/* Modal novo pet */}
       {addPetModal && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 100 }}
           onClick={(e) => e.target === e.currentTarget && setAddPetModal(false)}>
-          <div style={{ background: "var(--bg-secondary)", borderRadius: "1.25rem 1.25rem 0 0", width: "100%", maxWidth: 500, padding: "1.5rem" }}>
-            <div style={{ width: 40, height: 4, borderRadius: 2, background: "var(--border)", margin: "0 auto 1.25rem" }} />
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-              <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)" }}>Novo Pet</h2>
-              <button onClick={() => setAddPetModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}><MdClose size={20} /></button>
+          <div style={{ background: "var(--bg-card)", borderRadius: "1.25rem 1.25rem 0 0", width: "100%", maxWidth: 540, padding: "1.5rem" }}>
+            <div style={{ width: 44, height: 5, borderRadius: 3, background: "var(--border)", margin: "0 auto 1.5rem" }} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+              <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--text-primary)" }}>Novo Pet</h2>
+              <button onClick={() => setAddPetModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "0.5rem" }}><MdClose size={22} /></button>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Nome do pet *</label>
+                <input type="text" placeholder="Ex: Rex, Mimi, Bolinha..." className="input-field" style={{ fontSize: "1rem" }} autoFocus />
+              </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "0.35rem" }}>Nome</label>
-                  <input type="text" placeholder="Nome do pet" className="input-field" autoFocus />
-                </div>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "0.35rem" }}>Espécie</label>
-                  <select className="input-field" style={{ cursor: "pointer" }}>
-                    <option>Cachorro</option>
-                    <option>Gato</option>
-                    <option>Ave</option>
-                    <option>Peixe</option>
-                    <option>Outros</option>
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Animal</label>
+                  <select className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
+                    <option>Cachorro</option><option>Gato</option><option>Ave</option><option>Outros</option>
                   </select>
                 </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Raça</label>
+                  <input type="text" placeholder="Ex: Vira-lata" className="input-field" style={{ fontSize: "0.95rem" }} />
+                </div>
               </div>
-              <input type="text" placeholder="Raça" className="input-field" />
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "0.35rem" }}>Data de nascimento</label>
-                  <input type="date" className="input-field" />
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Nascimento</label>
+                  <input type="date" className="input-field" style={{ fontSize: "0.95rem" }} />
                 </div>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "0.35rem" }}>Peso (kg)</label>
-                  <input type="number" placeholder="0.0" step="0.1" min="0" className="input-field" />
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Peso (kg)</label>
+                  <input type="number" placeholder="0.0" step="0.1" min="0" className="input-field" style={{ fontSize: "0.95rem" }} />
                 </div>
               </div>
-              <input type="text" placeholder="Veterinário de confiança (opcional)" className="input-field" />
-              <button onClick={() => setAddPetModal(false)} className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-                <MdAdd size={18} /> Cadastrar pet
-              </button>
+              <div style={{ display: "flex", gap: "0.75rem" }}>
+                <button onClick={() => setAddPetModal(false)} className="btn-secondary" style={{ flex: 1, justifyContent: "center", padding: "0.875rem", fontSize: "0.95rem" }}>Cancelar</button>
+                <button onClick={() => { showToast("🐾 Pet cadastrado!"); setAddPetModal(false); }} className="btn-primary" style={{ flex: 2, justifyContent: "center", padding: "0.875rem", fontSize: "1rem", fontWeight: 800 }}>
+                  <MdAdd size={20} /> Cadastrar pet
+                </button>
+              </div>
             </div>
           </div>
         </div>

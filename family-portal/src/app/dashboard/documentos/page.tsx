@@ -34,15 +34,15 @@ export default function DocumentosPage() {
   return (
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", flexWrap: "wrap", gap: "1rem" }}>
-        <div>
-          <h1 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.2rem" }}>Documentos</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}>{mockDocs.length} documentos armazenados</p>
-        </div>
-        <button onClick={() => setUploadModal(true)} className="btn-primary">
-          <MdUpload size={18} /> Enviar documento
-        </button>
+      <div style={{ marginBottom: "1.5rem" }}>
+        <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.35rem" }}>
+          📄 Documentos da Família
+        </h1>
+        <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>{mockDocs.length} documentos guardados com segurança.</p>
       </div>
+      <button onClick={() => setUploadModal(true)} style={{ width: "100%", padding: "1rem 1.25rem", borderRadius: 16, border: "none", cursor: "pointer", background: "#6a9fd4", color: "#fff", fontSize: "1.05rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.625rem", boxShadow: "0 4px 16px rgba(106,159,212,0.35)", marginBottom: "1.5rem" }}>
+        <MdUpload size={24} /> Enviar novo documento
+      </button>
 
       {/* Alerta de vencimento */}
       {expiringSoon.length > 0 && (
@@ -68,17 +68,10 @@ export default function DocumentosPage() {
       </div>
 
       {/* Categorias */}
-      <div style={{ display: "flex", gap: "0.375rem", marginBottom: "1.25rem", overflowX: "auto", paddingBottom: "0.25rem" }}>
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.25rem", overflowX: "auto", paddingBottom: "0.35rem" }}>
         {categories.map((cat) => (
           <button key={cat} onClick={() => setCategoryFilter(cat)}
-            style={{
-              padding: "0.375rem 0.875rem", borderRadius: "9999px",
-              border: `1px solid ${categoryFilter === cat ? "#3b82f6" : "var(--border)"}`,
-              background: categoryFilter === cat ? "rgba(59,130,246,0.12)" : "transparent",
-              color: categoryFilter === cat ? "#3b82f6" : "var(--text-muted)",
-              fontSize: "0.8rem", cursor: "pointer", whiteSpace: "nowrap",
-              fontWeight: categoryFilter === cat ? 600 : 400,
-            }}>
+            style={{ padding: "0.5rem 1rem", borderRadius: "9999px", minHeight: 40, border: `1.5px solid ${categoryFilter === cat ? "#6a9fd4" : "var(--border)"}`, background: categoryFilter === cat ? "rgba(106,159,212,0.12)" : "transparent", color: categoryFilter === cat ? "#6a9fd4" : "var(--text-muted)", fontSize: "0.875rem", cursor: "pointer", whiteSpace: "nowrap", fontWeight: categoryFilter === cat ? 700 : 500 }}>
             {cat}
           </button>
         ))}

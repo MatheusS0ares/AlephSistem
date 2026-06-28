@@ -39,21 +39,21 @@ export default function FinanceiroPage() {
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto" }}>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-        <div>
-          <h1 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.25rem" }}>
-            Financeiro
-          </h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}>Junho 2026</p>
-        </div>
-        <div style={{ display: "flex", gap: "0.625rem" }}>
-          <button onClick={() => openNew("income")} className="btn-secondary" style={{ fontSize: "0.85rem" }}>
-            <MdTrendingUp size={16} /> Entrada
-          </button>
-          <button onClick={() => openNew("expense")} className="btn-primary" style={{ fontSize: "0.85rem" }}>
-            <MdAdd size={16} /> Gasto
-          </button>
-        </div>
+      <div style={{ marginBottom: "1.5rem" }}>
+        <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.35rem" }}>
+          💰 Financeiro
+        </h1>
+        <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>Junho 2026</p>
+      </div>
+
+      {/* Botões de ação */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1.75rem" }}>
+        <button onClick={() => openNew("income")} className="btn-secondary" style={{ justifyContent: "center", padding: "0.875rem", fontSize: "0.95rem", fontWeight: 700, minHeight: 52 }}>
+          <MdTrendingUp size={20} /> Registrar entrada
+        </button>
+        <button onClick={() => openNew("expense")} className="btn-primary" style={{ justifyContent: "center", padding: "0.875rem", fontSize: "0.95rem", fontWeight: 800, minHeight: 52 }}>
+          <MdAdd size={20} /> Registrar gasto
+        </button>
       </div>
 
       {/* Summary cards */}
@@ -78,30 +78,27 @@ export default function FinanceiroPage() {
         ))}
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: "flex", gap: "0.25rem", borderBottom: "1px solid var(--border)", marginBottom: "1.5rem", overflowX: "auto" }}>
+      {/* Seletor de seção */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.5rem", marginBottom: "1.5rem" }}>
         {tabs.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => setTab(id)}
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.4rem",
-              padding: "0.625rem 1rem",
-              background: "none",
-              border: "none",
+              display: "flex", flexDirection: "column", alignItems: "center", gap: "0.3rem",
+              padding: "0.75rem 0.5rem",
+              background: tab === id ? "rgba(34,197,94,0.1)" : "var(--bg-card)",
+              border: `1.5px solid ${tab === id ? "rgba(34,197,94,0.4)" : "var(--border)"}`,
+              borderRadius: "0.75rem",
               cursor: "pointer",
               color: tab === id ? "#22c55e" : "var(--text-muted)",
-              borderBottom: tab === id ? "2px solid #22c55e" : "2px solid transparent",
-              fontSize: "0.875rem",
-              fontWeight: tab === id ? 600 : 400,
-              whiteSpace: "nowrap",
-              marginBottom: "-1px",
+              fontSize: "0.72rem",
+              fontWeight: tab === id ? 700 : 500,
+              minHeight: 64,
               transition: "all 0.15s",
             }}
           >
-            <Icon size={16} />
+            <Icon size={20} />
             {label}
           </button>
         ))}

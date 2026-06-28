@@ -99,14 +99,17 @@ export default function SenhasPage() {
 
   if (!unlocked) {
     return (
-      <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: "100%", maxWidth: 380, textAlign: "center" }}>
-          <div style={{ width: 64, height: 64, borderRadius: "18px", background: "linear-gradient(135deg, #6366f1, #4f46e5)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.5rem" }}>
-            <MdShield size={32} color="white" />
+      <div style={{ minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.5rem" }}>
+        <div style={{ width: "100%", maxWidth: 400, textAlign: "center" }}>
+          <div style={{ width: 80, height: 80, borderRadius: 22, background: "linear-gradient(135deg, #6366f1, #4f46e5)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.75rem" }}>
+            <MdShield size={40} color="white" />
           </div>
-          <h1 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.5rem" }}>Cofre de Senhas</h1>
+          <h1 style={{ fontSize: "1.6rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.5rem" }}>🔒 Cofre de Senhas</h1>
+          <p style={{ color: "var(--text-secondary)", fontSize: "1rem", marginBottom: "0.5rem", lineHeight: 1.5 }}>
+            Esta seção é protegida com PIN.
+          </p>
           <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", marginBottom: "2rem" }}>
-            Esta seção é protegida. Digite o PIN da família para acessar.
+            Digite o PIN da família para ver as senhas.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <input
@@ -114,24 +117,28 @@ export default function SenhasPage() {
               value={masterPin}
               onChange={(e) => setMasterPin(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && unlock()}
-              placeholder="PIN da família"
+              placeholder="Digite seu PIN"
               maxLength={8}
               autoFocus
               className="input-field"
               style={{
-                textAlign: "center",
-                fontSize: "1.25rem",
-                letterSpacing: "0.3em",
+                textAlign: "center", fontSize: "1.5rem",
+                letterSpacing: "0.4em", padding: "1rem",
                 borderColor: pinError ? "#ef4444" : undefined,
+                borderWidth: pinError ? "2px" : undefined,
               }}
             />
-            {pinError && <p style={{ fontSize: "0.8rem", color: "#f87171" }}>PIN incorreto. Tente novamente.</p>}
-            <button onClick={unlock} className="btn-primary" style={{ width: "100%", justifyContent: "center", background: "#6366f1" }}>
-              <MdLock size={18} /> Desbloquear
+            {pinError && (
+              <div style={{ background: "rgba(224,120,120,0.1)", border: "1.5px solid rgba(224,120,120,0.3)", borderRadius: 12, padding: "0.75rem", fontSize: "0.9rem", color: "#e07878", fontWeight: 600 }}>
+                ❌ PIN incorreto. Tente novamente.
+              </div>
+            )}
+            <button onClick={unlock} style={{ width: "100%", padding: "1rem", borderRadius: 16, border: "none", cursor: "pointer", background: "#6366f1", color: "#fff", fontSize: "1.05rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.625rem", boxShadow: "0 4px 16px rgba(99,102,241,0.35)" }}>
+              <MdLock size={22} /> Abrir cofre
             </button>
           </div>
-          <p style={{ marginTop: "1.25rem", fontSize: "0.75rem", color: "var(--text-muted)" }}>
-            💡 Dica: configure o PIN nas Configurações · As senhas são criptografadas antes de salvar
+          <p style={{ marginTop: "1.5rem", fontSize: "0.82rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
+            💡 Configure o PIN em Configurações.<br/>As senhas são criptografadas e seguras.
           </p>
         </div>
       </div>
@@ -140,23 +147,21 @@ export default function SenhasPage() {
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-        <div>
-          <h1 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.2rem" }}>
-            <MdShield size={20} color="#6366f1" style={{ verticalAlign: "middle", marginRight: "0.4rem" }} />
-            Cofre de Senhas
+      <div style={{ marginBottom: "1.5rem" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap", marginBottom: "0.35rem" }}>
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text-primary)" }}>
+            🔒 Cofre de Senhas
           </h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}>{passwords.length} senhas armazenadas · Criptografado</p>
-        </div>
-        <div style={{ display: "flex", gap: "0.625rem" }}>
-          <button onClick={() => setUnlocked(false)} className="btn-secondary" style={{ fontSize: "0.85rem" }}>
+          <button onClick={() => setUnlocked(false)} className="btn-secondary" style={{ fontSize: "0.875rem" }}>
             <MdLock size={16} /> Bloquear
           </button>
-          <button onClick={() => setAddModal(true)} className="btn-primary" style={{ fontSize: "0.85rem" }}>
-            <MdAdd size={16} /> Nova senha
-          </button>
         </div>
+        <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>{passwords.length} senhas guardadas com segurança.</p>
       </div>
+
+      <button onClick={() => setAddModal(true)} style={{ width: "100%", padding: "1rem 1.25rem", borderRadius: 16, border: "none", cursor: "pointer", background: "#6366f1", color: "#fff", fontSize: "1.05rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.625rem", boxShadow: "0 4px 16px rgba(99,102,241,0.3)", marginBottom: "1.5rem" }}>
+        <MdAdd size={24} /> Adicionar nova senha
+      </button>
 
       {/* Aviso de segurança */}
       <div style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.2)", borderRadius: "0.75rem", padding: "0.875rem 1rem", marginBottom: "1.25rem", display: "flex", gap: "0.75rem", alignItems: "center" }}>
@@ -172,16 +177,16 @@ export default function SenhasPage() {
           <MdSearch size={18} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
           <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar senha..." className="input-field" style={{ paddingLeft: "2.5rem" }} />
         </div>
-        <div style={{ display: "flex", gap: "0.375rem", overflowX: "auto", paddingBottom: "0.25rem" }}>
+        <div style={{ display: "flex", gap: "0.5rem", overflowX: "auto", paddingBottom: "0.35rem" }}>
           {categories.map((cat) => (
             <button key={cat} onClick={() => setCategory(cat)}
               style={{
-                padding: "0.35rem 0.875rem", borderRadius: "9999px",
-                border: `1px solid ${category === cat ? "#6366f1" : "var(--border)"}`,
+                padding: "0.5rem 1rem", borderRadius: "9999px", minHeight: 40,
+                border: `1.5px solid ${category === cat ? "#6366f1" : "var(--border)"}`,
                 background: category === cat ? "rgba(99,102,241,0.12)" : "transparent",
                 color: category === cat ? "#818cf8" : "var(--text-muted)",
-                fontSize: "0.8rem", cursor: "pointer", whiteSpace: "nowrap",
-                fontWeight: category === cat ? 600 : 400,
+                fontSize: "0.875rem", cursor: "pointer", whiteSpace: "nowrap",
+                fontWeight: category === cat ? 700 : 500,
               }}>
               {cat}
             </button>
@@ -194,12 +199,12 @@ export default function SenhasPage() {
         {filtered.map((entry) => {
           const isVisible = visible.has(entry.id);
           return (
-            <div key={entry.id} className="card" style={{ padding: "1rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.875rem", marginBottom: "0.75rem" }}>
-                <span style={{ fontSize: "1.5rem", flexShrink: 0 }}>{entry.emoji}</span>
+            <div key={entry.id} className="card" style={{ padding: "1.125rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.875rem", marginBottom: "0.875rem" }}>
+                <span style={{ fontSize: "1.75rem", flexShrink: 0 }}>{entry.emoji}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, fontSize: "0.9rem", color: "var(--text-primary)" }}>{entry.title}</div>
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{entry.url || entry.category}</div>
+                  <div style={{ fontWeight: 700, fontSize: "1rem", color: "var(--text-primary)" }}>{entry.title}</div>
+                  <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>{entry.url || entry.category}</div>
                 </div>
                 <span style={{ fontSize: "0.7rem", padding: "0.15rem 0.5rem", borderRadius: "9999px", background: "rgba(99,102,241,0.1)", color: "#818cf8" }}>
                   {entry.category}

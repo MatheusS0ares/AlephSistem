@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { MdAdd, MdAutorenew, MdShoppingCart, MdRestaurant, MdChevronLeft, MdChevronRight, MdClose, MdSearch } from "react-icons/md";
+import { MdAdd, MdAutorenew, MdShoppingCart, MdRestaurant, MdClose, MdSearch } from "react-icons/md";
 
 const DAYS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
 const MEALS = ["Café da manhã", "Almoço", "Jantar", "Lanche"];
@@ -25,6 +25,12 @@ export default function CardapioPage() {
   const [selecting, setSelecting] = useState<{ day: string; meal: string } | null>(null);
   const [recipeSearch, setRecipeSearch] = useState("");
   const [activeDay, setActiveDay] = useState(0);
+  const [toast, setToast] = useState("");
+
+  function showToast(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(""), 2500);
+  }
 
   function assignMeal(recipe: (typeof recipes)[0]) {
     if (!selecting) return;
@@ -35,6 +41,7 @@ export default function CardapioPage() {
         [selecting.meal]: { name: recipe.name, emoji: recipe.emoji },
       },
     }));
+    showToast(`✅ ${recipe.name} adicionado!`);
     setSelecting(null);
   }
 
@@ -55,7 +62,8 @@ export default function CardapioPage() {
         }
       });
     });
-    alert(`${[...new Set(allIngredients)].length} ingredientes únicos adicionados à lista de compras!`);
+    const count = [...new Set(allIngredients)].length;
+    showToast(`🛒 ${count} ingredientes adicionados à lista!`);
   }
 
   const filteredRecipes = recipes.filter((r) =>
@@ -65,36 +73,49 @@ export default function CardapioPage() {
 
   const plannedCount = Object.values(plan).flatMap(Object.values).filter(Boolean).length;
   const totalSlots = DAYS.length * MEALS.length;
+  const currentDay = DAYS[activeDay];
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+      {toast && (
+        <div style={{ position: "fixed", top: 24, left: "50%", transform: "translateX(-50%)", background: "#2a5a3a", color: "#fff", padding: "0.875rem 1.5rem", borderRadius: 14, zIndex: 999, fontWeight: 700, fontSize: "1rem", boxShadow: "0 4px 20px rgba(0,0,0,0.35)", whiteSpace: "nowrap" }}>
+          {toast}
+        </div>
+      )}
+
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-        <div>
-          <h1 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.2rem" }}>Cardápio Semanal</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}>
-            {plannedCount}/{totalSlots} refeições planejadas esta semana
-          </p>
-        </div>
-        <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap" }}>
-          <button onClick={exportToShoppingList} className="btn-secondary" style={{ fontSize: "0.85rem" }}>
-            <MdShoppingCart size={16} /> Exportar lista de compras
-          </button>
-          <button className="btn-primary" style={{ fontSize: "0.85rem" }}>
-            <MdAutorenew size={16} /> Gerar automático
-          </button>
-        </div>
+      <div style={{ marginBottom: "1.5rem" }}>
+        <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.35rem" }}>
+          🍽️ Cardápio Semanal
+        </h1>
+        <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>
+          {plannedCount}/{totalSlots} refeições planejadas esta semana
+        </p>
       </div>
 
       {/* Barra de progresso */}
-      <div style={{ marginBottom: "1.5rem" }}>
-        <div style={{ height: 6, borderRadius: 3, background: "var(--border)", overflow: "hidden" }}>
-          <div style={{ height: "100%", width: `${(plannedCount / totalSlots) * 100}%`, background: "linear-gradient(90deg, #22c55e, #16a34a)", borderRadius: 3, transition: "width 0.3s" }} />
-        </div>
+      <div style={{ height: 8, borderRadius: 4, background: "var(--border)", overflow: "hidden", marginBottom: "1.25rem" }}>
+        <div style={{ height: "100%", width: `${(plannedCount / totalSlots) * 100}%`, background: "linear-gradient(90deg, #22c55e, #16a34a)", borderRadius: 4, transition: "width 0.3s" }} />
       </div>
 
-      {/* Navegação por dia (mobile) */}
-      <div style={{ display: "flex", gap: "0.375rem", marginBottom: "1.25rem", overflowX: "auto", paddingBottom: "0.25rem" }} className="day-nav">
+      {/* Botões de ação */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "1.75rem" }}>
+        <button
+          onClick={exportToShoppingList}
+          style={{ width: "100%", padding: "1rem 1.25rem", borderRadius: 16, border: "1.5px solid var(--brand)", cursor: "pointer", background: "var(--brand-bg)", color: "var(--brand)", fontSize: "1rem", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.625rem" }}
+        >
+          <MdShoppingCart size={22} /> Exportar lista de compras
+        </button>
+        <button
+          className="btn-primary"
+          style={{ width: "100%", justifyContent: "center", padding: "1rem", borderRadius: 16, fontSize: "1.05rem", fontWeight: 800 }}
+        >
+          <MdAutorenew size={22} /> Gerar cardápio automático
+        </button>
+      </div>
+
+      {/* Navegação por dia */}
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.25rem", overflowX: "auto", paddingBottom: "0.35rem" }}>
         {DAYS.map((day, i) => {
           const filled = Object.values(plan[day]).filter(Boolean).length;
           return (
@@ -102,23 +123,50 @@ export default function CardapioPage() {
               key={day}
               onClick={() => setActiveDay(i)}
               style={{
-                padding: "0.5rem 0.875rem",
-                borderRadius: "0.5rem",
-                border: `1px solid ${activeDay === i ? "#22c55e" : "var(--border)"}`,
+                padding: "0.625rem 1rem",
+                borderRadius: "0.625rem",
+                minHeight: 44,
+                border: `1.5px solid ${activeDay === i ? "#22c55e" : "var(--border)"}`,
                 background: activeDay === i ? "rgba(34,197,94,0.12)" : "transparent",
                 color: activeDay === i ? "#22c55e" : "var(--text-secondary)",
-                fontSize: "0.82rem",
+                fontSize: "0.875rem",
                 cursor: "pointer",
-                fontWeight: activeDay === i ? 600 : 400,
+                fontWeight: activeDay === i ? 700 : 500,
                 whiteSpace: "nowrap",
-                position: "relative",
               }}
             >
               {day.slice(0, 3)}
-              {filled > 0 && (
-                <span style={{ marginLeft: "0.375rem", fontSize: "0.68rem", color: "#22c55e" }}>●</span>
-              )}
+              {filled > 0 && <span style={{ marginLeft: "0.35rem", fontSize: "0.7rem", color: "#22c55e" }}>●</span>}
             </button>
+          );
+        })}
+      </div>
+
+      {/* Visão do dia selecionado (mobile-first) */}
+      <div className="day-view" style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "1.5rem" }}>
+        <h2 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.25rem" }}>{currentDay}</h2>
+        {MEALS.map((meal) => {
+          const slot = plan[currentDay][meal];
+          return (
+            <div key={meal} className="card" style={{ padding: "1rem 1.125rem", display: "flex", alignItems: "center", gap: "1rem", minHeight: 72 }}>
+              <div style={{ width: 80, fontSize: "0.78rem", fontWeight: 600, color: "var(--text-muted)", flexShrink: 0 }}>{meal}</div>
+              {slot ? (
+                <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "0.625rem" }}>
+                  <span style={{ fontSize: "1.5rem" }}>{slot.emoji}</span>
+                  <span style={{ fontSize: "0.95rem", fontWeight: 600, color: "var(--text-primary)", flex: 1 }}>{slot.name}</span>
+                  <button onClick={() => clearMeal(currentDay, meal)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "0.25rem", flexShrink: 0 }}>
+                    <MdClose size={16} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setSelecting({ day: currentDay, meal })}
+                  style={{ flex: 1, padding: "0.5rem 0.875rem", border: "1.5px dashed var(--border)", borderRadius: 10, background: "transparent", cursor: "pointer", color: "var(--text-muted)", fontSize: "0.875rem", display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}
+                >
+                  <MdAdd size={18} /> Escolher refeição
+                </button>
+              )}
+            </div>
           );
         })}
       </div>
@@ -156,7 +204,6 @@ export default function CardapioPage() {
                             fontSize: "0.75rem",
                             color: "var(--text-primary)",
                             cursor: "pointer",
-                            position: "relative",
                             textAlign: "center",
                           }}
                           onClick={() => clearMeal(day, meal)}
@@ -209,59 +256,58 @@ export default function CardapioPage() {
                 <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.15rem" }}>
                   {selecting.meal}
                 </h2>
-                <p style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>{selecting.day}</p>
+                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>{selecting.day}</p>
               </div>
-              <button onClick={() => setSelecting(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
-                <MdClose size={20} />
+              <button onClick={() => setSelecting(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "0.5rem" }}>
+                <MdClose size={22} />
               </button>
             </div>
             <div style={{ position: "relative", marginBottom: "1rem" }}>
               <MdSearch size={16} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
               <input type="text" value={recipeSearch} onChange={(e) => setRecipeSearch(e.target.value)} placeholder="Buscar receita..." className="input-field" style={{ paddingLeft: "2.25rem" }} autoFocus />
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
               {filteredRecipes.map((r) => (
                 <button
                   key={r.name}
                   onClick={() => assignMeal(r)}
                   style={{
                     display: "flex", alignItems: "center", gap: "0.875rem",
-                    padding: "0.875rem 1rem",
+                    padding: "1rem",
                     background: "var(--bg-card)",
                     border: "1px solid var(--border)",
                     borderRadius: "0.75rem",
                     cursor: "pointer",
                     textAlign: "left",
-                    transition: "border-color 0.15s",
+                    minHeight: 72,
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#22c55e")}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
                 >
                   <span style={{ fontSize: "1.75rem", flexShrink: 0 }}>{r.emoji}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, fontSize: "0.875rem", color: "var(--text-primary)", marginBottom: "0.2rem" }}>{r.name}</div>
-                    <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                    <div style={{ fontWeight: 600, fontSize: "0.95rem", color: "var(--text-primary)", marginBottom: "0.2rem" }}>{r.name}</div>
+                    <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
                       ⏱ {r.time} min · 👥 {r.servings} porções · {r.category}
                     </div>
                   </div>
-                  <MdAdd size={18} color="#22c55e" />
+                  <MdAdd size={20} color="#22c55e" />
                 </button>
               ))}
               <button
                 onClick={() => setSelecting(null)}
                 style={{
                   display: "flex", alignItems: "center", gap: "0.5rem",
-                  padding: "0.875rem 1rem",
+                  padding: "1rem",
                   background: "transparent",
                   border: "1px dashed var(--border)",
                   borderRadius: "0.75rem",
                   cursor: "pointer",
                   color: "var(--text-muted)",
-                  fontSize: "0.85rem",
+                  fontSize: "0.9rem",
                   justifyContent: "center",
+                  minHeight: 52,
                 }}
               >
-                <MdRestaurant size={16} /> Adicionar nova receita
+                <MdRestaurant size={18} /> Adicionar nova receita
               </button>
             </div>
           </div>
@@ -273,7 +319,7 @@ export default function CardapioPage() {
           .week-grid { display: none; }
         }
         @media (min-width: 701px) {
-          .day-nav { display: none; }
+          .day-view { display: none; }
         }
       `}</style>
     </div>

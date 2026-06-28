@@ -1,31 +1,30 @@
 "use client";
 import { useState } from "react";
-import { MdAdd, MdCalendarMonth, MdChevronLeft, MdChevronRight } from "react-icons/md";
+import { MdAdd, MdChevronLeft, MdChevronRight, MdClose } from "react-icons/md";
 
 const DAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
 const events = [
-  { date: "2026-06-27", title: "Consulta cardiologista", color: "#ef4444", member: "Matheus" },
-  { date: "2026-06-30", title: "Pagar aluguel", color: "#22c55e", member: "Família" },
-  { date: "2026-07-05", title: "Aniversário da Ana", color: "#ec4899", member: "Família" },
-  { date: "2026-07-10", title: "Dentista", color: "#3b82f6", member: "Ana" },
-  { date: "2026-07-15", title: "Reunião escola", color: "#f59e0b", member: "Família" },
+  { date: "2026-06-27", title: "Consulta cardiologista", color: "#d06a6a", member: "Matheus", emoji: "❤️" },
+  { date: "2026-06-30", title: "Pagar aluguel", color: "var(--brand)", member: "Família", emoji: "🏠" },
+  { date: "2026-07-05", title: "Aniversário da Ana 🎂", color: "#c07898", member: "Família", emoji: "🎂" },
+  { date: "2026-07-10", title: "Dentista", color: "#6a9fd4", member: "Ana", emoji: "🦷" },
+  { date: "2026-07-15", title: "Reunião escola", color: "#c99a40", member: "Família", emoji: "🏫" },
 ];
 
 export default function CalendarioPage() {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
+  const [selectedDay, setSelectedDay] = useState<number | null>(today.getDate());
+  const [addModal, setAddModal] = useState(false);
+  const [toast, setToast] = useState("");
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  const cells = Array.from({ length: firstDay + daysInMonth }, (_, i) => {
-    if (i < firstDay) return null;
-    return i - firstDay + 1;
-  });
+  const cells = Array.from({ length: firstDay + daysInMonth }, (_, i) => i < firstDay ? null : i - firstDay + 1);
 
   function getEventsForDay(day: number) {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -33,101 +32,207 @@ export default function CalendarioPage() {
   }
 
   const upcomingEvents = events
-    .filter((e) => new Date(e.date) >= today)
+    .filter((e) => new Date(e.date + "T12:00:00") >= new Date(today.getFullYear(), today.getMonth(), today.getDate()))
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(0, 5);
 
+  const selectedDateStr = selectedDay
+    ? `${year}-${String(month + 1).padStart(2, "0")}-${String(selectedDay).padStart(2, "0")}`
+    : null;
+  const selectedEvents = selectedDay ? getEventsForDay(selectedDay) : [];
+
+  function showToast(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(""), 2500);
+  }
+
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem", flexWrap: "wrap", gap: "1rem" }}>
-        <h1 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--text-primary)" }}>Calendário Familiar</h1>
-        <button className="btn-primary"><MdAdd size={18} /> Novo evento</button>
+    <div style={{ maxWidth: 720, margin: "0 auto" }}>
+      {toast && (
+        <div style={{ position: "fixed", top: 24, left: "50%", transform: "translateX(-50%)", background: "#2a5a3a", color: "#fff", padding: "0.875rem 1.5rem", borderRadius: 14, zIndex: 999, fontWeight: 700, fontSize: "1rem", boxShadow: "0 4px 20px rgba(0,0,0,0.35)", whiteSpace: "nowrap" }}>
+          {toast}
+        </div>
+      )}
+
+      {/* Header */}
+      <div style={{ marginBottom: "1.5rem" }}>
+        <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.35rem" }}>
+          📅 Agenda da Família
+        </h1>
+        <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>
+          Toque em um dia para ver os eventos. Toque no botão verde para adicionar.
+        </p>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 280px", gap: "1.5rem" }} className="calendar-grid">
-        {/* Calendário */}
-        <div className="card" style={{ padding: "1.25rem" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
-            <button
-              onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
-              style={{ background: "none", border: "1px solid var(--border)", cursor: "pointer", color: "var(--text-muted)", padding: "0.375rem", borderRadius: "0.5rem", display: "flex" }}
-            >
-              <MdChevronLeft size={20} />
-            </button>
-            <h2 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-primary)" }}>
-              {MONTHS[month]} {year}
-            </h2>
-            <button
-              onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
-              style={{ background: "none", border: "1px solid var(--border)", cursor: "pointer", color: "var(--text-muted)", padding: "0.375rem", borderRadius: "0.5rem", display: "flex" }}
-            >
-              <MdChevronRight size={20} />
-            </button>
-          </div>
+      {/* Botão principal */}
+      <button
+        onClick={() => setAddModal(true)}
+        style={{ width: "100%", padding: "1rem 1.25rem", borderRadius: 16, border: "none", cursor: "pointer", background: "var(--brand)", color: "#fff", fontSize: "1.05rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.625rem", boxShadow: "0 4px 16px rgba(122,171,138,0.4)", marginBottom: "1.75rem" }}
+      >
+        <MdAdd size={24} /> Adicionar evento à agenda
+      </button>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px" }}>
-            {DAYS.map((d) => (
-              <div key={d} style={{ textAlign: "center", fontSize: "0.72rem", fontWeight: 600, color: "var(--text-muted)", padding: "0.375rem 0" }}>{d}</div>
-            ))}
-            {cells.map((day, i) => {
-              if (!day) return <div key={`empty-${i}`} />;
-              const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-              const dayEvents = getEventsForDay(day);
-              return (
-                <div
-                  key={day}
-                  style={{
-                    minHeight: 48,
-                    padding: "0.25rem",
-                    borderRadius: "0.5rem",
-                    background: isToday ? "rgba(34,197,94,0.12)" : "transparent",
-                    border: isToday ? "1px solid rgba(34,197,94,0.3)" : "1px solid transparent",
-                    cursor: "pointer",
-                    transition: "background 0.15s",
-                  }}
-                  onMouseEnter={(e) => !isToday && ((e.currentTarget as HTMLElement).style.background = "var(--bg-secondary)")}
-                  onMouseLeave={(e) => !isToday && ((e.currentTarget as HTMLElement).style.background = "transparent")}
-                >
-                  <div style={{
-                    fontSize: "0.8rem",
-                    fontWeight: isToday ? 700 : 400,
-                    color: isToday ? "#22c55e" : "var(--text-secondary)",
-                    marginBottom: "0.2rem",
-                    textAlign: "center",
-                  }}>
-                    {day}
-                  </div>
+      {/* Calendário */}
+      <div className="card" style={{ padding: "1.25rem", marginBottom: "1.5rem" }}>
+        {/* Navegação de mês */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
+          <button
+            onClick={() => setCurrentDate(new Date(year, month - 1, 1))}
+            style={{ width: 44, height: 44, borderRadius: 12, background: "var(--bg-secondary)", border: "1.5px solid var(--border)", cursor: "pointer", color: "var(--text-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
+            <MdChevronLeft size={24} />
+          </button>
+          <h2 style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--text-primary)" }}>
+            {MONTHS[month]} {year}
+          </h2>
+          <button
+            onClick={() => setCurrentDate(new Date(year, month + 1, 1))}
+            style={{ width: 44, height: 44, borderRadius: 12, background: "var(--bg-secondary)", border: "1.5px solid var(--border)", cursor: "pointer", color: "var(--text-primary)", display: "flex", alignItems: "center", justifyContent: "center" }}
+          >
+            <MdChevronRight size={24} />
+          </button>
+        </div>
+
+        {/* Dias da semana */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "4px", marginBottom: "4px" }}>
+          {DAYS.map((d) => (
+            <div key={d} style={{ textAlign: "center", fontSize: "0.78rem", fontWeight: 700, color: "var(--text-muted)", padding: "0.4rem 0" }}>{d}</div>
+          ))}
+        </div>
+
+        {/* Grade de dias */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "4px" }}>
+          {cells.map((day, i) => {
+            if (!day) return <div key={`e-${i}`} />;
+            const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+            const isSelected = day === selectedDay;
+            const dayEvents = getEventsForDay(day);
+            return (
+              <button
+                key={day}
+                onClick={() => setSelectedDay(day)}
+                style={{
+                  minHeight: 52,
+                  padding: "0.3rem 0.2rem",
+                  borderRadius: 10,
+                  border: `2px solid ${isSelected ? "var(--brand)" : isToday ? "var(--brand-border)" : "transparent"}`,
+                  background: isSelected ? "var(--brand-bg)" : isToday ? "rgba(122,171,138,0.06)" : "transparent",
+                  cursor: "pointer",
+                  display: "flex", flexDirection: "column", alignItems: "center",
+                }}
+              >
+                <span style={{ fontSize: "0.88rem", fontWeight: isToday || isSelected ? 800 : 400, color: isSelected ? "var(--brand)" : isToday ? "var(--brand)" : "var(--text-secondary)", marginBottom: "3px" }}>
+                  {day}
+                </span>
+                <div style={{ display: "flex", flexDirection: "column", gap: "2px", width: "100%" }}>
                   {dayEvents.slice(0, 2).map((ev, j) => (
-                    <div key={j} style={{ height: 5, borderRadius: 2, background: ev.color, marginBottom: 2 }} />
+                    <div key={j} style={{ height: 5, borderRadius: 3, background: ev.color, width: "80%", margin: "0 auto" }} />
                   ))}
                 </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Próximos eventos */}
-        <div>
-          <h3 style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.875rem" }}>Próximos eventos</h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
-            {upcomingEvents.map((ev) => (
-              <div key={ev.date + ev.title} className="card" style={{ padding: "0.875rem", borderLeft: `3px solid ${ev.color}` }}>
-                <div style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: "0.25rem" }}>{ev.title}</div>
-                <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
-                  {new Date(ev.date + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" })}
-                  {" · "}{ev.member}
-                </div>
-              </div>
-            ))}
-          </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <style>{`
-        @media (max-width: 700px) {
-          .calendar-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
+      {/* Eventos do dia selecionado */}
+      {selectedDay && (
+        <div style={{ marginBottom: "1.75rem" }}>
+          <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.875rem" }}>
+            📌 Dia {selectedDay} de {MONTHS[month]}
+          </h3>
+          {selectedEvents.length === 0 ? (
+            <div className="card" style={{ padding: "2rem", textAlign: "center" }}>
+              <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem" }}>😊</div>
+              <p style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>Nenhum evento neste dia.</p>
+              <button onClick={() => setAddModal(true)} style={{ marginTop: "1rem", padding: "0.625rem 1.25rem", borderRadius: 12, border: "1.5px solid var(--brand)", background: "var(--brand-bg)", color: "var(--brand)", fontSize: "0.9rem", fontWeight: 700, cursor: "pointer" }}>
+                <MdAdd size={16} /> Adicionar evento
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {selectedEvents.map((ev) => (
+                <div key={ev.date + ev.title} className="card" style={{ padding: "1rem 1.125rem", display: "flex", alignItems: "center", gap: "1rem", minHeight: 72, borderLeft: `4px solid ${ev.color}` }}>
+                  <span style={{ fontSize: "1.75rem" }}>{ev.emoji}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.25rem" }}>{ev.title}</div>
+                    <div style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>👤 {ev.member}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Próximos eventos */}
+      <div>
+        <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.875rem" }}>
+          🔜 Próximos eventos
+        </h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          {upcomingEvents.map((ev) => {
+            const daysAway = Math.ceil((new Date(ev.date + "T12:00:00").getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+            return (
+              <div key={ev.date + ev.title} className="card" style={{ padding: "1rem 1.125rem", display: "flex", alignItems: "center", gap: "1rem", minHeight: 68, borderLeft: `4px solid ${ev.color}` }}>
+                <span style={{ fontSize: "1.5rem" }}>{ev.emoji}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.2rem" }}>{ev.title}</div>
+                  <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>👤 {ev.member}</div>
+                </div>
+                <div style={{ textAlign: "right", flexShrink: 0 }}>
+                  <div style={{ fontSize: "0.85rem", fontWeight: 800, color: "var(--text-primary)" }}>
+                    {new Date(ev.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short" })}
+                  </div>
+                  <div style={{ fontSize: "0.78rem", color: daysAway <= 3 ? "#d06a6a" : "var(--text-muted)" }}>
+                    {daysAway <= 0 ? "Hoje!" : `Em ${daysAway} dias`}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Modal */}
+      {addModal && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 100 }}
+          onClick={(e) => e.target === e.currentTarget && setAddModal(false)}>
+          <div style={{ background: "var(--bg-card)", borderRadius: "1.25rem 1.25rem 0 0", width: "100%", maxWidth: 540, padding: "1.5rem" }}>
+            <div style={{ width: 44, height: 5, borderRadius: 3, background: "var(--border)", margin: "0 auto 1.5rem" }} />
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+              <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--text-primary)" }}>Novo Evento</h2>
+              <button onClick={() => setAddModal(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "0.5rem" }}><MdClose size={22} /></button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>O que vai acontecer? *</label>
+                <input type="text" placeholder="Ex: Consulta médica, aniversário, reunião..." className="input-field" style={{ fontSize: "1rem" }} autoFocus />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Data *</label>
+                  <input type="date" className="input-field" defaultValue={selectedDateStr ?? ""} style={{ fontSize: "0.95rem" }} />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Quem?</label>
+                  <select className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
+                    <option>Família</option>
+                    <option>Ana</option>
+                    <option>Matheus</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: "0.75rem" }}>
+                <button onClick={() => setAddModal(false)} className="btn-secondary" style={{ flex: 1, justifyContent: "center", padding: "0.875rem", fontSize: "0.95rem" }}>Cancelar</button>
+                <button onClick={() => { showToast("✅ Evento adicionado!"); setAddModal(false); }} className="btn-primary" style={{ flex: 2, justifyContent: "center", padding: "0.875rem", fontSize: "1rem", fontWeight: 800 }}>
+                  <MdAdd size={20} /> Salvar evento
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
