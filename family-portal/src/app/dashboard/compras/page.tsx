@@ -1,413 +1,466 @@
 "use client";
-import { useState } from "react";
-import {
-  MdAdd, MdShoppingCart, MdCheck, MdDelete, MdHistory,
-  MdAttachMoney, MdClose, MdSearch, MdStore,
-} from "react-icons/md";
+import { useState, useEffect } from "react";
+import { MdAdd, MdCheck, MdDelete, MdShoppingCart, MdClose, MdHistory, MdStore } from "react-icons/md";
 
-type Tab = "lista" | "historico";
-
-interface ShoppingItem {
+interface Item {
   id: string;
   name: string;
   quantity: number;
   unit: string;
-  estimatedPrice?: number;
-  actualPrice?: number;
   checked: boolean;
-  category: string;
-  emoji: string;
 }
 
-const initialItems: ShoppingItem[] = [
-  { id: "1", name: "Arroz", quantity: 5, unit: "kg", estimatedPrice: 25, checked: false, category: "Grãos", emoji: "🍚" },
-  { id: "2", name: "Feijão", quantity: 2, unit: "kg", estimatedPrice: 18, checked: false, category: "Grãos", emoji: "🫘" },
-  { id: "3", name: "Leite", quantity: 6, unit: "L", estimatedPrice: 30, checked: false, category: "Laticínios", emoji: "🥛" },
-  { id: "4", name: "Sabão em pó", quantity: 2, unit: "kg", estimatedPrice: 28, checked: false, category: "Limpeza", emoji: "🧴" },
-  { id: "5", name: "Pão de forma", quantity: 2, unit: "unid", estimatedPrice: 12, checked: true, category: "Padaria", emoji: "🍞" },
-  { id: "6", name: "Queijo", quantity: 400, unit: "g", estimatedPrice: 22, checked: true, category: "Laticínios", emoji: "🧀" },
+const initialItems: Item[] = [
+  { id: "1", name: "Arroz",          quantity: 5, unit: "kg",   checked: false },
+  { id: "2", name: "Feijão",         quantity: 2, unit: "kg",   checked: false },
+  { id: "3", name: "Leite",          quantity: 6, unit: "L",    checked: false },
+  { id: "4", name: "Sabão em pó",    quantity: 2, unit: "kg",   checked: false },
+  { id: "5", name: "Pão de forma",   quantity: 2, unit: "unid", checked: true  },
+  { id: "6", name: "Queijo",         quantity: 1, unit: "unid", checked: true  },
 ];
 
 const mockHistory = [
   { id: "1", date: "2026-06-15", store: "Carrefour", items: 24, total: 387.50 },
-  { id: "2", date: "2026-06-02", store: "Extra", items: 18, total: 256.80 },
-  { id: "3", date: "2026-05-20", store: "Atacadão", items: 35, total: 623.40 },
-  { id: "4", date: "2026-05-05", store: "Carrefour", items: 21, total: 312.60 },
+  { id: "2", date: "2026-06-02", store: "Extra",     items: 18, total: 256.80 },
+  { id: "3", date: "2026-05-20", store: "Atacadão",  items: 35, total: 623.40 },
 ];
 
 export default function ComprasPage() {
-  const [tab, setTab] = useState<Tab>("lista");
-  const [items, setItems] = useState<ShoppingItem[]>(initialItems);
-  const [priceModal, setPriceModal] = useState<ShoppingItem | null>(null);
-  const [addModal, setAddModal] = useState(false);
-  const [search, setSearch] = useState("");
+  const [items, setItems]         = useState<Item[]>(initialItems);
+  const [addModal, setAddModal]   = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [toast, setToast]         = useState("");
 
-  const unchecked = items.filter((i) => !i.checked && i.name.toLowerCase().includes(search.toLowerCase()));
-  const checked = items.filter((i) => i.checked && i.name.toLowerCase().includes(search.toLowerCase()));
-  const total = items.reduce((s, i) => s + (i.actualPrice ?? i.estimatedPrice ?? 0) * i.quantity, 0);
-  const progress = items.length > 0 ? (checked.length / items.length) * 100 : 0;
+  const pending  = items.filter((i) => !i.checked);
+  const inCart   = items.filter((i) => i.checked);
+
+  function showToast(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(""), 2500);
+  }
 
   function toggleCheck(id: string) {
-    setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, checked: !i.checked } : i))
-    );
+    const item = items.find((i) => i.id === id)!;
+    setItems((prev) => prev.map((i) => i.id === id ? { ...i, checked: !i.checked } : i));
+    showToast(item.checked ? `"${item.name}" voltou para a lista` : `✓ "${item.name}" marcado!`);
   }
 
   function removeItem(id: string) {
+    const item = items.find((i) => i.id === id)!;
     setItems((prev) => prev.filter((i) => i.id !== id));
+    showToast(`"${item.name}" removido`);
   }
 
-  return (
-    <div style={{ maxWidth: 700, margin: "0 auto" }}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem", flexWrap: "wrap", gap: "1rem" }}>
-        <div>
-          <h1 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.2rem" }}>Compras</h1>
-          <p style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}>{checked.length}/{items.length} itens marcados</p>
-        </div>
-        <button onClick={() => setAddModal(true)} className="btn-primary">
-          <MdAdd size={18} /> Adicionar item
+  function clearCart() {
+    setItems((prev) => prev.filter((i) => !i.checked));
+    showToast("Carrinho limpo ✓");
+  }
+
+  function addItem(name: string, quantity: number, unit: string) {
+    setItems((prev) => [...prev, { id: Date.now().toString(), name, quantity, unit, checked: false }]);
+    setAddModal(false);
+    showToast(`✓ "${name}" adicionado!`);
+  }
+
+  if (showHistory) {
+    return (
+      <div style={{ maxWidth: 640, margin: "0 auto" }}>
+        <button
+          onClick={() => setShowHistory(false)}
+          style={{ display: "flex", alignItems: "center", gap: "0.4rem", background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "1.5rem", padding: 0 }}
+        >
+          ← Voltar para a lista
         </button>
-      </div>
-
-      {/* Progresso */}
-      <div className="card" style={{ padding: "1rem", marginBottom: "1.25rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-          <span style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>Progresso das compras</span>
-          <span style={{ fontSize: "0.82rem", fontWeight: 600, color: progress === 100 ? "#22c55e" : "var(--text-primary)" }}>
-            {progress.toFixed(0)}%
-          </span>
-        </div>
-        <div style={{ height: 8, borderRadius: 4, background: "var(--bg-secondary)", overflow: "hidden", marginBottom: "0.875rem" }}>
-          <div style={{ height: "100%", width: `${progress}%`, borderRadius: 4, background: "#22c55e", transition: "width 0.3s" }} />
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div>
-            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Estimado</div>
-            <div style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-primary)" }}>
-              R$ {items.reduce((s, i) => s + (i.estimatedPrice ?? 0) * i.quantity, 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-            </div>
-          </div>
-          <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Total atual</div>
-            <div style={{ fontSize: "1rem", fontWeight: 700, color: "#22c55e" }}>
-              R$ {total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div style={{ display: "flex", gap: "0.25rem", borderBottom: "1px solid var(--border)", marginBottom: "1.25rem" }}>
-        {(["lista", "historico"] as Tab[]).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            style={{
-              padding: "0.6rem 1.25rem",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: tab === t ? "#22c55e" : "var(--text-muted)",
-              borderBottom: tab === t ? "2px solid #22c55e" : "2px solid transparent",
-              fontSize: "0.875rem",
-              fontWeight: tab === t ? 600 : 400,
-              marginBottom: "-1px",
-            }}
-          >
-            {t === "lista" ? "Lista Atual" : "Histórico"}
-          </button>
-        ))}
-      </div>
-
-      {tab === "lista" && (
-        <div>
-          <div style={{ position: "relative", marginBottom: "1rem" }}>
-            <MdSearch size={16} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
-            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Filtrar itens..." className="input-field" style={{ paddingLeft: "2.25rem" }} />
-          </div>
-
-          {/* Itens pendentes */}
-          {unchecked.length > 0 && (
-            <div style={{ marginBottom: "1.5rem" }}>
-              <h3 style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.625rem" }}>
-                Para pegar ({unchecked.length})
-              </h3>
-              <div className="card" style={{ overflow: "hidden", padding: 0 }}>
-                {unchecked.map((item, i) => (
-                  <ShoppingItemRow
-                    key={item.id}
-                    item={item}
-                    onCheck={() => toggleCheck(item.id)}
-                    onRemove={() => removeItem(item.id)}
-                    onPriceClick={() => setPriceModal(item)}
-                    last={i === unchecked.length - 1}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Itens marcados */}
-          {checked.length > 0 && (
-            <div>
-              <h3 style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.625rem" }}>
-                No carrinho ({checked.length})
-              </h3>
-              <div className="card" style={{ overflow: "hidden", padding: 0, opacity: 0.7 }}>
-                {checked.map((item, i) => (
-                  <ShoppingItemRow
-                    key={item.id}
-                    item={item}
-                    onCheck={() => toggleCheck(item.id)}
-                    onRemove={() => removeItem(item.id)}
-                    onPriceClick={() => setPriceModal(item)}
-                    last={i === checked.length - 1}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {tab === "historico" && (
+        <h1 style={{ fontSize: "1.4rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.25rem" }}>Compras anteriores</h1>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "1.5rem" }}>Veja o que você comprou antes</p>
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           {mockHistory.map((h) => (
-            <div key={h.id} className="card" style={{ padding: "1rem", display: "flex", alignItems: "center", gap: "1rem", cursor: "pointer" }}>
-              <div style={{ width: 42, height: 42, borderRadius: "10px", background: "rgba(34,197,94,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <MdStore size={22} color="#22c55e" />
+            <div key={h.id} className="card" style={{ padding: "1.25rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div style={{ width: 48, height: 48, borderRadius: "14px", background: "var(--brand-bg)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <MdStore size={24} color="var(--brand)" />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, fontSize: "0.875rem", color: "var(--text-primary)" }}>{h.store}</div>
-                <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                  {new Date(h.date + "T12:00:00").toLocaleDateString("pt-BR")} · {h.items} itens
+                <div style={{ fontWeight: 700, fontSize: "1rem", color: "var(--text-primary)" }}>{h.store}</div>
+                <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginTop: "0.15rem" }}>
+                  {new Date(h.date + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "long" })} · {h.items} itens
                 </div>
               </div>
-              <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "var(--text-primary)" }}>
+              <div style={{ fontWeight: 800, fontSize: "1.1rem", color: "var(--text-primary)" }}>
                 R$ {h.total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
               </div>
             </div>
           ))}
         </div>
-      )}
-
-      {/* Modal de preço */}
-      {priceModal && (
-        <PriceModal
-          item={priceModal}
-          onSave={(price) => {
-            setItems((prev) => prev.map((i) => i.id === priceModal.id ? { ...i, actualPrice: price, checked: true } : i));
-            setPriceModal(null);
-          }}
-          onClose={() => setPriceModal(null)}
-        />
-      )}
-
-      {addModal && <AddItemModal onClose={() => setAddModal(false)} onAdd={(item) => { setItems((prev) => [...prev, item]); setAddModal(false); }} />}
-    </div>
-  );
-}
-
-function ShoppingItemRow({ item, onCheck, onRemove, onPriceClick, last }: {
-  item: ShoppingItem;
-  onCheck: () => void;
-  onRemove: () => void;
-  onPriceClick: () => void;
-  last: boolean;
-}) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        padding: "0.875rem 1rem",
-        borderBottom: last ? "none" : "1px solid var(--border-light)",
-        gap: "0.75rem",
-      }}
-    >
-      {/* Checkbox */}
-      <button
-        onClick={onCheck}
-        style={{
-          width: 26, height: 26, borderRadius: "50%",
-          border: item.checked ? "none" : "2px solid var(--border)",
-          background: item.checked ? "#22c55e" : "transparent",
-          cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        {item.checked && <MdCheck size={16} color="white" />}
-      </button>
-
-      <span style={{ fontSize: "1.3rem", flexShrink: 0 }}>{item.emoji}</span>
-
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: "0.875rem", fontWeight: 500, color: "var(--text-primary)", textDecoration: item.checked ? "line-through" : "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {item.name}
-        </div>
-        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-          {item.quantity} {item.unit}
-          {item.estimatedPrice ? ` · ~R$ ${(item.estimatedPrice * item.quantity).toLocaleString("pt-BR")}` : ""}
-        </div>
       </div>
-
-      {/* Preço real (clicar para lançar) */}
-      <button
-        onClick={onPriceClick}
-        style={{
-          background: item.actualPrice ? "rgba(34,197,94,0.1)" : "var(--bg-secondary)",
-          border: `1px solid ${item.actualPrice ? "rgba(34,197,94,0.3)" : "var(--border)"}`,
-          borderRadius: "0.5rem",
-          padding: "0.3rem 0.625rem",
-          cursor: "pointer",
-          color: item.actualPrice ? "#22c55e" : "var(--text-muted)",
-          fontSize: "0.78rem",
-          fontWeight: item.actualPrice ? 700 : 400,
-          display: "flex", alignItems: "center", gap: "0.25rem",
-          whiteSpace: "nowrap",
-        }}
-      >
-        <MdAttachMoney size={14} />
-        {item.actualPrice ? `R$ ${(item.actualPrice * item.quantity).toFixed(2)}` : "Lançar"}
-      </button>
-
-      <button onClick={onRemove} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "0.25rem", display: "flex" }}>
-        <MdDelete size={18} />
-      </button>
-    </div>
-  );
-}
-
-function PriceModal({ item, onSave, onClose }: { item: ShoppingItem; onSave: (price: number) => void; onClose: () => void }) {
-  const [qty, setQty] = useState(item.quantity);
-  const [unitPrice, setUnitPrice] = useState<number>(item.actualPrice ?? item.estimatedPrice ?? 0);
-
-  return (
-    <div
-      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "1rem" }}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
-      <div style={{ background: "var(--bg-secondary)", borderRadius: "1.25rem", width: "100%", maxWidth: 380, padding: "1.5rem" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <span style={{ fontSize: "2rem" }}>{item.emoji}</span>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: "1rem", color: "var(--text-primary)" }}>{item.name}</div>
-              <div style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{item.category}</div>
-            </div>
-          </div>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
-            <MdClose size={20} />
-          </button>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div>
-            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: 500 }}>Quantidade</label>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <button onClick={() => setQty(Math.max(1, qty - 1))} style={{ width: 36, height: 36, borderRadius: "50%", border: "1px solid var(--border)", background: "var(--bg-secondary)", cursor: "pointer", color: "var(--text-primary)", fontSize: "1.1rem" }}>−</button>
-              <span style={{ flex: 1, textAlign: "center", fontSize: "1.25rem", fontWeight: 700, color: "var(--text-primary)" }}>{qty} {item.unit}</span>
-              <button onClick={() => setQty(qty + 1)} style={{ width: 36, height: 36, borderRadius: "50%", border: "1px solid var(--border)", background: "var(--bg-secondary)", cursor: "pointer", color: "var(--text-primary)", fontSize: "1.1rem" }}>+</button>
-            </div>
-          </div>
-
-          <div>
-            <label style={{ display: "block", fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.4rem", fontWeight: 500 }}>Preço unitário</label>
-            <div style={{ position: "relative" }}>
-              <span style={{ position: "absolute", left: "0.875rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", fontSize: "0.9rem" }}>R$</span>
-              <input
-                type="number"
-                value={unitPrice}
-                onChange={(e) => setUnitPrice(Number(e.target.value))}
-                step="0.01"
-                min="0"
-                className="input-field"
-                style={{ paddingLeft: "2.5rem", fontSize: "1.1rem", fontWeight: 600 }}
-              />
-            </div>
-          </div>
-
-          {/* Total */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "0.875rem 1rem",
-              background: "rgba(34,197,94,0.08)",
-              borderRadius: "0.75rem",
-              border: "1px solid rgba(34,197,94,0.2)",
-            }}
-          >
-            <span style={{ fontSize: "0.875rem", color: "var(--text-secondary)", fontWeight: 500 }}>Total do item</span>
-            <span style={{ fontSize: "1.25rem", fontWeight: 800, color: "#22c55e" }}>
-              R$ {(unitPrice * qty).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-            </span>
-          </div>
-
-          <button onClick={() => onSave(unitPrice)} className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-            <MdCheck size={18} /> Confirmar e marcar
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AddItemModal({ onClose, onAdd }: { onClose: () => void; onAdd: (item: ShoppingItem) => void }) {
-  const [name, setName] = useState("");
-  const [qty, setQty] = useState(1);
-  const [unit, setUnit] = useState("unid");
-  const [price, setPrice] = useState<number | undefined>();
-
-  function handleAdd() {
-    if (!name) return;
-    onAdd({
-      id: Date.now().toString(),
-      name,
-      quantity: qty,
-      unit,
-      estimatedPrice: price,
-      checked: false,
-      category: "Outros",
-      emoji: "🛒",
-    });
+    );
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 100 }}
-      onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div style={{ background: "var(--bg-secondary)", borderRadius: "1.25rem 1.25rem 0 0", width: "100%", maxWidth: 480, padding: "1.5rem" }}>
-        <div style={{ width: 40, height: 4, borderRadius: 2, background: "var(--border)", margin: "0 auto 1.25rem" }} />
-        <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "1.25rem" }}>Adicionar à lista</h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nome do item" className="input-field" autoFocus />
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.75rem" }}>
-            <div>
-              <label style={{ display: "block", fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "0.35rem" }}>Qtd.</label>
-              <input type="number" value={qty} onChange={(e) => setQty(Number(e.target.value))} min="1" className="input-field" />
-            </div>
-            <div>
-              <label style={{ display: "block", fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "0.35rem" }}>Unidade</label>
-              <select value={unit} onChange={(e) => setUnit(e.target.value)} className="input-field" style={{ cursor: "pointer" }}>
-                <option value="unid">unid</option>
-                <option value="kg">kg</option>
-                <option value="g">g</option>
-                <option value="L">L</option>
-                <option value="ml">ml</option>
-                <option value="cx">cx</option>
-                <option value="pct">pct</option>
+    <div style={{ maxWidth: 640, margin: "0 auto" }}>
+
+      {/* Toast */}
+      {toast && (
+        <div style={{
+          position: "fixed", top: "1.25rem", left: "50%", transform: "translateX(-50%)",
+          background: "#2a2723", color: "var(--text-primary)",
+          padding: "0.75rem 1.5rem", borderRadius: "999px",
+          fontSize: "0.9rem", fontWeight: 600,
+          boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+          zIndex: 200, whiteSpace: "nowrap",
+          border: "1px solid var(--border)",
+        }}>
+          {toast}
+        </div>
+      )}
+
+      {/* Cabeçalho */}
+      <div style={{ marginBottom: "1.5rem" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+          <div>
+            <h1 style={{ fontSize: "1.6rem", fontWeight: 800, color: "var(--text-primary)", marginBottom: "0.25rem" }}>
+              🛒 Lista de Compras
+            </h1>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.95rem" }}>
+              Toque no item quando colocar no carrinho
+            </p>
+          </div>
+          <button
+            onClick={() => setShowHistory(true)}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.15rem", padding: "0.5rem" }}
+          >
+            <MdHistory size={22} />
+            <span style={{ fontSize: "0.68rem" }}>Histórico</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Progresso visual */}
+      {items.length > 0 && (
+        <div style={{ marginBottom: "1.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+            <span style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>
+              {inCart.length} de {items.length} itens no carrinho
+            </span>
+            <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--brand)" }}>
+              {Math.round((inCart.length / items.length) * 100)}%
+            </span>
+          </div>
+          <div style={{ height: 10, borderRadius: 99, background: "var(--bg-secondary)", overflow: "hidden" }}>
+            <div style={{
+              height: "100%",
+              width: `${(inCart.length / items.length) * 100}%`,
+              borderRadius: 99,
+              background: "var(--brand)",
+              transition: "width 0.4s ease",
+            }} />
+          </div>
+        </div>
+      )}
+
+      {/* Botão principal — destaque máximo */}
+      <button
+        onClick={() => setAddModal(true)}
+        style={{
+          width: "100%",
+          padding: "1rem",
+          borderRadius: "16px",
+          background: "var(--brand)",
+          color: "#fff",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "0.6rem",
+          fontSize: "1.05rem",
+          fontWeight: 800,
+          marginBottom: "1.75rem",
+          boxShadow: "0 4px 16px rgba(122,171,138,0.4)",
+          letterSpacing: "0.01em",
+        }}
+      >
+        <MdAdd size={24} /> Adicionar item à lista
+      </button>
+
+      {/* Lista — Para comprar */}
+      {pending.length > 0 ? (
+        <section style={{ marginBottom: "1.75rem" }}>
+          <h2 style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.75rem" }}>
+            Para comprar — {pending.length} {pending.length === 1 ? "item" : "itens"}
+          </h2>
+          <div className="card" style={{ overflow: "hidden", padding: 0 }}>
+            {pending.map((item, i) => (
+              <ItemRow
+                key={item.id}
+                item={item}
+                onCheck={() => toggleCheck(item.id)}
+                onRemove={() => removeItem(item.id)}
+                last={i === pending.length - 1}
+              />
+            ))}
+          </div>
+        </section>
+      ) : (
+        <div style={{
+          textAlign: "center", padding: "2.5rem 1rem",
+          border: "2px dashed var(--border)", borderRadius: "16px",
+          marginBottom: "1.75rem",
+        }}>
+          <div style={{ fontSize: "3rem", marginBottom: "0.75rem" }}>🎉</div>
+          <div style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.25rem" }}>
+            Tudo comprado!
+          </div>
+          <div style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>
+            Sua lista está vazia. Adicione itens acima.
+          </div>
+        </div>
+      )}
+
+      {/* Lista — No carrinho */}
+      {inCart.length > 0 && (
+        <section style={{ marginBottom: "1.5rem" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+            <h2 style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--brand)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              ✓ No carrinho — {inCart.length} {inCart.length === 1 ? "item" : "itens"}
+            </h2>
+            <button
+              onClick={clearCart}
+              style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.8rem", color: "var(--text-muted)", textDecoration: "underline", fontFamily: "inherit" }}
+            >
+              Limpar carrinho
+            </button>
+          </div>
+          <div className="card" style={{ overflow: "hidden", padding: 0, opacity: 0.75 }}>
+            {inCart.map((item, i) => (
+              <ItemRow
+                key={item.id}
+                item={item}
+                onCheck={() => toggleCheck(item.id)}
+                onRemove={() => removeItem(item.id)}
+                last={i === inCart.length - 1}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Estado vazio inicial */}
+      {items.length === 0 && (
+        <div style={{ textAlign: "center", padding: "3rem 1rem" }}>
+          <div style={{ fontSize: "3.5rem", marginBottom: "1rem" }}>🛒</div>
+          <div style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.5rem" }}>
+            Sua lista está vazia
+          </div>
+          <div style={{ fontSize: "0.95rem", color: "var(--text-muted)", lineHeight: 1.6 }}>
+            Toque no botão verde acima<br />para adicionar o primeiro item
+          </div>
+        </div>
+      )}
+
+      {/* Modal de adicionar */}
+      {addModal && (
+        <AddModal onClose={() => setAddModal(false)} onAdd={addItem} />
+      )}
+    </div>
+  );
+}
+
+/* ── Linha de item ─────────────────────────────────────── */
+function ItemRow({ item, onCheck, onRemove, last }: {
+  item: Item;
+  onCheck: () => void;
+  onRemove: () => void;
+  last: boolean;
+}) {
+  return (
+    <div style={{
+      display: "flex",
+      alignItems: "center",
+      padding: "0.875rem 1rem",
+      gap: "0.875rem",
+      borderBottom: last ? "none" : "1px solid var(--border-light)",
+      minHeight: 64,
+    }}>
+      {/* Checkbox grande */}
+      <button
+        onClick={onCheck}
+        aria-label={item.checked ? "Desmarcar item" : "Marcar como comprado"}
+        style={{
+          width: 40, height: 40,
+          borderRadius: "50%",
+          border: item.checked ? "none" : "2.5px solid var(--border)",
+          background: item.checked ? "var(--brand)" : "transparent",
+          cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          flexShrink: 0,
+          transition: "all 0.2s",
+        }}
+      >
+        {item.checked && <MdCheck size={22} color="white" />}
+      </button>
+
+      {/* Nome e quantidade */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontSize: "1rem", fontWeight: 600,
+          color: item.checked ? "var(--text-muted)" : "var(--text-primary)",
+          textDecoration: item.checked ? "line-through" : "none",
+          marginBottom: "0.1rem",
+        }}>
+          {item.name}
+        </div>
+        <div style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>
+          {item.quantity} {item.unit}
+        </div>
+      </div>
+
+      {/* Remover */}
+      <button
+        onClick={onRemove}
+        aria-label={`Remover ${item.name}`}
+        style={{
+          background: "none", border: "none", cursor: "pointer",
+          color: "var(--text-muted)", padding: "0.5rem",
+          display: "flex", alignItems: "center", borderRadius: "8px",
+          flexShrink: 0,
+        }}
+      >
+        <MdDelete size={20} />
+      </button>
+    </div>
+  );
+}
+
+/* ── Modal de adicionar ────────────────────────────────── */
+function AddModal({ onClose, onAdd }: {
+  onClose: () => void;
+  onAdd: (name: string, qty: number, unit: string) => void;
+}) {
+  const [name, setName]   = useState("");
+  const [qty, setQty]     = useState(1);
+  const [unit, setUnit]   = useState("unid");
+  const valid = name.trim().length > 0;
+
+  const units = ["unid", "kg", "g", "L", "ml", "cx", "pct"];
+
+  return (
+    <div
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+      style={{
+        position: "fixed", inset: 0,
+        background: "rgba(0,0,0,0.55)",
+        display: "flex", alignItems: "flex-end", justifyContent: "center",
+        zIndex: 100,
+      }}
+    >
+      <div style={{
+        background: "var(--bg-card)",
+        borderRadius: "24px 24px 0 0",
+        width: "100%", maxWidth: 520,
+        padding: "1.5rem 1.5rem 2rem",
+      }}>
+        {/* Handle */}
+        <div style={{ width: 44, height: 5, borderRadius: 99, background: "var(--border)", margin: "0 auto 1.5rem" }} />
+
+        {/* Título */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+          <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--text-primary)" }}>
+            O que você precisa comprar?
+          </h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "0.25rem" }}>
+            <MdClose size={22} />
+          </button>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+
+          {/* Campo de nome — destaque */}
+          <div>
+            <label style={{ display: "block", fontSize: "0.9rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>
+              Nome do item
+            </label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && valid && onAdd(name.trim(), qty, unit)}
+              placeholder="Ex: Arroz, Leite, Detergente..."
+              className="input-field"
+              autoFocus
+              style={{ fontSize: "1rem", padding: "0.875rem 1rem" }}
+            />
+          </div>
+
+          {/* Quantidade */}
+          <div>
+            <label style={{ display: "block", fontSize: "0.9rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>
+              Quantidade <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>(opcional)</span>
+            </label>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              {/* Stepper */}
+              <div style={{ display: "flex", alignItems: "center", gap: "0", border: "1.5px solid var(--border)", borderRadius: "12px", overflow: "hidden" }}>
+                <button
+                  onClick={() => setQty(Math.max(1, qty - 1))}
+                  style={{ width: 48, height: 48, border: "none", background: "var(--bg-secondary)", cursor: "pointer", color: "var(--text-primary)", fontSize: "1.4rem", fontWeight: 700, flexShrink: 0 }}
+                >
+                  −
+                </button>
+                <span style={{ width: 52, textAlign: "center", fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)" }}>
+                  {qty}
+                </span>
+                <button
+                  onClick={() => setQty(qty + 1)}
+                  style={{ width: 48, height: 48, border: "none", background: "var(--bg-secondary)", cursor: "pointer", color: "var(--text-primary)", fontSize: "1.4rem", fontWeight: 700, flexShrink: 0 }}
+                >
+                  +
+                </button>
+              </div>
+
+              {/* Unidade */}
+              <select
+                value={unit}
+                onChange={(e) => setUnit(e.target.value)}
+                className="input-field"
+                style={{ maxWidth: 120, height: 48, cursor: "pointer", fontSize: "0.95rem" }}
+              >
+                {units.map((u) => <option key={u} value={u}>{u}</option>)}
               </select>
             </div>
-            <div>
-              <label style={{ display: "block", fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "0.35rem" }}>Preço est.</label>
-              <input type="number" value={price ?? ""} onChange={(e) => setPrice(e.target.value ? Number(e.target.value) : undefined)} placeholder="0,00" step="0.01" min="0" className="input-field" />
-            </div>
           </div>
-          <button onClick={handleAdd} disabled={!name} className="btn-primary" style={{ width: "100%", justifyContent: "center" }}>
-            <MdAdd size={18} /> Adicionar
+
+          {/* Botões */}
+          <button
+            onClick={() => valid && onAdd(name.trim(), qty, unit)}
+            disabled={!valid}
+            style={{
+              width: "100%", padding: "1rem",
+              borderRadius: "14px",
+              background: valid ? "var(--brand)" : "var(--bg-secondary)",
+              color: valid ? "#fff" : "var(--text-muted)",
+              border: "none", cursor: valid ? "pointer" : "not-allowed",
+              fontSize: "1rem", fontWeight: 800,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              gap: "0.5rem",
+              transition: "all 0.2s",
+              boxShadow: valid ? "0 4px 14px rgba(122,171,138,0.35)" : "none",
+            }}
+          >
+            <MdCheck size={22} /> Adicionar à lista
+          </button>
+
+          <button
+            onClick={onClose}
+            style={{
+              width: "100%", padding: "0.875rem",
+              borderRadius: "14px",
+              background: "transparent",
+              color: "var(--text-muted)",
+              border: "1.5px solid var(--border)",
+              cursor: "pointer", fontSize: "0.95rem", fontWeight: 600,
+              fontFamily: "inherit",
+            }}
+          >
+            Cancelar
           </button>
         </div>
       </div>
