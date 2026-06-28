@@ -83,7 +83,7 @@ export function TopBar({ onMenuClick, memberName }: TopBarProps) {
             width: 8,
             height: 8,
             borderRadius: "50%",
-            background: "#22c55e",
+            background: "var(--brand)",
           }}
         />
       </button>
@@ -112,7 +112,7 @@ export function TopBar({ onMenuClick, memberName }: TopBarProps) {
             width: 34,
             height: 34,
             borderRadius: "50%",
-            background: "linear-gradient(135deg, #22c55e, #16a34a)",
+            background: "linear-gradient(135deg, #7aab8a, #5a8b6a)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

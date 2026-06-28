@@ -60,7 +60,7 @@ export default function LoginPage() {
               width: 56,
               height: 56,
               borderRadius: "16px",
-              background: "linear-gradient(135deg, #22c55e, #16a34a)",
+              background: "linear-gradient(135deg, #7aab8a, #5a8b6a)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -159,7 +159,7 @@ export default function LoginPage() {
 
         <p style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.875rem", color: "var(--text-muted)" }}>
           Não tem conta?{" "}
-          <Link href="/auth/register" style={{ color: "#22c55e", textDecoration: "none", fontWeight: 500 }}>
+          <Link href="/auth/register" style={{ color: "var(--brand)", textDecoration: "none", fontWeight: 500 }}>
             Criar família
           </Link>
         </p>

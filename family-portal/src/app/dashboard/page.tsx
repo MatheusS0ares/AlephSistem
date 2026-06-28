@@ -30,20 +30,20 @@ interface Module {
 }
 
 const modules: Module[] = [
-  { href: "/dashboard/financeiro", icon: MdAttachMoney, label: "Financeiro", desc: "Gastos, cartões, planejamento", color: "#22c55e" },
-  { href: "/dashboard/documentos", icon: MdDescription, label: "Documentos", desc: "Armazenamento seguro de docs", color: "#3b82f6" },
-  { href: "/dashboard/mantimentos", icon: MdKitchen, label: "Mantimentos", desc: "Estoque da dispensa", color: "#f59e0b", badge: "3 em falta", badgeColor: "yellow" },
-  { href: "/dashboard/compras", icon: MdShoppingCart, label: "Compras", desc: "Lista colaborativa + histórico", color: "#8b5cf6" },
-  { href: "/dashboard/cardapio", icon: MdRestaurant, label: "Cardápio", desc: "Planejamento de refeições", color: "#f97316" },
-  { href: "/dashboard/reformas", icon: MdBuild, label: "Obras", desc: "Orçamento por ambiente", color: "#6366f1" },
-  { href: "/dashboard/tarefas", icon: MdCheckBox, label: "Tarefas", desc: "Divisão com pontuação", color: "#06b6d4", badge: "5 pendentes", badgeColor: "blue" },
-  { href: "/dashboard/calendario", icon: MdCalendarMonth, label: "Calendário", desc: "Agenda familiar", color: "#ec4899" },
-  { href: "/dashboard/saude", icon: MdFavorite, label: "Saúde", desc: "Consultas e medicamentos", color: "#ef4444" },
-  { href: "/dashboard/pets", icon: MdPets, label: "Pets", desc: "Vacinas, rotina, saúde", color: "#a3e635" },
-  { href: "/dashboard/memorias", icon: MdPhotoLibrary, label: "Memórias", desc: "Álbum de fotos e marcos", color: "#ec4899" },
-  { href: "/dashboard/veiculos", icon: MdDirectionsCar, label: "Veículos", desc: "IPVA, revisão, seguro", color: "#94a3b8" },
-  { href: "/dashboard/contatos", icon: MdContactPhone, label: "Emergência", desc: "Contatos rápidos", color: "#f97316" },
-  { href: "/dashboard/senhas", icon: MdLock, label: "Cofre", desc: "Senhas criptografadas", color: "#6366f1" },
+  { href: "/dashboard/financeiro",  icon: MdAttachMoney,   label: "Financeiro",  desc: "Gastos, cartões, planejamento",   color: "#7aab8a" },
+  { href: "/dashboard/documentos",  icon: MdDescription,   label: "Documentos",  desc: "Armazenamento seguro de docs",    color: "#6a9fd4" },
+  { href: "/dashboard/mantimentos", icon: MdKitchen,       label: "Mantimentos", desc: "Estoque da dispensa",             color: "#c99a40", badge: "3 em falta", badgeColor: "yellow" },
+  { href: "/dashboard/compras",     icon: MdShoppingCart,  label: "Compras",     desc: "Lista colaborativa + histórico",  color: "#a07acc" },
+  { href: "/dashboard/cardapio",    icon: MdRestaurant,    label: "Cardápio",    desc: "Planejamento de refeições",       color: "#d07a6a" },
+  { href: "/dashboard/reformas",    icon: MdBuild,         label: "Obras",       desc: "Orçamento por ambiente",          color: "#7888d0" },
+  { href: "/dashboard/tarefas",     icon: MdCheckBox,      label: "Tarefas",     desc: "Divisão com pontuação",           color: "#5aabb0", badge: "5 pendentes", badgeColor: "blue" },
+  { href: "/dashboard/calendario",  icon: MdCalendarMonth, label: "Calendário",  desc: "Agenda familiar",                 color: "#c07898" },
+  { href: "/dashboard/saude",       icon: MdFavorite,      label: "Saúde",       desc: "Consultas e medicamentos",        color: "#d06a6a" },
+  { href: "/dashboard/pets",        icon: MdPets,          label: "Pets",        desc: "Vacinas, rotina, saúde",          color: "#88aa40" },
+  { href: "/dashboard/memorias",    icon: MdPhotoLibrary,  label: "Memórias",    desc: "Álbum de fotos e marcos",         color: "#c07898" },
+  { href: "/dashboard/veiculos",    icon: MdDirectionsCar, label: "Veículos",    desc: "IPVA, revisão, seguro",           color: "#8a96a0" },
+  { href: "/dashboard/contatos",    icon: MdContactPhone,  label: "Emergência",  desc: "Contatos rápidos",                color: "#d07a6a" },
+  { href: "/dashboard/senhas",      icon: MdLock,          label: "Cofre",       desc: "Senhas criptografadas",           color: "#7888d0" },
 ];
 
 export default function DashboardPage() {
@@ -71,10 +71,10 @@ export default function DashboardPage() {
   }, []);
 
   const quickStats: QuickStat[] = [
-    { label: "Saldo do mês", value: "R$ 3.450", sub: "+12% vs. mês passado", icon: MdAttachMoney, color: "#22c55e", trend: "up" },
-    { label: "Gastos hoje", value: "R$ 127", sub: "3 transações", icon: MdTrendingDown, color: "#f87171", trend: "down" },
-    { label: "Tarefas feitas", value: "7/12", sub: "Esta semana", icon: MdCheckBox, color: "#60a5fa" },
-    { label: "Compras", value: "14 itens", sub: "Lista aberta", icon: MdShoppingCart, color: "#a78bfa" },
+    { label: "Saldo do mês", value: "R$ 3.450", sub: "+12% vs. mês passado", icon: MdAttachMoney, color: "#7aab8a", trend: "up" },
+    { label: "Gastos hoje", value: "R$ 127", sub: "3 transações", icon: MdTrendingDown, color: "#d06a6a", trend: "down" },
+    { label: "Tarefas feitas", value: "7/12", sub: "Esta semana", icon: MdCheckBox, color: "#5aabb0" },
+    { label: "Compras", value: "14 itens", sub: "Lista aberta", icon: MdShoppingCart, color: "#a07acc" },
   ];
 
   return (
@@ -138,7 +138,7 @@ export default function DashboardPage() {
                 <Icon size={20} color={color} />
               </div>
               {trend && (
-                <span style={{ fontSize: "0.75rem", color: trend === "up" ? "#4ade80" : "#f87171" }}>
+                <span style={{ fontSize: "0.75rem", color: trend === "up" ? "#7aab8a" : "#d06a6a" }}>
                   {trend === "up" ? <MdTrendingUp size={16} /> : <MdTrendingDown size={16} />}
                 </span>
               )}
@@ -159,10 +159,10 @@ export default function DashboardPage() {
         </h2>
         <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap" }}>
           {[
-            { label: "Lançar gasto", href: "/dashboard/financeiro?new=expense", color: "#22c55e" },
-            { label: "Adicionar à lista", href: "/dashboard/compras?new=1", color: "#8b5cf6" },
-            { label: "Item em falta", href: "/dashboard/mantimentos?falta=1", color: "#f59e0b" },
-            { label: "Nova tarefa", href: "/dashboard/tarefas?new=1", color: "#06b6d4" },
+            { label: "Lançar gasto", href: "/dashboard/financeiro?new=expense", color: "#7aab8a" },
+            { label: "Adicionar à lista", href: "/dashboard/compras?new=1", color: "#a07acc" },
+            { label: "Item em falta", href: "/dashboard/mantimentos?falta=1", color: "#c99a40" },
+            { label: "Nova tarefa", href: "/dashboard/tarefas?new=1", color: "#5aabb0" },
           ].map(({ label, href, color }) => (
             <Link
               key={label}

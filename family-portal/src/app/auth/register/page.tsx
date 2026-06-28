@@ -100,7 +100,7 @@ export default function RegisterPage() {
                 flex: 1,
                 height: 4,
                 borderRadius: 2,
-                background: step >= s ? "#22c55e" : "var(--border)",
+                background: step >= s ? "var(--brand)" : "var(--border)",
                 transition: "background 0.3s",
               }}
             />
@@ -113,7 +113,7 @@ export default function RegisterPage() {
               width: 56,
               height: 56,
               borderRadius: "16px",
-              background: step === 1 ? "linear-gradient(135deg, #22c55e, #16a34a)" : "linear-gradient(135deg, #3b82f6, #1d4ed8)",
+              background: step === 1 ? "linear-gradient(135deg, #7aab8a, #5a8b6a)" : "linear-gradient(135deg, #6a9fd4, #4a7fb4)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -230,7 +230,7 @@ export default function RegisterPage() {
                 </p>
                 {["Controle financeiro", "Gestão de documentos", "Lista de compras", "Calendário familiar", "E muito mais..."].map((item) => (
                   <div key={item} style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.3rem" }}>
-                    <MdCheck size={14} color="#22c55e" />
+                    <MdCheck size={14} color="var(--brand)" />
                     <span style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>{item}</span>
                   </div>
                 ))}
@@ -251,7 +251,7 @@ export default function RegisterPage() {
 
         <p style={{ textAlign: "center", marginTop: "1.5rem", fontSize: "0.875rem", color: "var(--text-muted)" }}>
           Já tem conta?{" "}
-          <Link href="/auth/login" style={{ color: "#22c55e", textDecoration: "none", fontWeight: 500 }}>
+          <Link href="/auth/login" style={{ color: "var(--brand)", textDecoration: "none", fontWeight: 600 }}>
             Entrar
           </Link>
         </p>
