@@ -9,6 +9,9 @@ import WhatsAppFloat from "@/components/WhatsAppFloat";
 import CustomCursor from "@/components/ui/CustomCursor";
 import CookieBanner from "@/components/CookieBanner";
 import ThemeProvider from "@/components/ui/ThemeProvider";
+import LoadingScreen from "@/components/ui/LoadingScreen";
+import ScrollProgress from "@/components/ui/ScrollProgress";
+import SmoothScroller from "@/components/ui/SmoothScroller";
 import { site } from "@/config/site";
 
 const fraunces = Fraunces({
@@ -33,7 +36,6 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-// TODO-CLIENTE: substituir "sdedance.com.br" pelo domínio definitivo
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "https://sdedance.com.br";
@@ -66,7 +68,6 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-/* Inline script prevents flash of wrong theme before JS hydrates */
 const themeScript = `
 try {
   var t = localStorage.getItem('sde_theme') ||
@@ -83,11 +84,13 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${fraunces.variable} ${inter.variable} ${geistMono.variable}`}
     >
-      {/* Anti-flash: sets data-theme before first paint */}
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-screen flex flex-col">
+        <LoadingScreen />
+        <ScrollProgress />
+        <SmoothScroller />
         <ThemeProvider>
           <CustomCursor />
           <Header />

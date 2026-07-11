@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,15 +14,18 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const supabase = createClient();
+  const configured = isSupabaseConfigured();
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [k]: e.target.value }));
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!configured) return;
     setError("");
     setLoading(true);
+
+    const supabase = createClient();
 
     if (mode === "login") {
       const { error } = await supabase.auth.signInWithPassword({
@@ -47,12 +50,10 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center px-4"
       style={{ backgroundColor: "var(--color-blackout)" }}>
 
-      {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true"
         style={{ background: "radial-gradient(ellipse 60% 50% at 50% 30%, rgba(110,16,35,0.15) 0%, transparent 70%)" }} />
 
       <div className="relative z-10 w-full max-w-sm">
-        {/* Logo */}
         <div className="text-center mb-10">
           <a href="/" className="inline-flex flex-col items-center gap-1">
             <span className="text-3xl font-bold tracking-wider"
@@ -63,48 +64,60 @@ export default function LoginPage() {
           </a>
         </div>
 
-        {/* Card */}
-        <div className="p-8 border" style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}>
-          {/* Tabs */}
-          <div className="flex mb-8 border-b" style={{ borderColor: "var(--border-subtle)" }}>
-            {(["login", "register"] as const).map((m) => (
-              <button key={m} type="button" onClick={() => { setMode(m); setError(""); }}
-                className="flex-1 pb-3 text-xs tracking-[0.15em] uppercase transition-colors duration-200"
-                style={{
-                  fontFamily: "var(--font-mono)",
-                  color: mode === m ? "var(--color-spot)" : "var(--color-ash)",
-                  borderBottom: mode === m ? "2px solid var(--color-spot)" : "2px solid transparent",
-                  marginBottom: "-1px",
-                }}>
-                {m === "login" ? "Entrar" : "Criar conta"}
-              </button>
-            ))}
+        {!configured ? (
+          <div className="p-8 border text-center" style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}>
+            <p className="text-sm mb-2" style={{ color: "var(--color-bone)" }}>Portal em configuração</p>
+            <p className="text-xs leading-relaxed" style={{ color: "var(--color-ash)" }}>
+              O acesso ao portal ainda não está disponível. Entre em contato via WhatsApp.
+            </p>
+            <a href="/" className="inline-block mt-6 text-xs underline" style={{ color: "var(--color-spot)" }}>
+              ← Voltar ao site
+            </a>
           </div>
+        ) : (
+          <div className="p-8 border" style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}>
+            <div className="flex mb-8 border-b" style={{ borderColor: "var(--border-subtle)" }}>
+              {(["login", "register"] as const).map((m) => (
+                <button key={m} type="button" onClick={() => { setMode(m); setError(""); }}
+                  className="flex-1 pb-3 text-xs tracking-[0.15em] uppercase transition-colors duration-200"
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    color: mode === m ? "var(--color-spot)" : "var(--color-ash)",
+                    borderBottom: mode === m ? "2px solid var(--color-spot)" : "2px solid transparent",
+                    marginBottom: "-1px",
+                  }}>
+                  {m === "login" ? "Entrar" : "Criar conta"}
+                </button>
+              ))}
+            </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {mode === "register" && (
-              <Field id="nome" label="Nome completo" type="text" value={form.nome} onChange={set("nome")} required />
-            )}
-            <Field id="email" label="E-mail" type="email" value={form.email} onChange={set("email")} required />
-            <Field id="password" label="Senha" type="password" value={form.password} onChange={set("password")} required />
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              {mode === "register" && (
+                <Field id="nome" label="Nome completo" type="text" value={form.nome} onChange={set("nome")} required />
+              )}
+              <Field id="email" label="E-mail" type="email" value={form.email} onChange={set("email")} required />
+              <Field id="password" label="Senha" type="password" value={form.password} onChange={set("password")} required />
 
-            {error && (
-              <p className="text-xs px-3 py-2 border" style={{ color: "#ef4444", borderColor: "rgba(239,68,68,0.3)", backgroundColor: "rgba(239,68,68,0.05)" }}>
-                {error}
-              </p>
-            )}
+              {error && (
+                <p className="text-xs px-3 py-2 border" style={{ color: "#ef4444", borderColor: "rgba(239,68,68,0.3)", backgroundColor: "rgba(239,68,68,0.05)" }}>
+                  {error}
+                </p>
+              )}
 
-            <button type="submit" disabled={loading}
-              className="mt-2 w-full py-3 text-sm font-semibold transition-all duration-200 hover:brightness-110 disabled:opacity-60"
-              style={{ backgroundColor: "var(--color-spot)", color: "var(--color-blackout)" }}>
-              {loading ? "Aguarde…" : mode === "login" ? "Entrar" : "Criar minha conta"}
-            </button>
-          </form>
-        </div>
+              <button type="submit" disabled={loading}
+                className="mt-2 w-full py-3 text-sm font-semibold transition-all duration-200 hover:brightness-110 disabled:opacity-60"
+                style={{ backgroundColor: "var(--color-spot)", color: "var(--color-blackout)" }}>
+                {loading ? "Aguarde…" : mode === "login" ? "Entrar" : "Criar minha conta"}
+              </button>
+            </form>
+          </div>
+        )}
 
-        <p className="text-center mt-6 text-xs" style={{ color: "var(--color-ash)" }}>
-          <a href="/" className="hover:underline">← Voltar ao site</a>
-        </p>
+        {configured && (
+          <p className="text-center mt-6 text-xs" style={{ color: "var(--color-ash)" }}>
+            <a href="/" className="hover:underline">← Voltar ao site</a>
+          </p>
+        )}
       </div>
     </div>
   );
