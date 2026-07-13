@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import { Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
 import CustomCursor from "@/components/ui/CustomCursor";
+import CookieBanner from "@/components/CookieBanner";
+import ThemeProvider from "@/components/ui/ThemeProvider";
 import { site } from "@/config/site";
 
 const fraunces = Fraunces({
@@ -30,7 +33,6 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-// metadataBase: usa VERCEL_URL em preview/produção, fallback para domínio final
 // TODO-CLIENTE: substituir "sdedance.com.br" pelo domínio definitivo
 const baseUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -48,7 +50,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og",         // rota /og/route.tsx — OG gerado dinamicamente
+        url: "/og",
         width: 1200,
         height: 630,
         alt: `${site.brand.short} — ${site.brand.tagline}`,
@@ -64,6 +66,15 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+/* Inline script prevents flash of wrong theme before JS hydrates */
+const themeScript = `
+try {
+  var t = localStorage.getItem('sde_theme') ||
+    (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+  document.documentElement.dataset.theme = t;
+} catch(e) {}
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -72,12 +83,20 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${fraunces.variable} ${inter.variable} ${geistMono.variable}`}
     >
+      {/* Anti-flash: sets data-theme before first paint */}
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-screen flex flex-col">
-        <CustomCursor />
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <WhatsAppFloat />
+        <ThemeProvider>
+          <CustomCursor />
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <WhatsAppFloat />
+          <CookieBanner />
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );

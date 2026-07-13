@@ -4,6 +4,14 @@ import { useRef, useEffect } from "react";
 import { site } from "@/config/site";
 import { gsap, ScrollTrigger, registerGsap, prefersReducedMotion } from "@/lib/gsap";
 
+type GradeItem = { hora: string; turma: string; diasSemana: string; vagas: "disponivel" | "poucas" | "lotada" };
+
+const VAGAS_CONFIG = {
+  disponivel: { label: "Vagas disponíveis", dot: "#4ade80", text: "rgba(74,222,128,0.9)" },
+  poucas:     { label: "Últimas vagas",      dot: "#f59e0b", text: "rgba(245,158,11,0.9)" },
+  lotada:     { label: "Turma lotada",       dot: "#ef4444", text: "rgba(239,68,68,0.9)" },
+} as const;
+
 export default function GradeHoraria() {
   const sectionRef = useRef<HTMLElement>(null);
   const rowsRef = useRef<HTMLTableRowElement[]>([]);
@@ -37,8 +45,6 @@ export default function GradeHoraria() {
     };
   }, []);
 
-  type GradeItem = { hora: string; turma: string; diasSemana: string };
-  // Group rows by diasSemana
   const grupos = (site.grade as readonly GradeItem[]).reduce<Record<string, GradeItem[]>>(
     (acc, item) => {
       const key = item.diasSemana;
@@ -59,7 +65,6 @@ export default function GradeHoraria() {
       style={{ backgroundColor: "var(--color-blackout)" }}
     >
       <div className="max-w-5xl mx-auto px-6 lg:px-10">
-        {/* Header */}
         <div className="mb-12">
           <p className="eyebrow mb-3">Programação</p>
           <h2
@@ -74,14 +79,26 @@ export default function GradeHoraria() {
           </h2>
         </div>
 
-        {/* Tables por grupo de dia */}
+        {/* Legend */}
+        <div className="flex flex-wrap gap-5 mb-10">
+          {(Object.entries(VAGAS_CONFIG) as [keyof typeof VAGAS_CONFIG, typeof VAGAS_CONFIG[keyof typeof VAGAS_CONFIG]][]).map(([key, cfg]) => (
+            <div key={key} className="flex items-center gap-2">
+              <span
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{ backgroundColor: cfg.dot }}
+                aria-hidden="true"
+              />
+              <span className="text-xs" style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>
+                {cfg.label}
+              </span>
+            </div>
+          ))}
+        </div>
+
         <div className="flex flex-col gap-12">
           {Object.entries(grupos).map(([dias, turmas]) => (
             <div key={dias}>
-              {/* Dia label */}
-              <div
-                className="flex items-center gap-4 mb-4"
-              >
+              <div className="flex items-center gap-4 mb-4">
                 <span
                   className="text-xs tracking-[0.2em] uppercase"
                   style={{ color: "var(--color-spot)", fontFamily: "var(--font-mono)" }}
@@ -96,10 +113,7 @@ export default function GradeHoraria() {
               </div>
 
               <div className="overflow-x-auto -mx-6 px-6">
-                <table
-                  className="w-full border-collapse"
-                  aria-label={`Horários de ${dias}`}
-                >
+                <table className="w-full border-collapse" aria-label={`Horários de ${dias}`}>
                   <thead>
                     <tr>
                       <th
@@ -107,7 +121,7 @@ export default function GradeHoraria() {
                         style={{
                           color: "var(--color-ash)",
                           fontFamily: "var(--font-mono)",
-                          borderBottom: "1px solid rgba(244,239,231,0.08)",
+                          borderBottom: "1px solid var(--border-subtle)",
                         }}
                       >
                         Horário
@@ -117,49 +131,75 @@ export default function GradeHoraria() {
                         style={{
                           color: "var(--color-ash)",
                           fontFamily: "var(--font-mono)",
-                          borderBottom: "1px solid rgba(244,239,231,0.08)",
+                          borderBottom: "1px solid var(--border-subtle)",
                         }}
                       >
                         Turma
+                      </th>
+                      <th
+                        className="text-right pb-3 text-xs tracking-[0.15em] uppercase"
+                        style={{
+                          color: "var(--color-ash)",
+                          fontFamily: "var(--font-mono)",
+                          borderBottom: "1px solid var(--border-subtle)",
+                        }}
+                      >
+                        Vagas
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {turmas.map((item) => {
                       const ri = rowIndex++;
+                      const cfg = VAGAS_CONFIG[item.vagas];
                       return (
                         <tr
                           key={`${item.hora}-${item.turma}`}
-                          ref={(el) => {
-                            if (el) rowsRef.current[ri] = el;
-                          }}
+                          ref={(el) => { if (el) rowsRef.current[ri] = el; }}
                           className="group"
                           style={{ opacity: 0 }}
                         >
                           <td
-                            className="py-4 align-top"
-                            style={{
-                              borderBottom: "1px solid rgba(244,239,231,0.05)",
-                            }}
+                            className="py-4 align-middle"
+                            style={{ borderBottom: "1px solid var(--border-subtle)" }}
                           >
                             <span
                               className="text-base tabular-nums"
-                              style={{
-                                color: "var(--color-spot)",
-                                fontFamily: "var(--font-mono)",
-                              }}
+                              style={{ color: "var(--color-spot)", fontFamily: "var(--font-mono)" }}
                             >
                               {item.hora}
                             </span>
                           </td>
                           <td
-                            className="py-4 pl-8 align-top"
+                            className="py-4 pl-8 align-middle"
                             style={{
-                              borderBottom: "1px solid rgba(244,239,231,0.05)",
-                              color: "var(--color-bone)",
+                              borderBottom: "1px solid var(--border-subtle)",
+                              color: item.vagas === "lotada" ? "var(--color-ash)" : "var(--color-bone)",
+                              opacity: item.vagas === "lotada" ? 0.6 : 1,
                             }}
                           >
                             {item.turma}
+                            {item.vagas === "lotada" && (
+                              <span className="ml-2 text-xs line-through" style={{ color: "var(--color-ash)", opacity: 0.5 }}>
+                                indisponível
+                              </span>
+                            )}
+                          </td>
+                          <td
+                            className="py-4 align-middle text-right"
+                            style={{ borderBottom: "1px solid var(--border-subtle)" }}
+                          >
+                            <span
+                              className="inline-flex items-center gap-1.5 text-xs"
+                              style={{ color: cfg.text, fontFamily: "var(--font-mono)" }}
+                            >
+                              <span
+                                className="w-1.5 h-1.5 rounded-full shrink-0"
+                                style={{ backgroundColor: cfg.dot }}
+                                aria-hidden="true"
+                              />
+                              <span className="hidden sm:inline">{cfg.label}</span>
+                            </span>
                           </td>
                         </tr>
                       );
@@ -171,10 +211,9 @@ export default function GradeHoraria() {
           ))}
         </div>
 
-        {/* CTA */}
         <div
           className="mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-6 pt-8 border-t"
-          style={{ borderColor: "rgba(244,239,231,0.08)" }}
+          style={{ borderColor: "var(--border-subtle)" }}
         >
           <p className="text-sm flex-1" style={{ color: "var(--color-ash)" }}>
             Grade sujeita a ajustes — confirme disponibilidade de vagas via WhatsApp.
@@ -183,11 +222,8 @@ export default function GradeHoraria() {
             href={site.contact.whatsapp}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded text-sm font-semibold transition-colors duration-200 hover:brightness-110"
-            style={{
-              backgroundColor: "var(--color-spot)",
-              color: "var(--color-blackout)",
-            }}
+            className="shrink-0 inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold transition-colors duration-200 hover:brightness-110"
+            style={{ backgroundColor: "var(--color-spot)", color: "var(--color-blackout)" }}
           >
             Ver vagas disponíveis
           </a>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { site } from "@/config/site";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -17,7 +18,7 @@ export default function Header() {
     <header
       className="fixed top-0 left-0 right-0 z-40 transition-all duration-300"
       style={{
-        backgroundColor: scrolled ? "rgba(11,10,12,0.95)" : "transparent",
+        backgroundColor: scrolled ? "var(--bg-header)" : "transparent",
         backdropFilter: scrolled ? "blur(12px)" : "none",
         borderBottom: scrolled ? "1px solid rgba(110,16,35,0.3)" : "none",
       }}
@@ -54,13 +55,25 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* CTA */}
-        <div className="hidden md:flex items-center gap-4">
+        {/* Actions */}
+        <div className="hidden md:flex items-center gap-3">
+          <ThemeToggle />
+          <a
+            href="/portal/login"
+            className="text-xs tracking-[0.12em] uppercase px-3 py-2 border transition-colors duration-200 hover:border-spot hover:text-bone"
+            style={{
+              borderColor: "var(--border-mid)",
+              color: "var(--color-ash)",
+              fontFamily: "var(--font-mono)",
+            }}
+          >
+            Entrar
+          </a>
           <a
             href={site.contact.whatsapp}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2 rounded text-sm font-medium transition-colors duration-200"
+            className="inline-flex items-center gap-2 px-5 py-2 text-sm font-medium transition-all duration-200 hover:brightness-110"
             style={{
               backgroundColor: "var(--color-spot)",
               color: "var(--color-blackout)",
@@ -70,43 +83,46 @@ export default function Header() {
           </a>
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          type="button"
-          className="md:hidden flex flex-col gap-1.5 p-2"
-          aria-expanded={menuOpen}
-          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
-          onClick={() => setMenuOpen((v) => !v)}
-        >
-          <span
-            className="block w-6 h-px transition-transform duration-300"
-            style={{
-              backgroundColor: "var(--color-bone)",
-              transform: menuOpen ? "rotate(45deg) translate(3px,3px)" : "none",
-            }}
-          />
-          <span
-            className="block w-6 h-px transition-opacity duration-200"
-            style={{
-              backgroundColor: "var(--color-bone)",
-              opacity: menuOpen ? 0 : 1,
-            }}
-          />
-          <span
-            className="block w-6 h-px transition-transform duration-300"
-            style={{
-              backgroundColor: "var(--color-bone)",
-              transform: menuOpen ? "rotate(-45deg) translate(3px,-3px)" : "none",
-            }}
-          />
-        </button>
+        {/* Mobile: theme toggle + hamburger */}
+        <div className="md:hidden flex items-center gap-2">
+          <ThemeToggle />
+          <button
+            type="button"
+            className="flex flex-col gap-1.5 p-2"
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <span
+              className="block w-6 h-px transition-transform duration-300"
+              style={{
+                backgroundColor: "var(--color-bone)",
+                transform: menuOpen ? "rotate(45deg) translate(3px,3px)" : "none",
+              }}
+            />
+            <span
+              className="block w-6 h-px transition-opacity duration-200"
+              style={{
+                backgroundColor: "var(--color-bone)",
+                opacity: menuOpen ? 0 : 1,
+              }}
+            />
+            <span
+              className="block w-6 h-px transition-transform duration-300"
+              style={{
+                backgroundColor: "var(--color-bone)",
+                transform: menuOpen ? "rotate(-45deg) translate(3px,-3px)" : "none",
+              }}
+            />
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
       {menuOpen && (
         <nav
           className="md:hidden px-6 pb-6 pt-2 flex flex-col gap-4"
-          style={{ backgroundColor: "rgba(11,10,12,0.97)" }}
+          style={{ backgroundColor: "var(--bg-mobile-menu)" }}
           aria-label="Menu mobile"
         >
           {site.nav.map((item) => (
@@ -124,10 +140,18 @@ export default function Header() {
             </a>
           ))}
           <a
+            href="/portal/login"
+            className="py-2 text-sm border-b text-center"
+            style={{ color: "var(--color-spot)", borderColor: "rgba(110,16,35,0.2)" }}
+            onClick={() => setMenuOpen(false)}
+          >
+            Entrar no portal
+          </a>
+          <a
             href={site.contact.whatsapp}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 inline-flex justify-center items-center px-5 py-3 rounded text-sm font-medium"
+            className="mt-2 inline-flex justify-center items-center px-5 py-3 text-sm font-medium transition-all duration-200 hover:brightness-110"
             style={{
               backgroundColor: "var(--color-spot)",
               color: "var(--color-blackout)",

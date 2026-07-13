@@ -40,7 +40,7 @@ export default function Professores() {
       {/* Bottom note */}
       <div className="max-w-6xl mx-auto px-6 lg:px-10 mt-20">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 pt-8 border-t"
-          style={{ borderColor: "rgba(244,239,231,0.07)" }}>
+          style={{ borderColor: "var(--border-subtle)" }}>
           <p className="text-sm flex-1" style={{ color: "var(--color-ash)" }}>
             Quer conhecer o trabalho de perto? Agende uma aula experimental gratuita.
           </p>
@@ -181,7 +181,7 @@ function ProfessorCard({ prof, index }: { prof: Prof; index: number }) {
                   <div
                     className="w-full h-full flex flex-col items-center justify-center gap-4"
                     style={{
-                      background: "linear-gradient(160deg, rgba(61,10,22,0.6) 0%, rgba(11,10,12,0.9) 100%)",
+                      background: "linear-gradient(160deg, var(--color-vinho-deep) 0%, var(--color-blackout) 100%)",
                       border: "1px solid rgba(110,16,35,0.3)",
                     }}
                   >
@@ -194,7 +194,7 @@ function ProfessorCard({ prof, index }: { prof: Prof; index: number }) {
                         fontWeight: 900,
                         fontStyle: "italic",
                         color: "transparent",
-                        WebkitTextStroke: "1px rgba(231,182,92,0.4)",
+                        WebkitTextStroke: "1px var(--color-spot)",
                         lineHeight: 1,
                       }}
                       aria-hidden="true"
@@ -276,7 +276,7 @@ function ProfessorCard({ prof, index }: { prof: Prof; index: number }) {
               {/* Quotation mark */}
               <span
                 className="absolute -top-4 -left-1 text-5xl leading-none select-none"
-                style={{ color: "rgba(110,16,35,0.4)", fontFamily: "var(--font-display)" }}
+                style={{ color: "var(--quote-mark-color)", fontFamily: "var(--font-display)" }}
                 aria-hidden="true"
               >
                 "

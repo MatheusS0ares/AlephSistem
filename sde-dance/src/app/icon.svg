@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- background -->
+  <rect width="32" height="32" fill="#0B0A0C"/>
+
+  <!-- vinho accent bar — top, like a theater curtain rod -->
+  <rect x="0" y="0" width="32" height="2.5" fill="#6E1023"/>
+
+  <!-- SDE — bold serif, bone color -->
+  <text
+    x="16" y="20"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="13"
+    font-weight="700"
+    fill="#F4EFE7"
+    text-anchor="middle"
+    letter-spacing="0.5"
+  >SDE</text>
+
+  <!-- DANCE — small tracked uppercase in gold/spot -->
+  <text
+    x="16" y="27.5"
+    font-family="'Courier New', Courier, monospace"
+    font-size="4"
+    fill="#E7B65C"
+    text-anchor="middle"
+    letter-spacing="2.2"
+  >DANCE</text>
+</svg>

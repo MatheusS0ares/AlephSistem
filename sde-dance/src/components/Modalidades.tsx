@@ -47,7 +47,7 @@ export default function Modalidades() {
       <div className="max-w-6xl mx-auto px-6 lg:px-10 pb-28 lg:pb-36">
         <div
           className="flex flex-col sm:flex-row items-start sm:items-center gap-6 pt-8 border-t"
-          style={{ borderColor: "rgba(244,239,231,0.07)" }}
+          style={{ borderColor: "var(--border-subtle)" }}
         >
           <p className="text-sm flex-1" style={{ color: "var(--color-ash)" }}>
             Fale conosco para confirmar vagas e agendar sua aula experimental gratuita.
@@ -123,7 +123,7 @@ function PlaybillItem({ mod, index }: { mod: Mod; index: number }) {
     <div
       ref={itemRef}
       className="relative group border-b"
-      style={{ borderColor: "rgba(244,239,231,0.06)" }}
+      style={{ borderColor: "var(--border-subtle)" }}
     >
       {/* Amber refletor line — top */}
       <div
@@ -144,8 +144,8 @@ function PlaybillItem({ mod, index }: { mod: Mod; index: number }) {
           <div
             className="relative flex items-center justify-center shrink-0 w-28 lg:w-44"
             style={{
-              borderRight: isEven ? "1px solid rgba(244,239,231,0.06)" : "none",
-              borderLeft: isEven ? "none" : "1px solid rgba(244,239,231,0.06)",
+              borderRight: isEven ? "1px solid var(--border-subtle)" : "none",
+              borderLeft: isEven ? "none" : "1px solid var(--border-subtle)",
             }}
           >
             <span

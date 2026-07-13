@@ -18,9 +18,49 @@
   --spacing-section: 7rem;
 }
 
-/* ── Base ── */
-:root {
+/* ── Theme tokens ── */
+:root,
+[data-theme="dark"] {
   color-scheme: dark;
+  --color-blackout:   #0b0a0c;
+  --color-bone:       #f4efe7;
+  --color-ash:        #8c8089;
+  --color-spot:       #e7b65c;
+  --color-vinho:      #6e1023;
+  --color-vinho-deep: #3d0a16;
+
+  /* Semantic overlays */
+  --bg-header:         rgba(11,10,12,0.95);
+  --bg-mobile-menu:    rgba(11,10,12,0.98);
+  --bg-card:           rgba(11,10,12,0.80);
+  --bg-vinho-card:     rgba(61,10,22,0.40);
+  --bg-dark-card:      rgba(11,10,12,0.60);
+  --bg-lightbox:       rgba(11,10,12,0.95);   /* always dark */
+  --border-subtle:     rgba(244,239,231,0.07);
+  --border-mid:        rgba(244,239,231,0.15);
+  --border-bold:       rgba(244,239,231,0.22);
+  --quote-mark-color:  rgba(110,16,35,0.40);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --color-blackout:   #F5F0E8;
+  --color-bone:       #1A1118;
+  --color-ash:        #7A6C77;
+  --color-spot:       #B87D1A;
+  --color-vinho:      #7A1228;
+  --color-vinho-deep: #EDD5C8;
+
+  --bg-header:         rgba(245,240,232,0.95);
+  --bg-mobile-menu:    rgba(245,240,232,0.99);
+  --bg-card:           rgba(235,228,218,0.80);
+  --bg-vinho-card:     rgba(122,18,40,0.06);
+  --bg-dark-card:      rgba(220,212,202,0.70);
+  --bg-lightbox:       rgba(11,10,12,0.95);   /* sempre escuro */
+  --border-subtle:     rgba(26,17,24,0.09);
+  --border-mid:        rgba(26,17,24,0.16);
+  --border-bold:       rgba(26,17,24,0.26);
+  --quote-mark-color:  rgba(122,18,40,0.65);
 }
 
 *,
