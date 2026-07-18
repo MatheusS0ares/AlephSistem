@@ -37,10 +37,15 @@ const rotina = [
 ];
 
 export default function PetsPage() {
-  const [pets] = useState<Pet[]>(mockPets);
+  const [pets, setPets] = useState<Pet[]>(mockPets);
   const [selectedPet, setSelectedPet] = useState<Pet>(mockPets[0]);
   const [section, setSection] = useState<Section>("saude");
   const [addPetModal, setAddPetModal] = useState(false);
+  const [newPetName, setNewPetName] = useState("");
+  const [newPetSpecies, setNewPetSpecies] = useState("Cachorro");
+  const [newPetBreed, setNewPetBreed] = useState("");
+  const [newPetBirth, setNewPetBirth] = useState("");
+  const [newPetWeight, setNewPetWeight] = useState("");
   const [toast, setToast] = useState("");
 
   function showToast(msg: string) {
@@ -243,28 +248,47 @@ export default function PetsPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Animal</label>
-                  <select className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
+                  <select value={newPetSpecies} onChange={(e) => setNewPetSpecies(e.target.value)} className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
                     <option>Cachorro</option><option>Gato</option><option>Ave</option><option>Outros</option>
                   </select>
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Raça</label>
-                  <input type="text" placeholder="Ex: Vira-lata" className="input-field" style={{ fontSize: "0.95rem" }} />
+                  <input type="text" value={newPetBreed} onChange={(e) => setNewPetBreed(e.target.value)} placeholder="Ex: Vira-lata" className="input-field" style={{ fontSize: "0.95rem" }} />
                 </div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Nascimento</label>
-                  <input type="date" className="input-field" style={{ fontSize: "0.95rem" }} />
+                  <input type="date" value={newPetBirth} onChange={(e) => setNewPetBirth(e.target.value)} className="input-field" style={{ fontSize: "0.95rem" }} />
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Peso (kg)</label>
-                  <input type="number" placeholder="0.0" step="0.1" min="0" className="input-field" style={{ fontSize: "0.95rem" }} />
+                  <input type="number" value={newPetWeight} onChange={(e) => setNewPetWeight(e.target.value)} placeholder="0.0" step="0.1" min="0" className="input-field" style={{ fontSize: "0.95rem" }} />
                 </div>
               </div>
               <div style={{ display: "flex", gap: "0.75rem" }}>
                 <button onClick={() => setAddPetModal(false)} className="btn-secondary" style={{ flex: 1, justifyContent: "center", padding: "0.875rem", fontSize: "0.95rem" }}>Cancelar</button>
-                <button onClick={() => { showToast("🐾 Pet cadastrado!"); setAddPetModal(false); }} className="btn-primary" style={{ flex: 2, justifyContent: "center", padding: "0.875rem", fontSize: "1rem", fontWeight: 800 }}>
+                <button
+                  disabled={!newPetName.trim()}
+                  onClick={() => {
+                    const emojiMap: Record<string, string> = { Cachorro: "🐕", Gato: "🐈", Ave: "🦜", Outros: "🐾" };
+                    const colors = ["#c99a40", "#6a9fd4", "#a07ac0", "#d07a6a", "#7aab8a"];
+                    const newPet: Pet = {
+                      id: Date.now().toString(), name: newPetName.trim(), species: newPetSpecies,
+                      breed: newPetBreed || "Sem raça definida", birthDate: newPetBirth || new Date().toISOString().split("T")[0],
+                      weight: Number(newPetWeight) || 0, color: colors[pets.length % colors.length],
+                      emoji: emojiMap[newPetSpecies] ?? "🐾",
+                    };
+                    setPets((prev) => [...prev, newPet]);
+                    setSelectedPet(newPet);
+                    showToast(`🐾 ${newPetName.trim()} cadastrado!`);
+                    setNewPetName(""); setNewPetSpecies("Cachorro"); setNewPetBreed(""); setNewPetBirth(""); setNewPetWeight("");
+                    setAddPetModal(false);
+                  }}
+                  className="btn-primary"
+                  style={{ flex: 2, justifyContent: "center", padding: "0.875rem", fontSize: "1rem", fontWeight: 800, opacity: newPetName.trim() ? 1 : 0.6 }}
+                >
                   <MdAdd size={20} /> Cadastrar pet
                 </button>
               </div>

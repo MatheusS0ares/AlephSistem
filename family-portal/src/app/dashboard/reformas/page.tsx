@@ -63,6 +63,7 @@ export default function ReformasPage() {
   const [reforms, setReforms] = useState<Reform[]>(mockReforms);
   const [selected, setSelected] = useState<Reform>(mockReforms[0]);
   const [addItemModal, setAddItemModal] = useState(false);
+  const [addReformModal, setAddReformModal] = useState(false);
   const [newItemDesc, setNewItemDesc] = useState("");
   const [newItemBudget, setNewItemBudget] = useState("");
   const [newItemCategory, setNewItemCategory] = useState("Outros");
@@ -119,7 +120,7 @@ export default function ReformasPage() {
         </h1>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>Acompanhe o orçamento e andamento das obras da casa.</p>
       </div>
-      <button className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "1rem", borderRadius: 16, fontSize: "1.05rem", fontWeight: 800, marginBottom: "1.5rem" }}>
+      <button onClick={() => setAddReformModal(true)} className="btn-primary" style={{ width: "100%", justifyContent: "center", padding: "1rem", borderRadius: 16, fontSize: "1.05rem", fontWeight: 800, marginBottom: "1.5rem" }}>
         <MdAdd size={24} /> Adicionar nova obra
       </button>
 
@@ -273,11 +274,61 @@ export default function ReformasPage() {
         </div>
       )}
 
+      {addReformModal && <AddReformModal onClose={() => setAddReformModal(false)} onAdd={(r) => { setReforms((p) => [...p, r]); setSelected(r); setAddReformModal(false); }} />}
+
       <style>{`
         @media (max-width: 700px) {
           .reform-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
+    </div>
+  );
+}
+
+function AddReformModal({ onClose, onAdd }: { onClose: () => void; onAdd: (r: Reform) => void }) {
+  const [name, setName] = useState("");
+  const [room, setRoom] = useState("Sala");
+  const [budget, setBudget] = useState("");
+  const emojis: Record<string, string> = { Sala: "🛋️", Cozinha: "🍳", Banheiro: "🚿", Quarto: "🛏️", Varanda: "🌿", Garagem: "🚗", Outros: "🔨" };
+
+  function save() {
+    if (!name.trim() || !budget) return;
+    onAdd({ id: Date.now().toString(), name: name.trim(), room, emoji: emojis[room] ?? "🔨", budget: Number(budget), items: [], status: "planning" });
+  }
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 100 }} onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div style={{ background: "var(--bg-card)", borderRadius: "1.25rem 1.25rem 0 0", width: "100%", maxWidth: 540, padding: "1.5rem" }}>
+        <div style={{ width: 44, height: 5, borderRadius: 3, background: "var(--border)", margin: "0 auto 1.5rem" }} />
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+          <h2 style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--text-primary)" }}>Nova Obra</h2>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "0.5rem" }}><MdClose size={22} /></button>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+          <div>
+            <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.4rem" }}>Nome da obra *</label>
+            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Ex: Reforma da Cozinha" className="input-field" autoFocus />
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+            <div>
+              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.4rem" }}>Cômodo</label>
+              <select value={room} onChange={(e) => setRoom(e.target.value)} className="input-field" style={{ cursor: "pointer" }}>
+                {Object.keys(emojis).map((r) => <option key={r}>{r}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.4rem" }}>Orçamento (R$) *</label>
+              <input type="number" value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="0,00" min="0" className="input-field" />
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: "0.75rem", marginTop: "0.25rem" }}>
+            <button onClick={onClose} className="btn-secondary" style={{ flex: 1, justifyContent: "center", padding: "0.875rem" }}>Cancelar</button>
+            <button onClick={save} disabled={!name.trim() || !budget} className="btn-primary" style={{ flex: 2, justifyContent: "center", padding: "0.875rem", fontWeight: 800, opacity: (name.trim() && budget) ? 1 : 0.6 }}>
+              <MdAdd size={20} /> Criar obra
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

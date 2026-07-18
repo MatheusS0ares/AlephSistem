@@ -177,7 +177,16 @@ export default function TarefasPage() {
         </div>
       )}
 
-      {addModal && <AddTaskModal onClose={() => setAddModal(false)} />}
+      {addModal && (
+        <AddTaskModal
+          onClose={() => setAddModal(false)}
+          onAdd={(task) => {
+            setTasks((prev) => [task, ...prev]);
+            showToast(`✅ "${task.title}" adicionada!`);
+            setAddModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -267,7 +276,31 @@ function TaskCard({ task, onComplete }: { task: Task; onComplete?: () => void })
   );
 }
 
-function AddTaskModal({ onClose }: { onClose: () => void }) {
+const emojis: Record<Priority, string> = { low: "📋", medium: "⚡", high: "🔴" };
+
+function AddTaskModal({ onClose, onAdd }: { onClose: () => void; onAdd: (t: Task) => void }) {
+  const [title, setTitle] = useState("");
+  const [assignedTo, setAssignedTo] = useState("Ana");
+  const [priority, setPriority] = useState<Priority>("medium");
+  const [dueDate, setDueDate] = useState("");
+  const [recurring, setRecurring] = useState("");
+
+  function save() {
+    if (!title.trim()) return;
+    onAdd({
+      id: Date.now().toString(),
+      title: title.trim(),
+      assignedTo,
+      priority,
+      status: "pending",
+      dueDate: dueDate || undefined,
+      recurring: recurring || undefined,
+      points: priority === "high" ? 15 : priority === "medium" ? 10 : 5,
+      emoji: emojis[priority],
+    });
+    onClose();
+  }
+
   return (
     <div
       style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 100 }}
@@ -286,13 +319,17 @@ function AddTaskModal({ onClose }: { onClose: () => void }) {
             <label style={{ display: "block", fontSize: "0.875rem", color: "var(--text-secondary)", marginBottom: "0.5rem", fontWeight: 600 }}>
               O que precisa ser feito? *
             </label>
-            <input type="text" placeholder="Ex: Lavar louça, pagar conta..." className="input-field" style={{ fontSize: "1rem" }} autoFocus />
+            <input
+              type="text" value={title} onChange={(e) => setTitle(e.target.value)}
+              placeholder="Ex: Lavar louça, pagar conta..."
+              className="input-field" style={{ fontSize: "1rem" }} autoFocus
+            />
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
             <div>
               <label style={{ display: "block", fontSize: "0.875rem", color: "var(--text-secondary)", marginBottom: "0.5rem", fontWeight: 600 }}>Quem vai fazer?</label>
-              <select className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
+              <select value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)} className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
                 <option>Ana</option>
                 <option>Matheus</option>
                 <option>Família</option>
@@ -300,7 +337,7 @@ function AddTaskModal({ onClose }: { onClose: () => void }) {
             </div>
             <div>
               <label style={{ display: "block", fontSize: "0.875rem", color: "var(--text-secondary)", marginBottom: "0.5rem", fontWeight: 600 }}>Urgência</label>
-              <select className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
+              <select value={priority} onChange={(e) => setPriority(e.target.value as Priority)} className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
                 <option value="low">Baixa</option>
                 <option value="medium">Média</option>
                 <option value="high">Alta / Urgente</option>
@@ -311,11 +348,11 @@ function AddTaskModal({ onClose }: { onClose: () => void }) {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
             <div>
               <label style={{ display: "block", fontSize: "0.875rem", color: "var(--text-secondary)", marginBottom: "0.5rem", fontWeight: 600 }}>Prazo (opcional)</label>
-              <input type="date" className="input-field" style={{ fontSize: "0.95rem" }} />
+              <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="input-field" style={{ fontSize: "0.95rem" }} />
             </div>
             <div>
               <label style={{ display: "block", fontSize: "0.875rem", color: "var(--text-secondary)", marginBottom: "0.5rem", fontWeight: 600 }}>Repetir?</label>
-              <select className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
+              <select value={recurring} onChange={(e) => setRecurring(e.target.value)} className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
                 <option value="">Não</option>
                 <option value="daily">Todo dia</option>
                 <option value="weekly">Toda semana</option>
@@ -328,7 +365,7 @@ function AddTaskModal({ onClose }: { onClose: () => void }) {
             <button onClick={onClose} className="btn-secondary" style={{ flex: 1, justifyContent: "center", fontSize: "0.95rem", padding: "0.875rem" }}>
               Cancelar
             </button>
-            <button onClick={onClose} className="btn-primary" style={{ flex: 2, justifyContent: "center", fontSize: "1rem", padding: "0.875rem", fontWeight: 800 }}>
+            <button onClick={save} disabled={!title.trim()} className="btn-primary" style={{ flex: 2, justifyContent: "center", fontSize: "1rem", padding: "0.875rem", fontWeight: 800, opacity: title.trim() ? 1 : 0.6 }}>
               <MdAdd size={20} /> Criar tarefa
             </button>
           </div>

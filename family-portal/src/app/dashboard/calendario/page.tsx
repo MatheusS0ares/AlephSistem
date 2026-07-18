@@ -5,7 +5,7 @@ import { MdAdd, MdChevronLeft, MdChevronRight, MdClose } from "react-icons/md";
 const DAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const MONTHS = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
-const events = [
+const defaultEvents = [
   { date: "2026-06-27", title: "Consulta cardiologista", color: "#d06a6a", member: "Matheus", emoji: "❤️" },
   { date: "2026-06-30", title: "Pagar aluguel", color: "var(--brand)", member: "Família", emoji: "🏠" },
   { date: "2026-07-05", title: "Aniversário da Ana 🎂", color: "#c07898", member: "Família", emoji: "🎂" },
@@ -15,9 +15,13 @@ const events = [
 
 export default function CalendarioPage() {
   const today = new Date();
+  const [events, setEvents] = useState(defaultEvents);
   const [currentDate, setCurrentDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
   const [selectedDay, setSelectedDay] = useState<number | null>(today.getDate());
   const [addModal, setAddModal] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newMember, setNewMember] = useState("Família");
+  const [newDate, setNewDate] = useState("");
   const [toast, setToast] = useState("");
 
   const year = currentDate.getFullYear();
@@ -207,16 +211,24 @@ export default function CalendarioPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div>
                 <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>O que vai acontecer? *</label>
-                <input type="text" placeholder="Ex: Consulta médica, aniversário, reunião..." className="input-field" style={{ fontSize: "1rem" }} autoFocus />
+                <input
+                  type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)}
+                  placeholder="Ex: Consulta médica, aniversário, reunião..."
+                  className="input-field" style={{ fontSize: "1rem" }} autoFocus
+                />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 <div>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Data *</label>
-                  <input type="date" className="input-field" defaultValue={selectedDateStr ?? ""} style={{ fontSize: "0.95rem" }} />
+                  <input
+                    type="date" value={newDate || (selectedDateStr ?? "")}
+                    onChange={(e) => setNewDate(e.target.value)}
+                    className="input-field" style={{ fontSize: "0.95rem" }}
+                  />
                 </div>
                 <div>
                   <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Quem?</label>
-                  <select className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
+                  <select value={newMember} onChange={(e) => setNewMember(e.target.value)} className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
                     <option>Família</option>
                     <option>Ana</option>
                     <option>Matheus</option>
@@ -225,7 +237,18 @@ export default function CalendarioPage() {
               </div>
               <div style={{ display: "flex", gap: "0.75rem" }}>
                 <button onClick={() => setAddModal(false)} className="btn-secondary" style={{ flex: 1, justifyContent: "center", padding: "0.875rem", fontSize: "0.95rem" }}>Cancelar</button>
-                <button onClick={() => { showToast("✅ Evento adicionado!"); setAddModal(false); }} className="btn-primary" style={{ flex: 2, justifyContent: "center", padding: "0.875rem", fontSize: "1rem", fontWeight: 800 }}>
+                <button
+                  disabled={!newTitle.trim() || (!newDate && !selectedDateStr)}
+                  onClick={() => {
+                    const date = newDate || selectedDateStr!;
+                    setEvents((prev) => [...prev, { date, title: newTitle.trim(), color: "var(--brand)", member: newMember, emoji: "📅" }]);
+                    showToast("✅ Evento adicionado!");
+                    setNewTitle(""); setNewDate(""); setNewMember("Família");
+                    setAddModal(false);
+                  }}
+                  className="btn-primary"
+                  style={{ flex: 2, justifyContent: "center", padding: "0.875rem", fontSize: "1rem", fontWeight: 800, opacity: (newTitle.trim() && (newDate || selectedDateStr)) ? 1 : 0.6 }}
+                >
                   <MdAdd size={20} /> Salvar evento
                 </button>
               </div>

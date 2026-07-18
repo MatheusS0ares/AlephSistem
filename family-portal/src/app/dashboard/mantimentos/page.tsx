@@ -159,7 +159,16 @@ export default function MantimentosPage() {
         </div>
       )}
 
-      {showModal && <AddPantryItemModal onClose={() => setShowModal(false)} onAdd={(name) => showToast(`✅ "${name}" adicionado à dispensa!`)} />}
+      {showModal && (
+        <AddPantryItemModal
+          onClose={() => setShowModal(false)}
+          onAdd={(item) => {
+            const emojis: Record<string, string> = { Grãos: "🌾", Laticínios: "🥛", Carnes: "🥩", Higiene: "🧴", Limpeza: "🧹", Bebidas: "🧃", Outros: "📦" };
+            setItems((prev) => [...prev, { id: Date.now().toString(), emoji: emojis[item.category] ?? "📦", ...item }]);
+            showToast(`✅ "${item.name}" adicionado à dispensa!`);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -266,7 +275,9 @@ function PantryItem({ item, onAddToList, onQtyChange, variant }: PantryItemProps
   );
 }
 
-function AddPantryItemModal({ onClose, onAdd }: { onClose: () => void; onAdd: (name: string) => void }) {
+type NewItem = { name: string; category: string; unit: string; current: number; min: number };
+
+function AddPantryItemModal({ onClose, onAdd }: { onClose: () => void; onAdd: (item: NewItem) => void }) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState(categories[1]);
   const [unit, setUnit] = useState("unid");
@@ -275,7 +286,7 @@ function AddPantryItemModal({ onClose, onAdd }: { onClose: () => void; onAdd: (n
 
   function save() {
     if (!name.trim()) return;
-    onAdd(name.trim());
+    onAdd({ name: name.trim(), category, unit, current, min });
     onClose();
   }
 

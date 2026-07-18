@@ -16,8 +16,13 @@ const contacts = [
 const categories = ["Todos", "Emergência", "Saúde", "Vizinhos", "Serviços"];
 
 export default function ContatosPage() {
+  const [allContacts, setAllContacts] = useState(contacts);
   const [filter, setFilter] = useState("Todos");
   const [addModal, setAddModal] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newRelation, setNewRelation] = useState("");
+  const [newPhone, setNewPhone] = useState("");
+  const [newCategory, setNewCategory] = useState("Serviços");
   const [toast, setToast] = useState("");
 
   function showToast(msg: string) {
@@ -25,7 +30,7 @@ export default function ContatosPage() {
     setTimeout(() => setToast(""), 2500);
   }
 
-  const filtered = contacts.filter((c) => filter === "Todos" || c.category === filter);
+  const filtered = allContacts.filter((c) => filter === "Todos" || c.category === filter);
   const urgent = filtered.filter((c) => c.priority <= 1);
   const others = filtered.filter((c) => c.priority > 1);
 
@@ -132,25 +137,39 @@ export default function ContatosPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div>
                 <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Nome *</label>
-                <input type="text" placeholder="Ex: Dr. João, Eletricista..." className="input-field" style={{ fontSize: "1rem" }} autoFocus />
+                <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Ex: Dr. João, Eletricista..." className="input-field" style={{ fontSize: "1rem" }} autoFocus />
               </div>
               <div>
                 <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Descrição</label>
-                <input type="text" placeholder="Ex: Médico da família, vizinho..." className="input-field" style={{ fontSize: "0.95rem" }} />
+                <input type="text" value={newRelation} onChange={(e) => setNewRelation(e.target.value)} placeholder="Ex: Médico da família, vizinho..." className="input-field" style={{ fontSize: "0.95rem" }} />
               </div>
               <div>
                 <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Telefone *</label>
-                <input type="tel" placeholder="(11) 99999-0000" className="input-field" style={{ fontSize: "1.1rem" }} />
+                <input type="tel" value={newPhone} onChange={(e) => setNewPhone(e.target.value)} placeholder="(11) 99999-0000" className="input-field" style={{ fontSize: "1.1rem" }} />
               </div>
               <div>
                 <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>Categoria</label>
-                <select className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
+                <select value={newCategory} onChange={(e) => setNewCategory(e.target.value)} className="input-field" style={{ cursor: "pointer", fontSize: "0.95rem" }}>
                   {["Emergência", "Saúde", "Vizinhos", "Serviços"].map((c) => <option key={c}>{c}</option>)}
                 </select>
               </div>
               <div style={{ display: "flex", gap: "0.75rem" }}>
                 <button onClick={() => setAddModal(false)} className="btn-secondary" style={{ flex: 1, justifyContent: "center", padding: "0.875rem", fontSize: "0.95rem" }}>Cancelar</button>
-                <button onClick={() => { showToast("✅ Contato salvo!"); setAddModal(false); }} className="btn-primary" style={{ flex: 2, justifyContent: "center", padding: "0.875rem", fontSize: "1rem", fontWeight: 800, background: "#d07a6a" }}>
+                <button
+                  disabled={!newName.trim() || !newPhone.trim()}
+                  onClick={() => {
+                    const emojisMap: Record<string, string> = { Emergência: "🚨", Saúde: "❤️", Vizinhos: "🤝", Serviços: "🔧" };
+                    setAllContacts((prev) => [...prev, {
+                      id: Date.now().toString(), name: newName.trim(), relation: newRelation.trim() || newCategory,
+                      phone: newPhone.trim(), category: newCategory, priority: 3, emoji: emojisMap[newCategory] ?? "📞",
+                    }]);
+                    showToast(`✅ "${newName.trim()}" adicionado!`);
+                    setNewName(""); setNewRelation(""); setNewPhone(""); setNewCategory("Serviços");
+                    setAddModal(false);
+                  }}
+                  className="btn-primary"
+                  style={{ flex: 2, justifyContent: "center", padding: "0.875rem", fontSize: "1rem", fontWeight: 800, background: "#d07a6a", opacity: (newName.trim() && newPhone.trim()) ? 1 : 0.6 }}
+                >
                   <MdAdd size={20} /> Salvar contato
                 </button>
               </div>
