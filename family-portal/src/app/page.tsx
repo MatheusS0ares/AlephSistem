@@ -1,3 +1,11 @@
+import { redirect } from "next/navigation";
+
+// Landing page bypassed during development — restoring: remove this redirect
+export default function HomePage() {
+  redirect("/dashboard");
+}
+
+/*
 import Link from "next/link";
 import {
   MdHome, MdAttachMoney, MdDescription, MdShoppingCart,
@@ -167,3 +175,4 @@ export default function HomePage() {
     </main>
   );
 }
+*/

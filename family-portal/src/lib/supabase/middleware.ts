@@ -33,15 +33,15 @@ export async function updateSession(request: NextRequest) {
   const isAuthRoute = url.pathname.startsWith("/auth");
   const isDashboard = url.pathname.startsWith("/dashboard");
 
-  if (!user && isDashboard) {
-    url.pathname = "/auth/login";
-    return NextResponse.redirect(url);
-  }
-
-  if (user && isAuthRoute && !url.pathname.startsWith("/auth/invite")) {
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
-  }
+  // Auth guards disabled during development
+  // if (!user && isDashboard) {
+  //   url.pathname = "/auth/login";
+  //   return NextResponse.redirect(url);
+  // }
+  // if (user && isAuthRoute && !url.pathname.startsWith("/auth/invite")) {
+  //   url.pathname = "/dashboard";
+  //   return NextResponse.redirect(url);
+  // }
 
   return supabaseResponse;
 }
