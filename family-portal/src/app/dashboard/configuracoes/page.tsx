@@ -103,6 +103,7 @@ function PerfilModal({ onClose, onSave }: { onClose: () => void; onSave: (name: 
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            autoComplete="off"
             className="input-field"
             style={{ width: "100%" }}
           />
@@ -112,16 +113,23 @@ function PerfilModal({ onClose, onSave }: { onClose: () => void; onSave: (name: 
           <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>
             E-mail
           </label>
-          <input
-            type="email"
-            value="matheus.nascimento@verticalsaude.com.br"
-            readOnly
-            className="input-field"
-            style={{ width: "100%", color: "var(--text-muted)" }}
-          />
-          <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "0.3rem" }}>
-            O e-mail não pode ser alterado por aqui
-          </p>
+          <div style={{
+            background: "var(--bg-secondary)",
+            border: "1.5px solid var(--border)",
+            borderRadius: 12,
+            padding: "0.65rem 0.95rem",
+            fontSize: "0.875rem",
+            color: "var(--text-muted)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "0.5rem",
+          }}>
+            <span>matheus.nascimento@verticalsaude.com.br</span>
+            <span style={{ fontSize: "0.7rem", background: "var(--bg-card)", border: "1px solid var(--border)", borderRadius: 6, padding: "0.15rem 0.4rem", whiteSpace: "nowrap", color: "var(--text-muted)" }}>
+              fixo
+            </span>
+          </div>
         </div>
 
         <button
