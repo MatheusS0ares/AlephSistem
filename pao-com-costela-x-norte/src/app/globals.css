@@ -195,3 +195,15 @@ body {
 .preco-mudou {
   animation: pulso-preco 0.4s ease-out;
 }
+
+@keyframes flutuar {
+  0%, 100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(-2deg);
+  }
+}
+.flutuar {
+  animation: flutuar 5s ease-in-out infinite;
+}

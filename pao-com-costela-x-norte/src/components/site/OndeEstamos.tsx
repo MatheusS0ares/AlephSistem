@@ -24,15 +24,18 @@ export default function OndeEstamos() {
                 Chamar no WhatsApp
               </a>
             </div>
-            <div className="min-h-[220px] flex items-center justify-center border-t sm:border-t-0 sm:border-l border-papel/10">
+            <div className="fundo-cena relative min-h-[220px] flex items-center justify-center border-t sm:border-t-0 sm:border-l border-papel/10 overflow-hidden">
               {temCoordenadas ? (
                 <iframe
                   title="Mapa"
-                  className="w-full h-full min-h-[220px] grayscale contrast-125"
+                  className="relative w-full h-full min-h-[220px] grayscale contrast-125"
                   src={`https://www.openstreetmap.org/export/embed.html?marker=${siteConfig.latitude},${siteConfig.longitude}`}
                 />
               ) : (
-                <p className="text-sm text-papel/40 px-4 text-center">mapa em breve</p>
+                <div className="relative flex flex-col items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-brasa shadow-[0_0_24px_4px_var(--color-brasa)]" />
+                  <p className="text-xs uppercase tracking-wide text-papel/40">mapa em breve</p>
+                </div>
               )}
             </div>
           </div>

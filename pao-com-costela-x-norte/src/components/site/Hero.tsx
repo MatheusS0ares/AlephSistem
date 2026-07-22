@@ -1,5 +1,6 @@
 import { siteConfig } from "@/lib/site-config";
 import MenuMarquee from "./MenuMarquee";
+import SanduicheHero from "./SanduicheHero";
 
 export default function Hero({ itensMarquee }: { itensMarquee: string[] }) {
   return (
@@ -30,6 +31,8 @@ export default function Hero({ itensMarquee }: { itensMarquee: string[] }) {
             Ver cardápio
           </a>
         </div>
+
+        <SanduicheHero />
       </div>
 
       <MenuMarquee itens={itensMarquee} />

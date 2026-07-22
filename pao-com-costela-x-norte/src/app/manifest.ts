@@ -11,11 +11,11 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: "/admin",
     display: "standalone",
     background_color: "#faf8f4",
-    theme_color: "#e2451f",
+    theme_color: "#ff4d23",
     orientation: "portrait",
     icons: [
-      { src: "/favicon.ico", sizes: "any", type: "image/x-icon" },
-      // TODO-CLIENTE: adicionar /public/icon-192.png e /public/icon-512.png
+      { src: "/icon-192", sizes: "192x192", type: "image/png" },
+      { src: "/icon-512", sizes: "512x512", type: "image/png" },
     ],
   };
 }
