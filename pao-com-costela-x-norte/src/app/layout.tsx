@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Anton, Inter, Space_Mono } from "next/font/google";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
@@ -35,6 +35,10 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     type: "website",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a0806",
 };
 
 const jsonLd = {

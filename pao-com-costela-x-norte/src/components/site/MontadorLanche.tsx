@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Cardapio, Carne, ItemCarrinho, Molho, Pao, TipoPedido } from "@/lib/types";
 import { resolverPreco, formatarPreco } from "@/lib/price";
 import { montarMensagemPedido, linkWhatsApp } from "@/lib/whatsapp";
@@ -123,8 +123,10 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
   }
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
-      <div className="space-y-8">
+    <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
+      <div className="vidro rounded-3xl p-6 sm:p-8 space-y-10">
+        <IndicadorPassos passoAtual={pao ? (carne ? (molho ? 4 : 3) : 2) : 1} />
+
         <PassoPaes ativo={passo === 1} paes={cardapio.paes} selecionado={pao} onSelecionar={selecionarPao} />
 
         {pao && (
@@ -147,13 +149,13 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
         )}
 
         {pao && carne && molho && passo === 4 && (
-          <div className="border-4 border-papel p-6 space-y-4">
-            <div className="flex items-center gap-4">
-              <span className="text-sm uppercase tracking-wide text-papel/70">Quantidade</span>
-              <div className="flex items-center gap-3">
+          <div className="borda-fina rounded-2xl p-6 space-y-4 bg-noite-2/40">
+            <div className="flex items-center justify-between">
+              <span className="text-sm uppercase tracking-wide text-papel/60">Quantidade</span>
+              <div className="flex items-center gap-4">
                 <button
                   type="button"
-                  className="alvo-toque bg-brasa text-noite font-bold text-xl"
+                  className="alvo-toque rounded-full bg-papel/10 hover:bg-papel/20 font-bold text-xl transition-colors"
                   onClick={() => setQuantidade((q) => Math.max(1, q - 1))}
                   aria-label="Diminuir quantidade"
                 >
@@ -162,7 +164,7 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
                 <span className="preco text-xl w-8 text-center">{quantidade}</span>
                 <button
                   type="button"
-                  className="alvo-toque bg-brasa text-noite font-bold text-xl"
+                  className="alvo-toque rounded-full bg-papel/10 hover:bg-papel/20 font-bold text-xl transition-colors"
                   onClick={() => setQuantidade((q) => q + 1)}
                   aria-label="Aumentar quantidade"
                 >
@@ -171,7 +173,7 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
               </div>
             </div>
             <input
-              className="alvo-toque w-full bg-transparent border-2 border-fumaca px-4 text-papel placeholder:text-fumaca"
+              className="alvo-toque w-full bg-transparent borda-fina rounded-xl px-4 text-papel placeholder:text-fumaca"
               placeholder="Observação (ex: sem vinagrete)"
               value={observacaoItem}
               onChange={(e) => setObservacaoItem(e.target.value)}
@@ -179,7 +181,7 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
             <button
               type="button"
               onClick={adicionarAoCarrinho}
-              className="alvo-toque w-full bg-lona text-noite font-bold uppercase tracking-wide"
+              className="alvo-toque w-full rounded-xl bg-lona text-noite font-bold uppercase tracking-wide hover:brightness-110 transition-[filter]"
             >
               Adicionar ao pedido — {formatarPreco((precoAtual ?? 0) * quantidade)}
             </button>
@@ -187,19 +189,19 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
         )}
       </div>
 
-      <aside className="border-4 border-lona p-6 space-y-4 h-fit lg:sticky lg:top-6">
+      <aside className="vidro rounded-3xl p-6 space-y-4 h-fit lg:sticky lg:top-24">
         <h3 className="titulo-display text-xl">Seu pedido</h3>
         {carrinho.length === 0 ? (
-          <p className="text-sm text-papel/60">Monte seu lanche ao lado.</p>
+          <p className="text-sm text-papel/50">Monte seu lanche ao lado.</p>
         ) : (
           <ul className="space-y-2 text-sm">
             {carrinho.map((item, i) => (
-              <li key={i} className="flex justify-between gap-2 border-b border-fumaca/40 pb-2">
-                <span>
+              <li key={i} className="flex justify-between gap-2 border-b border-papel/10 pb-2">
+                <span className="text-papel/80">
                   {item.quantidade}x {item.paoNome} — {item.carneNome}
                   {item.molhoNome ? ` — ${item.molhoNome}` : ""}
                 </span>
-                <span className="preco whitespace-nowrap">{formatarPreco(item.precoUnitario * item.quantidade)}</span>
+                <span className="preco whitespace-nowrap text-papel">{formatarPreco(item.precoUnitario * item.quantidade)}</span>
               </li>
             ))}
           </ul>
@@ -207,14 +209,11 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
 
         {carrinho.length > 0 && (
           <>
-            <p className="flex justify-between font-bold titulo-display text-lg">
-              <span>Subtotal</span>
-              <span className="preco text-brasa">{formatarPreco(subtotal)}</span>
-            </p>
+            <PrecoAnimado valor={subtotal} />
 
             <div className="space-y-2">
               <input
-                className="alvo-toque w-full bg-transparent border-2 border-fumaca px-3 text-papel placeholder:text-fumaca text-sm"
+                className="alvo-toque w-full bg-transparent borda-fina rounded-xl px-3 text-papel placeholder:text-fumaca text-sm"
                 placeholder="Seu nome"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
@@ -225,8 +224,8 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
                     key={t}
                     type="button"
                     onClick={() => setTipo(t)}
-                    className={`alvo-toque flex-1 border-2 uppercase text-xs ${
-                      tipo === t ? "bg-letrista border-letrista" : "border-fumaca"
+                    className={`alvo-toque flex-1 rounded-xl border uppercase text-xs transition-colors ${
+                      tipo === t ? "bg-letrista/20 border-letrista text-papel" : "borda-fina text-papel/60"
                     }`}
                   >
                     {t}
@@ -235,14 +234,14 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
               </div>
               {tipo === "entrega" && (
                 <input
-                  className="alvo-toque w-full bg-transparent border-2 border-fumaca px-3 text-papel placeholder:text-fumaca text-sm"
+                  className="alvo-toque w-full bg-transparent borda-fina rounded-xl px-3 text-papel placeholder:text-fumaca text-sm"
                   placeholder="Endereço"
                   value={endereco}
                   onChange={(e) => setEndereco(e.target.value)}
                 />
               )}
               <input
-                className="alvo-toque w-full bg-transparent border-2 border-fumaca px-3 text-papel placeholder:text-fumaca text-sm"
+                className="alvo-toque w-full bg-transparent borda-fina rounded-xl px-3 text-papel placeholder:text-fumaca text-sm"
                 placeholder="Observação do pedido"
                 value={observacaoPedido}
                 onChange={(e) => setObservacaoPedido(e.target.value)}
@@ -254,7 +253,7 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
                 <p>{erro}</p>
                 <a
                   href={linkFallback()}
-                  className="alvo-toque flex items-center justify-center w-full bg-lona text-noite font-bold uppercase tracking-wide"
+                  className="alvo-toque flex items-center justify-center w-full rounded-xl bg-lona text-noite font-bold uppercase tracking-wide"
                 >
                   Enviar pelo WhatsApp mesmo assim
                 </a>
@@ -265,7 +264,7 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
               type="button"
               disabled={!nome.trim() || enviando}
               onClick={enviarPedido}
-              className="alvo-toque w-full bg-brasa text-noite font-bold uppercase tracking-wide disabled:opacity-40"
+              className="alvo-toque w-full rounded-xl bg-brasa text-noite font-bold uppercase tracking-wide disabled:opacity-40 shadow-[0_0_30px_-8px_var(--color-brasa)] hover:shadow-[0_0_44px_-4px_var(--color-brasa)] transition-shadow"
             >
               {enviando ? "Enviando..." : "Enviar pedido pelo WhatsApp"}
             </button>
@@ -276,16 +275,67 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
   );
 }
 
+function PrecoAnimado({ valor }: { valor: number }) {
+  const [pulsar, setPulsar] = useState(false);
+  const anterior = useRef(valor);
+
+  useEffect(() => {
+    if (anterior.current !== valor) {
+      setPulsar(true);
+      anterior.current = valor;
+      const t = setTimeout(() => setPulsar(false), 400);
+      return () => clearTimeout(t);
+    }
+  }, [valor]);
+
+  return (
+    <p className="flex justify-between items-baseline font-bold titulo-display text-lg">
+      <span className="text-papel/70 text-sm">Subtotal</span>
+      <span className={`preco text-2xl text-brasa ${pulsar ? "preco-mudou" : ""}`}>{formatarPreco(valor)}</span>
+    </p>
+  );
+}
+
+function IndicadorPassos({ passoAtual }: { passoAtual: Passo }) {
+  const nomes = ["Pão", "Carne", "Molho", "Pronto"];
+  return (
+    <div className="flex items-center" aria-hidden="true">
+      {nomes.map((nome, i) => {
+        const n = (i + 1) as Passo;
+        const ativo = n <= passoAtual;
+        return (
+          <div key={nome} className="flex items-center flex-1 last:flex-none">
+            <div className="flex flex-col items-center gap-1.5 shrink-0">
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold titulo-display transition-colors ${
+                  ativo ? "bg-brasa text-noite" : "borda-fina text-papel/40"
+                }`}
+              >
+                {i + 1}
+              </div>
+              <span className={`text-[10px] uppercase tracking-wide ${ativo ? "text-papel/80" : "text-papel/30"}`}>{nome}</span>
+            </div>
+            {i < nomes.length - 1 && (
+              <div className={`h-px flex-1 mx-2 transition-colors ${n < passoAtual ? "bg-brasa" : "bg-papel/10"}`} />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function CamadaSanduiche({ passo }: { passo: Passo }) {
   return (
-    <div className="flex flex-col items-center gap-1 h-28 justify-end" aria-hidden="true">
+    <div className="flex flex-col items-center gap-1 h-24 justify-end" aria-hidden="true">
       {passo >= 3 && (
-        <div className="w-24 h-2 rounded-full bg-brasa transition-all duration-300 ease-out" style={{ animation: "cair 0.3s ease-out" }} />
+        <div
+          className="w-24 h-2 rounded-full bg-brasa shadow-[0_0_16px_-2px_var(--color-brasa)]"
+          style={{ animation: "cair 0.3s ease-out" }}
+        />
       )}
-      {passo >= 2 && (
-        <div className="w-28 h-6 bg-fumaca transition-all duration-300 ease-out" style={{ animation: "cair 0.3s ease-out" }} />
-      )}
-      <div className="w-32 h-5 rounded-t-full bg-lona transition-all duration-300 ease-out" style={{ animation: "cair 0.3s ease-out" }} />
+      {passo >= 2 && <div className="w-28 h-6 rounded-sm bg-fumaca" style={{ animation: "cair 0.3s ease-out" }} />}
+      <div className="w-32 h-5 rounded-t-full bg-lona" style={{ animation: "cair 0.3s ease-out" }} />
     </div>
   );
 }
@@ -302,8 +352,8 @@ function PassoPaes({
   onSelecionar: (p: Pao) => void;
 }) {
   return (
-    <section className={ativo ? "" : "opacity-60"}>
-      <h3 className="titulo-display text-lg mb-3">1. Escolha o pão</h3>
+    <section className={ativo ? "" : "opacity-50"}>
+      <h3 className="titulo-display text-lg mb-3 text-papel/60">Escolha o pão</h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {paes.map((p) => (
           <button
@@ -311,12 +361,14 @@ function PassoPaes({
             type="button"
             disabled={!p.disponivel}
             onClick={() => onSelecionar(p)}
-            className={`alvo-toque p-4 border-4 text-left transition-colors ${
-              selecionado?.id === p.id ? "border-brasa bg-brasa/10" : "border-papel/30"
-            } ${!p.disponivel ? "opacity-40" : ""}`}
+            className={`alvo-toque p-4 rounded-xl border text-left transition-all ${
+              selecionado?.id === p.id
+                ? "border-brasa bg-brasa/10 shadow-[0_0_24px_-8px_var(--color-brasa)]"
+                : "borda-fina hover:border-papel/30"
+            } ${!p.disponivel ? "opacity-30" : ""}`}
           >
             <p className="font-bold">{p.nome}</p>
-            <p className="preco text-sm text-papel/70">
+            <p className="preco text-sm text-papel/60">
               {p.preco_base === null ? "preço não definido" : formatarPreco(p.preco_base)}
             </p>
             {!p.disponivel && <p className="text-xs uppercase text-lona mt-1">acabou hoje</p>}
@@ -351,8 +403,8 @@ function PassoCarnes({
   onConfirmarMisto: () => void;
 }) {
   return (
-    <section className={ativo ? "" : "opacity-60"}>
-      <h3 className="titulo-display text-lg mb-3">2. Escolha a carne</h3>
+    <section className={ativo ? "" : "opacity-50"}>
+      <h3 className="titulo-display text-lg mb-3 text-papel/60">Escolha a carne</h3>
       <CamadaSanduiche passo={selecionada ? 3 : 2} />
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
         {carnes.map((c) => {
@@ -363,12 +415,14 @@ function PassoCarnes({
               type="button"
               disabled={!c.disponivel}
               onClick={() => onSelecionar(c)}
-              className={`alvo-toque p-4 border-4 text-left transition-colors ${
-                selecionada?.id === c.id ? "border-brasa bg-brasa/10" : "border-papel/30"
-              } ${!c.disponivel ? "opacity-40" : ""}`}
+              className={`alvo-toque p-4 rounded-xl border text-left transition-all ${
+                selecionada?.id === c.id
+                  ? "border-brasa bg-brasa/10 shadow-[0_0_24px_-8px_var(--color-brasa)]"
+                  : "borda-fina hover:border-papel/30"
+              } ${!c.disponivel ? "opacity-30" : ""}`}
             >
               <p className="font-bold">{c.nome}</p>
-              <p className="preco text-sm text-papel/70">{formatarPreco(preco)}</p>
+              <p className="preco text-sm text-papel/60">{formatarPreco(preco)}</p>
               {!c.disponivel && <p className="text-xs uppercase text-lona mt-1">acabou hoje</p>}
             </button>
           );
@@ -376,8 +430,8 @@ function PassoCarnes({
       </div>
 
       {selecionada?.composta && (
-        <div className="mt-4 border-2 border-letrista p-4 space-y-3">
-          <p className="text-sm">
+        <div className="mt-4 borda-fina rounded-xl p-4 space-y-3 border-letrista/50">
+          <p className="text-sm text-papel/70">
             Escolha {selecionada.qtd_escolhas} carnes para o misto ({mistoEscolhas.length}/{selecionada.qtd_escolhas})
           </p>
           <div className="flex flex-wrap gap-2">
@@ -386,8 +440,8 @@ function PassoCarnes({
                 key={c.id}
                 type="button"
                 onClick={() => onAlternarMisto(c.nome)}
-                className={`alvo-toque px-4 border-2 text-sm ${
-                  mistoEscolhas.includes(c.nome) ? "bg-letrista border-letrista" : "border-fumaca"
+                className={`alvo-toque px-4 rounded-full border text-sm transition-colors ${
+                  mistoEscolhas.includes(c.nome) ? "bg-letrista/30 border-letrista" : "borda-fina text-papel/60"
                 }`}
               >
                 {c.nome}
@@ -398,7 +452,7 @@ function PassoCarnes({
             type="button"
             disabled={mistoEscolhas.length !== selecionada.qtd_escolhas}
             onClick={onConfirmarMisto}
-            className="alvo-toque bg-lona text-noite font-bold px-6 uppercase text-sm disabled:opacity-40"
+            className="alvo-toque rounded-full bg-lona text-noite font-bold px-6 uppercase text-sm disabled:opacity-40"
           >
             Confirmar composição
           </button>
@@ -420,8 +474,8 @@ function PassoMolhos({
   onSelecionar: (m: Molho) => void;
 }) {
   return (
-    <section className={ativo ? "" : "opacity-60"}>
-      <h3 className="titulo-display text-lg mb-3">3. Escolha o molho</h3>
+    <section className={ativo ? "" : "opacity-50"}>
+      <h3 className="titulo-display text-lg mb-3 text-papel/60">Escolha o molho</h3>
       <CamadaSanduiche passo={4} />
       <div className="flex flex-wrap gap-3 mt-3">
         {molhos.map((m) => (
@@ -430,9 +484,11 @@ function PassoMolhos({
             type="button"
             disabled={!m.disponivel}
             onClick={() => onSelecionar(m)}
-            className={`alvo-toque px-5 border-4 flex items-center gap-2 ${
-              selecionado?.id === m.id ? "border-brasa bg-brasa/10" : "border-papel/30"
-            } ${!m.disponivel ? "opacity-40" : ""}`}
+            className={`alvo-toque px-5 rounded-full border flex items-center gap-2 transition-all ${
+              selecionado?.id === m.id
+                ? "border-brasa bg-brasa/10 shadow-[0_0_24px_-8px_var(--color-brasa)]"
+                : "borda-fina hover:border-papel/30"
+            } ${!m.disponivel ? "opacity-30" : ""}`}
           >
             {m.cor_hex && (
               <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: m.cor_hex }} />
