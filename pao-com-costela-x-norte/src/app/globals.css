@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Paleta — faixa de lona pintada à mão ── */
+  --color-noite: #141110;
+  --color-brasa: #e2451f;
+  --color-lona: #f2c230;
+  --color-letrista: #1b62a8;
+  --color-papel: #f0e6d2;
+  --color-fumaca: #635b54;
+
+  /* ── Painel admin — ferramenta de trabalho, tema claro ── */
+  --color-admin-bg: #faf8f4;
+  --color-admin-texto: #1a1714;
+  --color-admin-borda: #e4dfd6;
+
+  /* ── Tipografia ── */
+  --font-display: var(--font-anton);
+  --font-corpo: var(--font-inter);
+  --font-mono-preco: var(--font-space-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 4rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  font-family: var(--font-corpo), system-ui, sans-serif;
+}
+
+/* Tema do site público — a festa da identidade visual */
+.tema-site {
+  background-color: var(--color-noite);
+  color: var(--color-papel);
+}
+
+.preco {
+  font-family: var(--font-mono-preco), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.titulo-display {
+  font-family: var(--font-display), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.contorno-letrista {
+  -webkit-text-stroke: 2px var(--color-letrista);
+  paint-order: stroke fill;
+}
+
+/* Tema do painel admin — quieto, claro, um único acento */
+.tema-admin {
+  background-color: var(--color-admin-bg);
+  color: var(--color-admin-texto);
+}
+
+.alvo-toque {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-letrista);
+  outline-offset: 2px;
+}
+
+@keyframes cair {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.9);
+  }
+  60% {
+    transform: translateY(3px) scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
