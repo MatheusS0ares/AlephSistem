@@ -3,7 +3,7 @@ import { resolverPreco, formatarPreco } from "@/lib/price";
 import ScrollReveal from "./ScrollReveal";
 
 export default function CardapioCompleto({ cardapio }: { cardapio: Cardapio }) {
-  const { paes, carnes, molhos } = cardapio;
+  const { paes, carnes, molhos, combos } = cardapio;
 
   return (
     <section className="tema-site px-6 py-24 sm:py-32 relative border-t border-papel/5">
@@ -49,6 +49,28 @@ export default function CardapioCompleto({ cardapio }: { cardapio: Cardapio }) {
             </ScrollReveal>
           ))}
         </div>
+
+        {combos.length > 0 && (
+          <ScrollReveal atraso={160}>
+            <div className="mt-16">
+              <h3 className="titulo-display text-2xl mb-6 text-papel/70 text-center">Combos</h3>
+              <ul className="grid gap-4 sm:grid-cols-2 max-w-2xl mx-auto">
+                {combos.map((combo) => (
+                  <li key={combo.id} className="vidro rounded-2xl p-6 flex items-center justify-between gap-4">
+                    <div>
+                      <p className="font-bold text-papel">{combo.nome}</p>
+                      <p className="text-xs text-papel/50">
+                        {combo.quantidade}x · {combo.permite_variar_carne ? "carne à sua escolha" : "mesma carne"}
+                      </p>
+                      {!combo.disponivel && <p className="text-xs uppercase text-brasa font-bold mt-1">acabou hoje</p>}
+                    </div>
+                    <span className="preco text-brasa font-bold text-lg">{formatarPreco(combo.preco)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </ScrollReveal>
+        )}
 
         {molhos.length > 0 && (
           <ScrollReveal atraso={200}>

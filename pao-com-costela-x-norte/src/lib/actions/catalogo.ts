@@ -124,6 +124,115 @@ export async function definirPrecoExcecao(paoId: string, carneId: string, preco:
   revalidateTag("cardapio");
 }
 
+export async function moverOrdem(tabela: TabelaCatalogo, id: string, direcao: "cima" | "baixo") {
+  await exigirAdmin();
+  const supabase = await createClient();
+
+  const { data: itens } = await supabase.from(tabela).select("id, ordem").order("ordem");
+  if (!itens) return;
+
+  const indice = itens.findIndex((i) => i.id === id);
+  const indiceVizinho = direcao === "cima" ? indice - 1 : indice + 1;
+  if (indice === -1 || indiceVizinho < 0 || indiceVizinho >= itens.length) return;
+
+  const atual = itens[indice];
+  const vizinho = itens[indiceVizinho];
+
+  await Promise.all([
+    supabase.from(tabela).update({ ordem: vizinho.ordem }).eq("id", atual.id),
+    supabase.from(tabela).update({ ordem: atual.ordem }).eq("id", vizinho.id),
+  ]);
+  revalidateTag("cardapio");
+}
+
+export async function criarCombo(input: {
+  nome: string;
+  paoId: string | null;
+  quantidade: number;
+  preco: number;
+  permiteVariarCarne: boolean;
+}) {
+  await exigirAdmin();
+  if (!input.nome.trim()) throw new Error("NOME_VAZIO");
+  if (!(input.preco > 0)) throw new Error("PRECO_INVALIDO");
+  if (!(input.quantidade > 1)) throw new Error("QUANTIDADE_INVALIDA");
+
+  const supabase = await createClient();
+  const { data: existentes } = await supabase.from("combos").select("ordem").order("ordem", { ascending: false }).limit(1);
+  const proximaOrdem = (existentes?.[0]?.ordem ?? 0) + 1;
+
+  const { error } = await supabase.from("combos").insert({
+    nome: input.nome.trim(),
+    pao_id: input.paoId,
+    quantidade: input.quantidade,
+    preco: input.preco,
+    permite_variar_carne: input.permiteVariarCarne,
+    ordem: proximaOrdem,
+  });
+  if (error) throw new Error(error.message);
+  revalidateTag("cardapio");
+}
+
+export async function atualizarCombo(id: string, campo: "preco" | "quantidade", valor: number) {
+  await exigirAdmin();
+  if (!(valor > 0)) throw new Error("VALOR_INVALIDO");
+  if (campo === "quantidade" && valor <= 1) throw new Error("QUANTIDADE_INVALIDA");
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("combos").update({ [campo]: valor }).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidateTag("cardapio");
+}
+
+export async function removerCombo(id: string) {
+  await exigirAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase.from("combos").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidateTag("cardapio");
+}
+
+export async function criarPromocao(input: {
+  titulo: string;
+  paoId: string;
+  carneId: string;
+  preco: number;
+  inicio: string;
+  fim?: string;
+}) {
+  await exigirAdmin();
+  if (!input.titulo.trim()) throw new Error("TITULO_VAZIO");
+  if (!(input.preco > 0)) throw new Error("PRECO_INVALIDO");
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("promocoes").insert({
+    titulo: input.titulo.trim(),
+    pao_id: input.paoId,
+    carne_id: input.carneId,
+    preco: input.preco,
+    inicio: input.inicio,
+    fim: input.fim || null,
+  });
+  if (error) throw new Error(error.message);
+  revalidateTag("cardapio");
+}
+
+export async function alternarAtivoPromocao(id: string, ativo: boolean) {
+  await exigirAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase.from("promocoes").update({ ativo }).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidateTag("cardapio");
+}
+
+export async function removerPromocao(id: string) {
+  await exigirAdmin();
+  const supabase = await createClient();
+  const { error } = await supabase.from("promocoes").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidateTag("cardapio");
+}
+
 /** Desfaz a última alteração feita por este admin que ainda não foi desfeita. */
 export async function desfazerUltimaAlteracao() {
   const admin = await exigirAdmin();

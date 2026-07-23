@@ -48,12 +48,25 @@ export type Promocao = {
   ativo: boolean;
 };
 
+export type Combo = {
+  id: string;
+  nome: string;
+  pao_id: string | null;
+  quantidade: number;
+  preco: number;
+  permite_variar_carne: boolean;
+  ordem: number;
+  ativo: boolean;
+  disponivel: boolean;
+};
+
 export type Cardapio = {
   paes: Pao[];
   carnes: Carne[];
   molhos: Molho[];
   excecoes: PrecoExcecao[];
   promocoes: Promocao[];
+  combos: Combo[];
 };
 
 export type FormaPagamento = "dinheiro" | "pix" | "cartao";
