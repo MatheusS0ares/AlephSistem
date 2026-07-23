@@ -1,20 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── Paleta "Brasa noturna" — grelha à noite, precisão de produto ── */
-  --color-noite: #0a0806;
-  --color-noite-2: #14100c;
-  --color-brasa: #ff4d23;
-  --color-brasa-2: #ff8a3d;
-  --color-lona: #ffc53d;
-  --color-letrista: #3d8bdb;
-  --color-papel: #f5efe6;
-  --color-fumaca: #8a8078;
+  /* ── Paleta "Brasa noturna" Premium ── */
+  --color-noite: #050505;
+  --color-noite-2: #0a0a0a;
+  --color-brasa: #ff3c00;
+  --color-brasa-2: #ff7300;
+  --color-lona: #ffb800;
+  --color-letrista: #0077ff;
+  --color-papel: #fbfbfb;
+  --color-fumaca: #707070;
 
-  /* ── Painel admin — ferramenta de trabalho, tema claro ── */
-  --color-admin-bg: #faf8f4;
-  --color-admin-texto: #1a1714;
-  --color-admin-borda: #e4dfd6;
+  /* ── Painel admin ── */
+  --color-admin-bg: #fafafa;
+  --color-admin-texto: #111111;
+  --color-admin-borda: #eaeaea;
 
   /* ── Tipografia ── */
   --font-display: var(--font-anton);
@@ -27,29 +27,20 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: initial; /* Lenis takes over */
   scroll-padding-top: 5rem;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
 }
 
 body {
   font-family: var(--font-corpo), system-ui, sans-serif;
+  background-color: var(--color-noite);
+  color: var(--color-papel);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Tema do site público — cinematográfico, noturno, glow de brasa ── */
+/* ── Tema do site público — Premium Dark Mode ── */
 .tema-site {
   background-color: var(--color-noite);
   color: var(--color-papel);
@@ -58,32 +49,30 @@ body {
 .preco {
   font-family: var(--font-mono-preco), ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.05em;
 }
 
 .titulo-display {
   font-family: var(--font-display), sans-serif;
   text-transform: uppercase;
-  letter-spacing: -0.01em;
-  line-height: 0.92;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
 }
 
-/* texto em brasa — cor sólida (sempre legível) + glow tipo neon/ember */
+/* texto em brasa — modern neon glow */
 .texto-brasa {
-  color: var(--color-brasa-2);
-  text-shadow:
-    0 0 30px color-mix(in srgb, var(--color-brasa) 80%, transparent),
-    0 0 70px color-mix(in srgb, var(--color-brasa) 45%, transparent);
+  color: var(--color-papel);
+  background: linear-gradient(to right, var(--color-brasa-2), var(--color-brasa));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 40px color-mix(in srgb, var(--color-brasa) 60%, transparent));
 }
 
-/*
- * Fundo de cena (glow + grid) — SEMPRE em pseudo-elementos decorativos,
- * nunca aplicado no próprio container do conteúdo: mask-image afeta a
- * renderização inteira do elemento (texto incluso), então precisa viver
- * isolado num ::before/::after que não carrega texto real.
- */
+/* Background Scene - Ultra premium grid & mesh gradient */
 .fundo-cena {
   position: relative;
   isolation: isolate;
+  background-color: var(--color-noite);
 }
 .fundo-cena::before {
   content: "";
@@ -91,8 +80,8 @@ body {
   inset: 0;
   z-index: -2;
   background:
-    radial-gradient(50% 45% at 50% 0%, color-mix(in srgb, var(--color-brasa) 20%, transparent) 0%, transparent 70%),
-    radial-gradient(35% 35% at 90% 10%, color-mix(in srgb, var(--color-lona) 14%, transparent) 0%, transparent 70%);
+    radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--color-brasa) 15%, transparent), transparent),
+    radial-gradient(ellipse 60% 50% at 90% 20%, color-mix(in srgb, var(--color-lona) 8%, transparent), transparent);
   pointer-events: none;
 }
 .fundo-cena::after {
@@ -101,56 +90,42 @@ body {
   inset: 0;
   z-index: -1;
   background-image:
-    linear-gradient(color-mix(in srgb, var(--color-papel) 5%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--color-papel) 5%, transparent) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse 70% 55% at 50% 0%, black 30%, transparent 85%);
+    linear-gradient(color-mix(in srgb, var(--color-papel) 3%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-papel) 3%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle 800px at 50% 0%, black, transparent);
   pointer-events: none;
 }
 
-/* superfície de vidro — cards, nav, modais sobre o glow */
+/* Premium Glassmorphism */
 .vidro {
-  background: color-mix(in srgb, var(--color-noite-2) 72%, transparent);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid color-mix(in srgb, var(--color-papel) 10%, transparent);
+  background: color-mix(in srgb, var(--color-noite-2) 40%, transparent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid color-mix(in srgb, var(--color-papel) 6%, transparent);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .borda-fina {
-  border: 1px solid color-mix(in srgb, var(--color-papel) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-papel) 8%, transparent);
 }
 
-/* marquee de ingredientes — loop infinito, pausa se reduced-motion */
+/* Marquee Animations */
 .marquee-trilho {
   display: flex;
   width: max-content;
-  animation: marquee 28s linear infinite;
+  animation: marquee 35s linear infinite;
 }
 .marquee-viewport:hover .marquee-trilho {
   animation-play-state: paused;
 }
 
 @keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
-/* revelação ao rolar — JS alterna .revelado */
-.revelar {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.revelar.revelado {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Tema do painel admin — quieto, claro, um único acento */
+/* ── Painel admin ── */
 .tema-admin {
   background-color: var(--color-admin-bg);
   color: var(--color-admin-texto);
@@ -162,48 +137,13 @@ body {
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-letrista);
-  outline-offset: 2px;
+  outline: 2px solid var(--color-brasa);
+  outline-offset: 4px;
 }
 
-@keyframes cair {
-  from {
-    opacity: 0;
-    transform: translateY(-14px) scale(0.9);
-  }
-  60% {
-    transform: translateY(3px) scale(1.02);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes pulso-preco {
-  0% {
-    transform: scale(1);
-  }
-  35% {
-    transform: scale(1.12);
-    color: var(--color-lona);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-.preco-mudou {
-  animation: pulso-preco 0.4s ease-out;
-}
-
-@keyframes flutuar {
-  0%, 100% {
-    transform: translateY(0) rotate(-3deg);
-  }
-  50% {
-    transform: translateY(-14px) rotate(-2deg);
-  }
-}
-.flutuar {
-  animation: flutuar 5s ease-in-out infinite;
+/* Utilities for animations */
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-papel) 0%, var(--color-fumaca) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

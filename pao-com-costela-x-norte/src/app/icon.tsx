@@ -4,44 +4,64 @@ export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
 export default function Icon() {
-  return new ImageResponse(<MarcaX tamanho={32} />, size);
+  return new ImageResponse(<MarcaSanduiche tamanho={32} />, size);
 }
 
-export function MarcaX({ tamanho }: { tamanho: number }) {
-  const traco = Math.round(tamanho * 0.14);
-  const braco = Math.round(tamanho * 0.62);
+export function MarcaSanduiche({ tamanho }: { tamanho: number }) {
   return (
     <div
       style={{
         width: "100%",
         height: "100%",
-        background: "#0a0806",
+        background: "#050505",
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        borderRadius: tamanho >= 192 ? "22%" : "25%",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        boxShadow: "inset 0 0 10px rgba(0,0,0,0.5)",
       }}
     >
-      <div style={{ position: "relative", width: braco, height: braco, display: "flex" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: Math.round(tamanho * 0.08) + "px",
+        }}
+      >
+        {/* Pão de cima */}
         <div
           style={{
-            position: "absolute",
-            top: braco / 2 - traco / 2,
-            left: -(braco * 0.21),
-            width: braco * 1.42,
-            height: traco,
-            background: "#ff4d23",
-            transform: "rotate(45deg)",
+            width: Math.round(tamanho * 0.6),
+            height: Math.round(tamanho * 0.2),
+            background: "#ffb800",
+            borderTopLeftRadius: Math.round(tamanho * 0.2),
+            borderTopRightRadius: Math.round(tamanho * 0.2),
+            borderBottomLeftRadius: Math.round(tamanho * 0.05),
+            borderBottomRightRadius: Math.round(tamanho * 0.05),
           }}
         />
+        {/* Carne */}
         <div
           style={{
-            position: "absolute",
-            top: braco / 2 - traco / 2,
-            left: -(braco * 0.21),
-            width: braco * 1.42,
-            height: traco,
-            background: "#ff4d23",
-            transform: "rotate(-45deg)",
+            width: Math.round(tamanho * 0.65),
+            height: Math.round(tamanho * 0.15),
+            background: "#ff3c00",
+            borderRadius: Math.round(tamanho * 0.05),
+          }}
+        />
+        {/* Pão de baixo */}
+        <div
+          style={{
+            width: Math.round(tamanho * 0.6),
+            height: Math.round(tamanho * 0.15),
+            background: "#fbfbfb",
+            borderTopLeftRadius: Math.round(tamanho * 0.05),
+            borderTopRightRadius: Math.round(tamanho * 0.05),
+            borderBottomLeftRadius: Math.round(tamanho * 0.1),
+            borderBottomRightRadius: Math.round(tamanho * 0.1),
           }}
         />
       </div>
