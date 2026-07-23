@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
-import { MarcaX } from "../icon";
+import { MarcaSanduiche } from "../icon";
 
 export async function GET() {
-  return new ImageResponse(<MarcaX tamanho={192} />, { width: 192, height: 192 });
+  return new ImageResponse(<MarcaSanduiche tamanho={192} />, { width: 192, height: 192 });
 }

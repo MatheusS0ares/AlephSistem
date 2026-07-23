@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
 import type { Cardapio } from "@/lib/types";
 import { resolverPreco, formatarPreco } from "@/lib/price";
 import ScrollReveal from "./ScrollReveal";

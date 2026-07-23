@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Anton, Inter, Space_Mono } from "next/font/google";
+import { MotionConfig } from "framer-motion";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
-import SmoothScroller from "@/components/site/SmoothScroller";
 
 const anton = Anton({
   variable: "--font-anton",
@@ -75,12 +75,15 @@ const jsonLd = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body className={`${anton.variable} ${inter.variable} ${spaceMono.variable} antialiased bg-noite`}>
+      <body className={`${anton.variable} ${inter.variable} ${spaceMono.variable} antialiased`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <SmoothScroller>{children}</SmoothScroller>
+        {/* reducedMotion="user": toda animação framer-motion do app respeita
+            prefers-reduced-motion automaticamente — inofensivo nas rotas do
+            painel admin, que não usam framer-motion. */}
+        <MotionConfig reducedMotion="user">{children}</MotionConfig>
       </body>
     </html>
   );

@@ -27,14 +27,29 @@
 }
 
 html {
-  scroll-behavior: initial; /* Lenis takes over */
+  scroll-behavior: initial; /* Lenis assume no site público; admin usa o padrão nativo */
   scroll-padding-top: 5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 body {
   font-family: var(--font-corpo), system-ui, sans-serif;
-  background-color: var(--color-noite);
-  color: var(--color-papel);
+  /* sem cor de fundo aqui de propósito: site e admin têm temas opostos
+     (.tema-site / .tema-admin) e não podem herdar um do outro por um
+     estilo compartilhado no body. Cada tema pinta o próprio fundo. */
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

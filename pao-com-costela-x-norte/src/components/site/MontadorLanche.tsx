@@ -127,7 +127,7 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
   // Animation variants
   const fadeIn = {
     hidden: { opacity: 0, y: 15, filter: "blur(4px)" },
-    visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
+    visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } },
     exit: { opacity: 0, scale: 0.98, transition: { duration: 0.3 } }
   };
 
@@ -242,7 +242,7 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
                         {item.carneNome} {item.carnesComposicao ? `(${item.carnesComposicao.join(", ")})` : ""}
                         {item.molhoNome ? ` — ${item.molhoNome}` : ""}
                       </span>
-                      {item.observacao && <p className="text-xs text-lona mt-1 italic">"{item.observacao}"</p>}
+                      {item.observacao && <p className="text-xs text-lona mt-1 italic">&ldquo;{item.observacao}&rdquo;</p>}
                     </div>
                     <span className="preco whitespace-nowrap text-papel mt-1">
                       {formatarPreco(item.precoUnitario * item.quantidade)}
@@ -394,17 +394,22 @@ function IndicadorPassos({ passoAtual }: { passoAtual: Passo }) {
   );
 }
 
-function CamadaSanduiche({ passo }: { passo: Passo }) {
-  // Simplificando o SanduicheHero para algo mais estético ou removendo em prol de um design mais limpo
-  return null;
-}
-
-function PassoPaes({ ativo, paes, selecionado, onSelecionar }: any) {
+function PassoPaes({
+  ativo,
+  paes,
+  selecionado,
+  onSelecionar,
+}: {
+  ativo: boolean;
+  paes: Pao[];
+  selecionado: Pao | null;
+  onSelecionar: (p: Pao) => void;
+}) {
   return (
     <section className={`transition-opacity duration-500 ${ativo ? "opacity-100" : "opacity-30 pointer-events-none"}`}>
       <h3 className="titulo-display text-2xl mb-5 text-papel">1. Escolha o pão</h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        {paes.map((p: any) => (
+        {paes.map((p) => (
           <button
             key={p.id}
             type="button"
@@ -433,12 +438,34 @@ function PassoPaes({ ativo, paes, selecionado, onSelecionar }: any) {
   );
 }
 
-function PassoCarnes({ ativo, carnes, pao, cardapio, selecionada, onSelecionar, mistoEscolhas, outrasCarnesParaMisto, onAlternarMisto, onConfirmarMisto }: any) {
+function PassoCarnes({
+  ativo,
+  carnes,
+  pao,
+  cardapio,
+  selecionada,
+  onSelecionar,
+  mistoEscolhas,
+  outrasCarnesParaMisto,
+  onAlternarMisto,
+  onConfirmarMisto,
+}: {
+  ativo: boolean;
+  carnes: Carne[];
+  pao: Pao;
+  cardapio: Cardapio;
+  selecionada: Carne | null;
+  onSelecionar: (c: Carne) => void;
+  mistoEscolhas: string[];
+  outrasCarnesParaMisto: Carne[];
+  onAlternarMisto: (nome: string) => void;
+  onConfirmarMisto: () => void;
+}) {
   return (
     <section className={`transition-opacity duration-500 ${ativo ? "opacity-100" : "opacity-30 pointer-events-none"}`}>
       <h3 className="titulo-display text-2xl mb-5 text-papel">2. Escolha a carne</h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        {carnes.map((c: any) => {
+        {carnes.map((c) => {
           const preco = resolverPreco(cardapio, pao.id, c.id);
           return (
             <button
@@ -480,7 +507,7 @@ function PassoCarnes({ ativo, carnes, pao, cardapio, selecionada, onSelecionar, 
               </span>
             </p>
             <div className="flex flex-wrap gap-2">
-              {outrasCarnesParaMisto.map((c: any) => (
+              {outrasCarnesParaMisto.map((c) => (
                 <button
                   key={c.id}
                   type="button"
@@ -510,12 +537,22 @@ function PassoCarnes({ ativo, carnes, pao, cardapio, selecionada, onSelecionar, 
   );
 }
 
-function PassoMolhos({ ativo, molhos, selecionado, onSelecionar }: any) {
+function PassoMolhos({
+  ativo,
+  molhos,
+  selecionado,
+  onSelecionar,
+}: {
+  ativo: boolean;
+  molhos: Molho[];
+  selecionado: Molho | null;
+  onSelecionar: (m: Molho) => void;
+}) {
   return (
     <section className={`transition-opacity duration-500 ${ativo ? "opacity-100" : "opacity-30 pointer-events-none"}`}>
       <h3 className="titulo-display text-2xl mb-5 text-papel">3. Escolha o molho</h3>
       <div className="flex flex-wrap gap-3">
-        {molhos.map((m: any) => (
+        {molhos.map((m) => (
           <button
             key={m.id}
             type="button"
