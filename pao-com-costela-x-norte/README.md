@@ -2,8 +2,11 @@
 
 App autocontido dentro do monorepo AlephSistem. Segue o mesmo padrão de
 `family-portal/` e `sde-dance/`: pasta própria, `package.json` próprio,
-schema Supabase próprio, deploy Vercel próprio. Nada aqui é compartilhado
-com outro cliente — mexer neste projeto não tem como afetar os demais.
+deploy Vercel próprio. O banco pode dividir o Supabase com outros apps do
+monorepo (free tier = 2 projetos por conta), isolado por schema Postgres
+próprio (`xnorte`) — ver seção "Isolamento" abaixo. Nada aqui é
+compartilhado com outro cliente — mexer neste projeto não tem como afetar
+os demais.
 
 ## Isolamento (repositório e banco)
 
@@ -12,29 +15,41 @@ com outro cliente — mexer neste projeto não tem como afetar os demais.
   Root Directory apontado para esta pasta nas configurações do projeto
   Vercel — criar um projeto Vercel **novo**, nunca reaproveitar o de outro
   cliente).
-- **Banco**: usar um projeto Supabase **dedicado** (não o de nenhum outro
-  app do monorepo). Rodar `supabase/schema.sql` nesse projeto novo. RLS
-  garante que só usuários da tabela `admins` desse projeto escrevem, e o
+- **Banco**: o ideal é um projeto Supabase dedicado, mas o free tier só
+  permite 2 projetos por conta — então este app roda dividindo um projeto
+  Supabase já usado por outros apps do monorepo. O isolamento nesse caso
+  não vem do projeto, vem do **schema Postgres**: todas as tabelas vivem
+  em `xnorte`, nunca em `public`, então não colidem com nenhuma tabela de
+  outro app no mesmo banco (ver `supabase/schema.sql`, primeiras linhas).
+  RLS garante que só usuários da tabela `xnorte.admins` escrevem, e o
   pedido do site público só é gravado via `service_role` no servidor —
-  nunca com a chave anon no browser (seção 4.4 do brief).
+  nunca com a chave anon no browser (seção 4.4 do brief). Quando este
+  cliente virar pagante, migrar para um projeto dedicado é só rodar o
+  mesmo SQL trocando `xnorte.` por vazio e mudar `NEXT_PUBLIC_SUPABASE_SCHEMA`
+  para `public` — nenhum outro código muda.
 - **Env vars**: cada variável em `.env.example` é específica deste
-  projeto (URL/chaves do Supabase dedicado, secret do webhook). Configurar
+  projeto (URL/chaves do Supabase, schema, secret do webhook). Configurar
   no Vercel apenas neste projeto, não no root do monorepo.
 
 ## Setup
 
-1. Criar um projeto novo no Supabase.
-2. Rodar `supabase/schema.sql` no SQL Editor.
-3. Copiar `.env.example` para `.env.local` e preencher.
-4. Fazer login uma vez pelo `/admin/login` (magic link) e depois, no SQL
+1. Criar (ou abrir) o projeto Supabase.
+2. Rodar `supabase/schema.sql` no SQL Editor — cria o schema `xnorte` e
+   tudo dentro dele, sem tocar em nada que já exista em `public`.
+3. **Passo que é fácil esquecer**: Settings → API → Data API → "Exposed
+   schemas" → adicionar `xnorte` na lista (além de `public`). Sem isso a
+   API do Supabase não enxerga nenhuma tabela deste app.
+4. Copiar `.env.example` para `.env.local` e preencher.
+5. Fazer login uma vez pelo `/admin/login` (magic link) e depois, no SQL
    Editor, promover o usuário a admin:
    ```sql
-   insert into admins (id, nome)
+   insert into xnorte.admins (id, nome)
    values ('<uuid em auth.users>', 'Nome do dono');
    ```
-5. `npm install && npm run dev`.
-6. Configurar o Database Webhook no Supabase (Database → Webhooks) nas
-   tabelas `paes`, `carnes`, `molhos`, `precos_excecao`, `promocoes`:
+6. `npm install && npm run dev`.
+7. Configurar o Database Webhook no Supabase (Database → Webhooks) nas
+   tabelas `xnorte.paes`, `xnorte.carnes`, `xnorte.molhos`,
+   `xnorte.precos_excecao`, `xnorte.promocoes`, `xnorte.combos`:
    POST para `https://<domínio>/api/revalidate`, header
    `x-revalidate-secret: <mesmo valor de REVALIDATE_SECRET>`.
 

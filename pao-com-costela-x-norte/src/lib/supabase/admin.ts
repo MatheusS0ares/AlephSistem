@@ -1,5 +1,6 @@
 import "server-only";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { SUPABASE_SCHEMA } from "./config";
 
 // Cliente com service_role — ignora RLS. Uso restrito a "server-only":
 // nunca é importado por componente cliente nem exposto ao browser.
@@ -13,5 +14,6 @@ export function createAdminClient() {
   }
   return createSupabaseClient(url, key, {
     auth: { autoRefreshToken: false, persistSession: false },
+    db: { schema: SUPABASE_SCHEMA },
   });
 }

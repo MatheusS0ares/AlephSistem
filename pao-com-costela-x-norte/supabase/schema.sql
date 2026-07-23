@@ -1,31 +1,46 @@
 -- ═══════════════════════════════════════════════════════════════
 -- Pão com Costela — X Norte
--- Cole este SQL no Supabase (projeto DEDICADO a este cliente,
--- separado de qualquer outro projeto do AlephSistem) → SQL Editor → Run
+-- Cole este SQL no Supabase → SQL Editor → Run
 --
--- Este schema é autocontido: nenhuma tabela aqui é compartilhada com
--- outro app do monorepo. Rodar num projeto Supabase próprio garante
--- isolamento total de dados e de RLS entre clientes.
+-- ISOLAMENTO DENTRO DE UM PROJETO COMPARTILHADO
+-- O Supabase free tier só permite 2 projetos por conta, então este
+-- app pode rodar dentro de um projeto Supabase já usado por outros
+-- apps do monorepo. Para não colidir com nenhuma tabela/função que já
+-- exista lá (ex.: stores, products, orders da Reino Imperial), tudo
+-- aqui vive num schema Postgres próprio, `xnorte`, nunca em `public`.
+-- Isso dá isolamento total de nomes mesmo dividindo o mesmo banco.
+--
+-- PASSO OBRIGATÓRIO DEPOIS DE RODAR ESTE SQL:
+-- Supabase Dashboard → Settings → API → Data API → "Exposed schemas"
+-- → adicionar "xnorte" na lista (junto com "public"). Sem isso a API
+-- (supabase-js) não enxerga nenhuma tabela deste app — dá erro de
+-- "schema must be one of the following: public".
+--
+-- Quando este cliente virar pagante, o ideal é migrar para um projeto
+-- Supabase dedicado (ver README) — aí `xnorte` vira `public` de novo,
+-- sem precisar mudar nenhuma linha de código além da env var de schema.
 -- ═══════════════════════════════════════════════════════════════
+
+create schema if not exists xnorte;
 
 -- ── Admins ─────────────────────────────────────────────
 -- Quem pode logar no painel (magic link). Popular manualmente
--- após o primeiro login: insert into admins (id, nome) values ('<uuid do auth.users>', 'Nome').
+-- após o primeiro login: insert into xnorte.admins (id, nome) values ('<uuid do auth.users>', 'Nome').
 
-create table admins (
+create table xnorte.admins (
   id         uuid primary key references auth.users(id) on delete cascade,
   nome       text not null,
   criado_em  timestamptz not null default now()
 );
 
-create or replace function is_admin()
-returns boolean language sql stable security definer set search_path = public as $$
-  select exists(select 1 from admins where id = auth.uid());
+create or replace function xnorte.is_admin()
+returns boolean language sql stable security definer set search_path = xnorte, public as $$
+  select exists(select 1 from xnorte.admins where id = auth.uid());
 $$;
 
 -- ── Trigger genérico de atualizado_em ──────────────────
 
-create or replace function set_atualizado_em()
+create or replace function xnorte.set_atualizado_em()
 returns trigger language plpgsql as $$
 begin
   new.atualizado_em = now();
@@ -35,7 +50,7 @@ $$;
 
 -- ============ CATÁLOGO ============
 
-create table paes (
+create table xnorte.paes (
   id            uuid primary key default gen_random_uuid(),
   nome          text not null,
   descricao     text,
@@ -48,7 +63,7 @@ create table paes (
   atualizado_em timestamptz not null default now()
 );
 
-create table carnes (
+create table xnorte.carnes (
   id            uuid primary key default gen_random_uuid(),
   nome          text not null,
   descricao     text,                            -- ex: "frango / toscana"
@@ -63,7 +78,7 @@ create table carnes (
   atualizado_em timestamptz not null default now()
 );
 
-create table molhos (
+create table xnorte.molhos (
   id            uuid primary key default gen_random_uuid(),
   nome          text not null,
   cor_hex       text,                            -- bolinha de cor no cardápio
@@ -75,18 +90,18 @@ create table molhos (
 );
 
 -- sobrescrita de célula da matriz, quando a regra base+ajuste não vale
-create table precos_excecao (
-  pao_id        uuid not null references paes(id) on delete cascade,
-  carne_id      uuid not null references carnes(id) on delete cascade,
+create table xnorte.precos_excecao (
+  pao_id        uuid not null references xnorte.paes(id) on delete cascade,
+  carne_id      uuid not null references xnorte.carnes(id) on delete cascade,
   preco         numeric(10,2) not null check (preco >= 0),
   atualizado_em timestamptz not null default now(),
   primary key (pao_id, carne_id)
 );
 
-create table combos (
+create table xnorte.combos (
   id                   uuid primary key default gen_random_uuid(),
   nome                 text not null,            -- ex: "Trio Mini Baguete"
-  pao_id               uuid references paes(id),
+  pao_id               uuid references xnorte.paes(id),
   quantidade           int not null check (quantidade > 1),
   preco                numeric(10,2) not null,
   permite_variar_carne boolean not null default true,
@@ -95,11 +110,11 @@ create table combos (
   disponivel           boolean not null default true
 );
 
-create table promocoes (
+create table xnorte.promocoes (
   id           uuid primary key default gen_random_uuid(),
   titulo       text not null,                    -- "Promoção do dia"
-  pao_id       uuid references paes(id),
-  carne_id     uuid references carnes(id),
+  pao_id       uuid references xnorte.paes(id),
+  carne_id     uuid references xnorte.carnes(id),
   preco        numeric(10,2) not null,
   inicio       date not null,
   fim          date,                             -- null = sem prazo
@@ -108,7 +123,7 @@ create table promocoes (
 
 -- log genérico de alteração de preço/cardápio, com autor e data,
 -- usado para o "desfazer última alteração" do painel
-create table log_alteracoes (
+create table xnorte.log_alteracoes (
   id             uuid primary key default gen_random_uuid(),
   tabela         text not null,
   registro_id    uuid not null,
@@ -122,7 +137,7 @@ create table log_alteracoes (
 
 -- ============ OPERAÇÃO ============
 
-create table turnos (
+create table xnorte.turnos (
   id             uuid primary key default gen_random_uuid(),
   aberto_por     uuid references auth.users(id),
   aberto_em      timestamptz not null default now(),
@@ -135,12 +150,12 @@ create table turnos (
 );
 
 -- garante no máximo um turno aberto por vez
-create unique index turno_aberto_unico on turnos ((fechado_em is null)) where fechado_em is null;
+create unique index turno_aberto_unico on xnorte.turnos ((fechado_em is null)) where fechado_em is null;
 
-create table pedidos (
+create table xnorte.pedidos (
   id               uuid primary key default gen_random_uuid(),
   codigo           text not null unique,          -- sequencial curto do dia: "042"
-  turno_id         uuid references turnos(id),
+  turno_id         uuid references xnorte.turnos(id),
   canal            text not null check (canal in ('balcao','whatsapp','site')),
   tipo             text not null default 'retirada' check (tipo in ('retirada','entrega')),
   cliente_nome     text,
@@ -160,9 +175,9 @@ create table pedidos (
 
 -- snapshot: nomes e valores gravados no momento da venda, nunca por referência
 -- (garante que alterar preço hoje não muda pedido já registrado — critério de aceite #6)
-create table pedido_itens (
+create table xnorte.pedido_itens (
   id                 uuid primary key default gen_random_uuid(),
-  pedido_id          uuid not null references pedidos(id) on delete cascade,
+  pedido_id          uuid not null references xnorte.pedidos(id) on delete cascade,
   pao_nome           text not null,
   carne_nome         text not null,
   carnes_composicao  text[],                       -- preenchido quando misto
@@ -175,25 +190,25 @@ create table pedido_itens (
 
 -- ── Triggers de atualizado_em ───────────────────────────
 
-create trigger trg_paes_atualizado before update on paes
-  for each row execute function set_atualizado_em();
-create trigger trg_carnes_atualizado before update on carnes
-  for each row execute function set_atualizado_em();
-create trigger trg_molhos_atualizado before update on molhos
-  for each row execute function set_atualizado_em();
-create trigger trg_excecao_atualizado before update on precos_excecao
-  for each row execute function set_atualizado_em();
+create trigger trg_paes_atualizado before update on xnorte.paes
+  for each row execute function xnorte.set_atualizado_em();
+create trigger trg_carnes_atualizado before update on xnorte.carnes
+  for each row execute function xnorte.set_atualizado_em();
+create trigger trg_molhos_atualizado before update on xnorte.molhos
+  for each row execute function xnorte.set_atualizado_em();
+create trigger trg_excecao_atualizado before update on xnorte.precos_excecao
+  for each row execute function xnorte.set_atualizado_em();
 
 -- ── Código sequencial do pedido (por dia) ───────────────
 
-create or replace function gerar_codigo_pedido()
-returns trigger language plpgsql as $$
+create or replace function xnorte.gerar_codigo_pedido()
+returns trigger language plpgsql set search_path = xnorte, public as $$
 declare
   proximo int;
 begin
   if new.codigo is null or new.codigo = '' then
     select count(*) + 1 into proximo
-      from pedidos
+      from xnorte.pedidos
      where criado_em::date = current_date;
     new.codigo := lpad(proximo::text, 3, '0');
   end if;
@@ -201,18 +216,18 @@ begin
 end;
 $$;
 
-create trigger trg_pedido_codigo before insert on pedidos
-  for each row execute function gerar_codigo_pedido();
+create trigger trg_pedido_codigo before insert on xnorte.pedidos
+  for each row execute function xnorte.gerar_codigo_pedido();
 
 -- ── Resolução de preço ───────────────────────────────────
 
-create or replace function preco_resolvido(p_pao uuid, p_carne uuid)
-returns numeric language sql stable as $$
+create or replace function xnorte.preco_resolvido(p_pao uuid, p_carne uuid)
+returns numeric language sql stable set search_path = xnorte, public as $$
   select coalesce(
-    (select preco from precos_excecao e
+    (select preco from xnorte.precos_excecao e
       where e.pao_id = p_pao and e.carne_id = p_carne),
     (select p.preco_base + c.ajuste
-       from paes p, carnes c
+       from xnorte.paes p, xnorte.carnes c
       where p.id = p_pao and c.id = p_carne and p.preco_base is not null)
   );
 $$;
@@ -220,120 +235,122 @@ $$;
 -- aplica promoção ativa na leitura, sem nunca sobrescrever preco_base;
 -- se a promoção for removida, o preço volta sozinho e o histórico de
 -- vendas (pedido_itens, já gravado como snapshot) permanece correto
-create or replace function preco_final(p_pao uuid, p_carne uuid, p_data date default current_date)
-returns numeric language sql stable as $$
+create or replace function xnorte.preco_final(p_pao uuid, p_carne uuid, p_data date default current_date)
+returns numeric language sql stable set search_path = xnorte, public as $$
   select coalesce(
-    (select pr.preco from promocoes pr
+    (select pr.preco from xnorte.promocoes pr
       where pr.ativo and pr.pao_id = p_pao and pr.carne_id = p_carne
         and pr.inicio <= p_data and (pr.fim is null or pr.fim >= p_data)
       order by pr.inicio desc
       limit 1),
-    preco_resolvido(p_pao, p_carne)
+    xnorte.preco_resolvido(p_pao, p_carne)
   );
 $$;
 
 -- ── RLS ──────────────────────────────────────────────────
 
-alter table paes            enable row level security;
-alter table carnes          enable row level security;
-alter table molhos          enable row level security;
-alter table precos_excecao  enable row level security;
-alter table combos          enable row level security;
-alter table promocoes       enable row level security;
-alter table log_alteracoes  enable row level security;
-alter table turnos          enable row level security;
-alter table pedidos         enable row level security;
-alter table pedido_itens    enable row level security;
-alter table admins          enable row level security;
+alter table xnorte.paes            enable row level security;
+alter table xnorte.carnes          enable row level security;
+alter table xnorte.molhos          enable row level security;
+alter table xnorte.precos_excecao  enable row level security;
+alter table xnorte.combos          enable row level security;
+alter table xnorte.promocoes       enable row level security;
+alter table xnorte.log_alteracoes  enable row level security;
+alter table xnorte.turnos          enable row level security;
+alter table xnorte.pedidos         enable row level security;
+alter table xnorte.pedido_itens    enable row level security;
+alter table xnorte.admins          enable row level security;
 
 -- catálogo: leitura pública só do que está ativo; admin vê tudo e escreve
-create policy paes_leitura_publica on paes for select
+create policy paes_leitura_publica on xnorte.paes for select
   to anon, authenticated using (ativo = true);
-create policy paes_leitura_admin on paes for select
-  to authenticated using (is_admin());
-create policy paes_escrita_admin on paes for all
-  to authenticated using (is_admin()) with check (is_admin());
+create policy paes_leitura_admin on xnorte.paes for select
+  to authenticated using (xnorte.is_admin());
+create policy paes_escrita_admin on xnorte.paes for all
+  to authenticated using (xnorte.is_admin()) with check (xnorte.is_admin());
 
-create policy carnes_leitura_publica on carnes for select
+create policy carnes_leitura_publica on xnorte.carnes for select
   to anon, authenticated using (ativo = true);
-create policy carnes_leitura_admin on carnes for select
-  to authenticated using (is_admin());
-create policy carnes_escrita_admin on carnes for all
-  to authenticated using (is_admin()) with check (is_admin());
+create policy carnes_leitura_admin on xnorte.carnes for select
+  to authenticated using (xnorte.is_admin());
+create policy carnes_escrita_admin on xnorte.carnes for all
+  to authenticated using (xnorte.is_admin()) with check (xnorte.is_admin());
 
-create policy molhos_leitura_publica on molhos for select
+create policy molhos_leitura_publica on xnorte.molhos for select
   to anon, authenticated using (ativo = true);
-create policy molhos_leitura_admin on molhos for select
-  to authenticated using (is_admin());
-create policy molhos_escrita_admin on molhos for all
-  to authenticated using (is_admin()) with check (is_admin());
+create policy molhos_leitura_admin on xnorte.molhos for select
+  to authenticated using (xnorte.is_admin());
+create policy molhos_escrita_admin on xnorte.molhos for all
+  to authenticated using (xnorte.is_admin()) with check (xnorte.is_admin());
 
-create policy excecao_leitura_publica on precos_excecao for select
+create policy excecao_leitura_publica on xnorte.precos_excecao for select
   to anon, authenticated using (true);
-create policy excecao_escrita_admin on precos_excecao for all
-  to authenticated using (is_admin()) with check (is_admin());
+create policy excecao_escrita_admin on xnorte.precos_excecao for all
+  to authenticated using (xnorte.is_admin()) with check (xnorte.is_admin());
 
-create policy combos_leitura_publica on combos for select
+create policy combos_leitura_publica on xnorte.combos for select
   to anon, authenticated using (ativo = true);
-create policy combos_leitura_admin on combos for select
-  to authenticated using (is_admin());
-create policy combos_escrita_admin on combos for all
-  to authenticated using (is_admin()) with check (is_admin());
+create policy combos_leitura_admin on xnorte.combos for select
+  to authenticated using (xnorte.is_admin());
+create policy combos_escrita_admin on xnorte.combos for all
+  to authenticated using (xnorte.is_admin()) with check (xnorte.is_admin());
 
-create policy promocoes_leitura_publica on promocoes for select
+create policy promocoes_leitura_publica on xnorte.promocoes for select
   to anon, authenticated using (ativo = true);
-create policy promocoes_leitura_admin on promocoes for select
-  to authenticated using (is_admin());
-create policy promocoes_escrita_admin on promocoes for all
-  to authenticated using (is_admin()) with check (is_admin());
+create policy promocoes_leitura_admin on xnorte.promocoes for select
+  to authenticated using (xnorte.is_admin());
+create policy promocoes_escrita_admin on xnorte.promocoes for all
+  to authenticated using (xnorte.is_admin()) with check (xnorte.is_admin());
 
 -- log: só admin lê; escrita sempre via service role (server action)
-create policy log_leitura_admin on log_alteracoes for select
-  to authenticated using (is_admin());
+create policy log_leitura_admin on xnorte.log_alteracoes for select
+  to authenticated using (xnorte.is_admin());
 
 -- turnos: só admin lê e escreve
-create policy turnos_leitura_admin on turnos for select
-  to authenticated using (is_admin());
-create policy turnos_escrita_admin on turnos for all
-  to authenticated using (is_admin()) with check (is_admin());
+create policy turnos_leitura_admin on xnorte.turnos for select
+  to authenticated using (xnorte.is_admin());
+create policy turnos_escrita_admin on xnorte.turnos for all
+  to authenticated using (xnorte.is_admin()) with check (xnorte.is_admin());
 
 -- pedidos e pedido_itens: nenhuma policy de insert para anon — pedido vindo
 -- do site público só é gravado via service role dentro de uma server action
 -- (nunca com a chave anon direto do browser). Admin autenticado (canal
 -- balcão) pode inserir/ler/atualizar porque passou pelo login com magic link.
-create policy pedidos_leitura_admin on pedidos for select
-  to authenticated using (is_admin());
-create policy pedidos_insert_admin on pedidos for insert
-  to authenticated with check (is_admin());
-create policy pedidos_update_admin on pedidos for update
-  to authenticated using (is_admin()) with check (is_admin());
+create policy pedidos_leitura_admin on xnorte.pedidos for select
+  to authenticated using (xnorte.is_admin());
+create policy pedidos_insert_admin on xnorte.pedidos for insert
+  to authenticated with check (xnorte.is_admin());
+create policy pedidos_update_admin on xnorte.pedidos for update
+  to authenticated using (xnorte.is_admin()) with check (xnorte.is_admin());
 
-create policy pedido_itens_leitura_admin on pedido_itens for select
-  to authenticated using (is_admin());
-create policy pedido_itens_insert_admin on pedido_itens for insert
+create policy pedido_itens_leitura_admin on xnorte.pedido_itens for select
+  to authenticated using (xnorte.is_admin());
+create policy pedido_itens_insert_admin on xnorte.pedido_itens for insert
   to authenticated with check (
-    exists (select 1 from pedidos p where p.id = pedido_id and is_admin())
+    exists (select 1 from xnorte.pedidos p where p.id = pedido_id and xnorte.is_admin())
   );
 
 -- admins: cada admin só enxerga a própria linha
-create policy admins_leitura_propria on admins for select
+create policy admins_leitura_propria on xnorte.admins for select
   to authenticated using (id = auth.uid());
 
 -- ── Storage — fotos do cardápio ─────────────────────────
--- Bucket público (as fotos aparecem no site), upload restrito a admin.
+-- Bucket com nome prefixado (xnorte-cardapio) pra não colidir com um
+-- bucket "cardapio" de outro app no mesmo projeto Supabase. Público
+-- pra leitura (as fotos aparecem no site), upload restrito a admin.
 
 insert into storage.buckets (id, name, public)
-values ('cardapio', 'cardapio', true)
+values ('xnorte-cardapio', 'xnorte-cardapio', true)
 on conflict (id) do nothing;
 
-create policy cardapio_fotos_leitura_publica on storage.objects for select
-  to anon, authenticated using (bucket_id = 'cardapio');
-create policy cardapio_fotos_escrita_admin on storage.objects for insert
-  to authenticated with check (bucket_id = 'cardapio' and is_admin());
-create policy cardapio_fotos_update_admin on storage.objects for update
-  to authenticated using (bucket_id = 'cardapio' and is_admin());
-create policy cardapio_fotos_delete_admin on storage.objects for delete
-  to authenticated using (bucket_id = 'cardapio' and is_admin());
+create policy xnorte_fotos_leitura_publica on storage.objects for select
+  to anon, authenticated using (bucket_id = 'xnorte-cardapio');
+create policy xnorte_fotos_escrita_admin on storage.objects for insert
+  to authenticated with check (bucket_id = 'xnorte-cardapio' and xnorte.is_admin());
+create policy xnorte_fotos_update_admin on storage.objects for update
+  to authenticated using (bucket_id = 'xnorte-cardapio' and xnorte.is_admin());
+create policy xnorte_fotos_delete_admin on storage.objects for delete
+  to authenticated using (bucket_id = 'xnorte-cardapio' and xnorte.is_admin());
 
 -- ============ SEED ============
 -- Só a linha do pão bola está confirmada com o cliente (brief seção 11).
@@ -342,7 +359,7 @@ create policy cardapio_fotos_delete_admin on storage.objects for delete
 -- NÃO assumir os demais valores — o painel deve sinalizar "preço não definido"
 -- em vez de herdar um número chutado.
 
-insert into paes (nome, preco_base, ordem) values
+insert into xnorte.paes (nome, preco_base, ordem) values
   ('Pão Bola', 15.00, 1),
   ('Mini Baguete 17cm', null, 2),
   ('Pão Francês', null, 3);
@@ -351,13 +368,13 @@ insert into paes (nome, preco_base, ordem) values
 -- confirmado pelo cliente: pão bola + contra filé = R$ 15,00 (a "carne padrão"
 -- do brief). Ajuste da linguiça ainda não foi confirmado (seção 11, pergunta 3);
 -- entra como 0 por padrão do schema — sinalizar para o cliente revisar.
-insert into carnes (nome, descricao, ajuste, composta, qtd_escolhas, ordem) values
+insert into xnorte.carnes (nome, descricao, ajuste, composta, qtd_escolhas, ordem) values
   ('Contra filé', null, 0, false, 0, 1),
   ('Costela', null, -3.00, false, 0, 2),
   ('Linguiça', null, 0, false, 0, 3),
   ('Misto', 'escolha 2 carnes', 1.00, true, 2, 4);
 
-insert into molhos (nome, cor_hex, ordem) values
+insert into xnorte.molhos (nome, cor_hex, ordem) values
   ('Alho', '#F2C230', 1),
   ('BBQ', '#E2451F', 2),
   ('Vinagrete', '#1B62A8', 3);

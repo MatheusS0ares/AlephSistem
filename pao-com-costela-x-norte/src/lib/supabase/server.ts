@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { SUPABASE_SCHEMA } from "./config";
 
 // Cliente autenticado com a sessão do usuário (cookies) — respeita RLS.
 // Usar em Server Components, Route Handlers e Server Actions do painel admin.
@@ -9,6 +10,7 @@ export async function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      db: { schema: SUPABASE_SCHEMA },
       cookies: {
         getAll() {
           return cookieStore.getAll();

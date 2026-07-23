@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { BUCKET_CARDAPIO } from "@/lib/supabase/config";
 import { atualizarFoto } from "@/lib/actions/catalogo";
 
 function comprimirImagem(arquivo: File): Promise<Blob> {
@@ -48,12 +49,12 @@ export default function FotoUpload({
       const comprimida = await comprimirImagem(arquivo);
       const caminho = `${tabela}/${id}-${Date.now()}.jpg`;
       const supabase = createClient();
-      const { error } = await supabase.storage.from("cardapio").upload(caminho, comprimida, {
+      const { error } = await supabase.storage.from(BUCKET_CARDAPIO).upload(caminho, comprimida, {
         contentType: "image/jpeg",
         upsert: true,
       });
       if (error) throw error;
-      const { data } = supabase.storage.from("cardapio").getPublicUrl(caminho);
+      const { data } = supabase.storage.from(BUCKET_CARDAPIO).getPublicUrl(caminho);
       await atualizarFoto(tabela, id, data.publicUrl);
       setPreview(data.publicUrl);
     } catch {

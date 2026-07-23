@@ -1,4 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr";
+import { SUPABASE_SCHEMA } from "./config";
 
 export function createClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -6,7 +7,7 @@ export function createClient() {
   if (!url || !key) {
     throw new Error("SUPABASE_NOT_CONFIGURED");
   }
-  return createBrowserClient(url, key);
+  return createBrowserClient(url, key, { db: { schema: SUPABASE_SCHEMA } });
 }
 
 export function isSupabaseConfigured() {
