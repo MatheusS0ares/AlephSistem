@@ -46,7 +46,7 @@ sistema mostra "preço não definido" em vez de chutar valor:
 1. Preço do Mini Baguete 17cm e do Pão Francês — vale para qual carne, ou é o mesmo pra qualquer uma?
 2. Desconto da costela (−R$ 3,00) vale em todos os pães ou só no pão bola?
 3. Linguiça tem ajuste próprio? (entrou como 0 por padrão — revisar em `/admin/cardapio`)
-4. Trio é 3 unidades iguais ou pode variar a carne? Por que pão bola não tem trio? *(combos ficaram fora desta entrega — tabela `combos` existe no schema, mas não há UI ainda)*
+4. Trio é 3 unidades iguais ou pode variar a carne? Por que pão bola não tem trio? *(painel já tem tela pra criar combos em `/admin/cardapio` — assim que a resposta chegar, é só cadastrar lá)*
 5. Faz entrega? Raio e taxa? (`siteConfig.fazEntrega = false` por enquanto)
 6. Horário e dias de funcionamento (`src/lib/site-config.ts`, placeholder "18h às 23h")
 7. Formas de pagamento aceitas (assumido dinheiro/pix/cartão)
@@ -62,9 +62,6 @@ iFood, controle de estoque de insumo, multi-loja.
 
 ## O que ficou parcial
 
-- `combos` e `promocoes` têm schema, RLS e resolução de preço prontos,
-  mas sem tela de edição no painel — hoje só dá pra gravar via SQL. Baixo
-  risco: nenhuma das duas perguntas do cliente (seção 11, item 4) foi
-  respondida ainda, então não há dado real para editar.
-- Reordenar itens do cardápio por arrastar: hoje a ordem vem da coluna
-  `ordem` do seed; trocar exige SQL direto.
+- Reordenar itens do cardápio é por setas ↑↓ (`/admin/cardapio`), não
+  por arrastar — mesmo resultado, sem precisar de uma lib de drag-and-drop
+  a mais no bundle.
