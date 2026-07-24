@@ -10,13 +10,9 @@ export function isSupabaseConfigured() {
   return isConfiguredEnv();
 }
 
-/**
- * Cardápio como o site público enxerga: só itens ativos, cacheado com a tag 'cardapio'.
- * DEBUG TEMPORÁRIO: `_erro` carrega a primeira mensagem de erro do Supabase (RLS,
- * schema não exposto etc.) pra diagnosticar o cardápio vazio — remover depois.
- */
-export async function getCardapioPublico(): Promise<Cardapio & { _erro?: string }> {
-  if (!isSupabaseConfigured()) return { ...VAZIO, _erro: "NEXT_PUBLIC_SUPABASE_URL ou NEXT_PUBLIC_SUPABASE_ANON_KEY não configurados na Vercel" };
+/** Cardápio como o site público enxerga: só itens ativos, cacheado com a tag 'cardapio'. */
+export async function getCardapioPublico(): Promise<Cardapio> {
+  if (!isSupabaseConfigured()) return VAZIO;
   const supabase = createPublicCachedClient();
   const [paes, carnes, molhos, excecoes, promocoes, combos] = await Promise.all([
     supabase.from("paes").select("*").eq("ativo", true).order("ordem"),
@@ -26,7 +22,6 @@ export async function getCardapioPublico(): Promise<Cardapio & { _erro?: string 
     supabase.from("promocoes").select("*").eq("ativo", true),
     supabase.from("combos").select("*").eq("ativo", true).order("ordem"),
   ]);
-  const erro = paes.error ?? carnes.error ?? molhos.error ?? excecoes.error ?? promocoes.error ?? combos.error;
   return {
     paes: paes.data ?? [],
     carnes: carnes.data ?? [],
@@ -34,7 +29,6 @@ export async function getCardapioPublico(): Promise<Cardapio & { _erro?: string 
     excecoes: excecoes.data ?? [],
     promocoes: promocoes.data ?? [],
     combos: combos.data ?? [],
-    ...(erro ? { _erro: `${erro.message} (code: ${erro.code})` } : {}),
   };
 }
 
