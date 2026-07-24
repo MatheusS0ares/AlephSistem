@@ -17,6 +17,8 @@ export default function LoginForm() {
   const [enviado, setEnviado] = useState(false);
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(false);
+  const [esqueci, setEsqueci] = useState(false);
+  const [recuperado, setRecuperado] = useState(false);
 
   const configurado = isSupabaseConfigured();
 
@@ -60,6 +62,25 @@ export default function LoginForm() {
     setEnviado(true);
   }
 
+  async function recuperarSenha(e: React.FormEvent) {
+    e.preventDefault();
+    if (!configurado) return;
+    setErro("");
+    setCarregando(true);
+
+    const supabase = createClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/admin/auth/callback?redirect=${encodeURIComponent("/admin/conta")}`,
+    });
+
+    setCarregando(false);
+    if (error) {
+      setErro("Não foi possível enviar o link de recuperação. Confira o e-mail.");
+      return;
+    }
+    setRecuperado(true);
+  }
+
   return (
     <div className="w-full max-w-sm space-y-8">
       <div className="text-center">
@@ -77,6 +98,41 @@ export default function LoginForm() {
         <p className="text-center text-sm border-2 border-brasa p-6">
           Link enviado para <strong>{email}</strong>. Abra o e-mail no celular e toque no link.
         </p>
+      ) : recuperado ? (
+        <p className="text-center text-sm border-2 border-brasa p-6">
+          Link de recuperação enviado para <strong>{email}</strong>. Abra o e-mail, toque no link e
+          defina uma senha nova em &ldquo;Minha conta&rdquo;.
+        </p>
+      ) : esqueci ? (
+        <form onSubmit={recuperarSenha} className="space-y-4">
+          <p className="text-sm text-admin-texto/60">
+            Informa o e-mail da conta que a gente manda um link pra você definir uma senha nova.
+          </p>
+          <input
+            type="email"
+            required
+            autoFocus
+            placeholder="seu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="alvo-toque w-full border-2 border-admin-borda px-4 text-lg"
+          />
+          {erro && <p className="text-sm text-brasa">{erro}</p>}
+          <button
+            type="submit"
+            disabled={carregando}
+            className="alvo-toque w-full bg-brasa text-white font-bold uppercase tracking-wide disabled:opacity-50"
+          >
+            {carregando ? "Enviando..." : "Enviar link de recuperação"}
+          </button>
+          <button
+            type="button"
+            onClick={() => { setEsqueci(false); setErro(""); }}
+            className="alvo-toque w-full text-sm text-admin-texto/60 underline"
+          >
+            Voltar
+          </button>
+        </form>
       ) : (
         <>
           <div className="flex border-2 border-admin-borda">
@@ -125,6 +181,15 @@ export default function LoginForm() {
             >
               {carregando ? "Entrando..." : modo === "senha" ? "Entrar" : "Enviar link de acesso"}
             </button>
+            {modo === "senha" && (
+              <button
+                type="button"
+                onClick={() => { setEsqueci(true); setErro(""); }}
+                className="alvo-toque w-full text-sm text-admin-texto/60 underline"
+              >
+                Esqueci minha senha
+              </button>
+            )}
           </form>
         </>
       )}
