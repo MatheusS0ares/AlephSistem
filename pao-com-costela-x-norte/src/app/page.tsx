@@ -3,6 +3,7 @@ import SmoothScroller from "@/components/site/SmoothScroller";
 import SiteNav from "@/components/site/SiteNav";
 import Hero from "@/components/site/Hero";
 import UspBento from "@/components/site/UspBento";
+import VitrineFotos from "@/components/site/VitrineFotos";
 import MontadorLanche from "@/components/site/MontadorLanche";
 import CardapioCompleto from "@/components/site/CardapioCompleto";
 import OndeEstamos from "@/components/site/OndeEstamos";
@@ -24,6 +25,8 @@ export default async function HomePage() {
         <Hero itensMarquee={itensMarquee} />
 
         <UspBento />
+
+        <VitrineFotos />
 
         <section id="montar" className="tema-site px-6 py-20 border-b border-papel/10">
           <div className="max-w-4xl mx-auto">
