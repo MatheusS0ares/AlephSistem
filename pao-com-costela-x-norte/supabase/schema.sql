@@ -19,9 +19,25 @@
 -- Quando este cliente virar pagante, o ideal é migrar para um projeto
 -- Supabase dedicado (ver README) — aí `xnorte` vira `public` de novo,
 -- sem precisar mudar nenhuma linha de código além da env var de schema.
+--
+-- SCRIPT IDEMPOTENTE (só na fase de setup, antes de ter pedido real):
+-- as duas linhas abaixo apagam qualquer coisa que já exista em `xnorte`
+-- e recriam do zero, pra este SQL poder ser colado e rodado de novo
+-- sem erro de "already exists" caso uma tentativa anterior tenha parado
+-- no meio. As policies do bucket de fotos ficam em `storage.objects`,
+-- fora do schema `xnorte`, por isso precisam de drop à parte — "drop
+-- schema xnorte cascade" não alcança elas.
+-- ⚠️ DEPOIS QUE O APP ESTIVER EM PRODUÇÃO COM PEDIDOS REAIS, NÃO RODAR
+-- ESTE SCRIPT DE NOVO — ele apaga xnorte.pedidos, xnorte.turnos etc.
 -- ═══════════════════════════════════════════════════════════════
 
-create schema if not exists xnorte;
+drop policy if exists xnorte_fotos_leitura_publica on storage.objects;
+drop policy if exists xnorte_fotos_escrita_admin on storage.objects;
+drop policy if exists xnorte_fotos_update_admin on storage.objects;
+drop policy if exists xnorte_fotos_delete_admin on storage.objects;
+drop schema if exists xnorte cascade;
+
+create schema xnorte;
 
 -- ── Admins ─────────────────────────────────────────────
 -- Quem pode logar no painel (magic link). Popular manualmente
