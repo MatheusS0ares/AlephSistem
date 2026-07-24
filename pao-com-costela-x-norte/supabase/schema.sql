@@ -263,6 +263,27 @@ returns numeric language sql stable set search_path = xnorte, public as $$
   );
 $$;
 
+-- ── Grants ───────────────────────────────────────────────
+-- Schema novo != schema `public`: os papéis que a API do Supabase usa
+-- (anon, authenticated, service_role) só têm acesso automático a
+-- `public`. Sem isso, toda query dá "permission denied for schema
+-- xnorte" (42501) mesmo com RLS certinho — RLS só entra em jogo depois
+-- que o GRANT de base já permitiu o acesso à tabela. `default privileges`
+-- garante que tabela/função nova criada depois também herda o grant.
+
+grant usage on schema xnorte to anon, authenticated, service_role;
+
+grant select on all tables in schema xnorte to anon;
+grant select, insert, update, delete on all tables in schema xnorte to authenticated;
+grant all privileges on all tables in schema xnorte to service_role;
+
+grant execute on all functions in schema xnorte to anon, authenticated, service_role;
+
+alter default privileges in schema xnorte grant select on tables to anon;
+alter default privileges in schema xnorte grant select, insert, update, delete on tables to authenticated;
+alter default privileges in schema xnorte grant all privileges on tables to service_role;
+alter default privileges in schema xnorte grant execute on functions to anon, authenticated, service_role;
+
 -- ── RLS ──────────────────────────────────────────────────
 
 alter table xnorte.paes            enable row level security;
