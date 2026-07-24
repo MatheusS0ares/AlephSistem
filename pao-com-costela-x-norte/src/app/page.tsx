@@ -34,7 +34,13 @@ export default async function HomePage() {
             {isSupabaseConfigured() && cardapio.paes.length > 0 ? (
               <MontadorLanche cardapio={cardapio} />
             ) : (
-              <p className="text-papel/60">Cardápio em configuração — volte em breve.</p>
+              <div>
+                <p className="text-papel/60">Cardápio em configuração — volte em breve.</p>
+                {/* DEBUG TEMPORÁRIO — remover depois de resolver o cardápio vazio */}
+                {cardapio._erro && (
+                  <p className="text-brasa text-xs mt-2 font-mono break-all">DEBUG: {cardapio._erro}</p>
+                )}
+              </div>
             )}
           </div>
         </section>
