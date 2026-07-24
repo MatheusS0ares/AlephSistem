@@ -34,8 +34,10 @@ export async function abrirTurno(observacao?: string) {
   return data;
 }
 
+// Sem checagem de admin aqui de propósito: mesmo motivo de pedidosDoDia()
+// em actions/pedidos.ts — a rota já é protegida pelo layout e pela RLS,
+// um throw no meio da renderização derruba a página em vez de redirecionar.
 export async function resumoTurno(turnoId: string) {
-  await exigirAdmin();
   const supabase = await createClient();
 
   const { data: pedidos, error } = await supabase

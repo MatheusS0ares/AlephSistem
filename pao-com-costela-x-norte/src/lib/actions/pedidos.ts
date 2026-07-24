@@ -126,10 +126,12 @@ export async function atualizarStatusPedido(id: string, status: StatusPedido) {
   if (error) throw new Error(error.message);
 }
 
+// Sem checagem de admin aqui de propósito: a rota já é protegida pelo
+// layout de (protegido) (redireciona quem não é admin) e pela RLS
+// (xnorte.pedidos só libera linha real pra quem xnorte.is_admin()).
+// Um throw aqui é redundante e, se disparar durante a renderização,
+// derruba a página inteira em vez de deixar o layout redirecionar.
 export async function pedidosDoDia() {
-  const admin = await getAdminUser();
-  if (!admin) throw new Error("NAO_AUTORIZADO");
-
   const supabase = await createClient();
   const inicioDoDia = new Date();
   inicioDoDia.setHours(0, 0, 0, 0);
