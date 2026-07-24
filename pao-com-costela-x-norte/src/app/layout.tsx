@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Anton, Inter, Space_Mono } from "next/font/google";
+import { Anton, Inter, Permanent_Marker, Space_Mono } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
@@ -19,6 +19,12 @@ const spaceMono = Space_Mono({
   variable: "--font-space-mono",
   subsets: ["latin"],
   weight: ["400", "700"],
+});
+
+const marcador = Permanent_Marker({
+  variable: "--font-permanent-marker",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 const urlBase = process.env.NEXT_PUBLIC_SITE_URL ?? "https://xnorte.vercel.app";
@@ -75,7 +81,7 @@ const jsonLd = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body className={`${anton.variable} ${inter.variable} ${spaceMono.variable} antialiased`}>
+      <body className={`${anton.variable} ${inter.variable} ${spaceMono.variable} ${marcador.variable} antialiased`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -19,20 +19,28 @@ export default function Hero({ itensMarquee }: { itensMarquee: string[] }) {
           {siteConfig.cidade} · aberto {siteConfig.horario}
         </motion.p>
         
-        <h1 className="titulo-display text-[3.5rem] leading-[0.85] sm:text-[8rem] md:text-[10rem]">
-          <motion.span 
+        <h1 className="titulo-display text-[3.5rem] leading-[0.85] sm:text-[8rem] md:text-[10rem] relative">
+          <motion.span
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className="block text-papel"
+            className="block text-papel relative"
           >
-            PÃO COM
+            PÃO
+            <motion.span
+              initial={{ opacity: 0, scale: 0.7, rotate: 6 }}
+              animate={{ opacity: 1, scale: 1, rotate: -6 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
+              className="texto-marcador absolute left-1/2 -translate-x-1/2 -bottom-2 sm:-bottom-4 text-[1.5rem] sm:text-[3rem] whitespace-nowrap"
+            >
+              com
+            </motion.span>
           </motion.span>
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-            className="block texto-brasa"
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+            className="block texto-brasa mt-4 sm:mt-6"
           >
             COSTELA
           </motion.span>

@@ -20,6 +20,7 @@
   --font-display: var(--font-anton);
   --font-corpo: var(--font-inter);
   --font-mono-preco: var(--font-space-mono);
+  --font-marcador: var(--font-permanent-marker);
 }
 
 * {
@@ -81,6 +82,19 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 0 40px color-mix(in srgb, var(--color-brasa) 60%, transparent));
+}
+
+/* palavra "marcador" — tag de spray/caneta sobreposta ao título, camada
+   de tipografia inspirada em referências editoriais, adaptada pro clima
+   underground/trailer (marker em vez de script elegante) */
+.texto-marcador {
+  font-family: var(--font-marcador), cursive;
+  color: var(--color-lona);
+  text-transform: none;
+  letter-spacing: 0;
+  display: inline-block;
+  transform: rotate(-6deg);
+  filter: drop-shadow(0 2px 12px color-mix(in srgb, var(--color-lona) 50%, transparent));
 }
 
 /* Background Scene - Ultra premium grid & mesh gradient */

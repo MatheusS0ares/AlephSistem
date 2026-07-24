@@ -1,3 +1,5 @@
+import Image from "next/image";
+import { Sandwich } from "lucide-react";
 import type { Cardapio } from "@/lib/types";
 import { resolverPreco, formatarPreco } from "@/lib/price";
 import ScrollReveal from "./ScrollReveal";
@@ -22,14 +24,25 @@ export default function CardapioCompleto({ cardapio }: { cardapio: Cardapio }) {
             <ScrollReveal key={p.id} atraso={i * 100}>
               <div className="vidro rounded-3xl p-8 sm:p-10 h-full relative group hover:border-papel/20 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.05)] transition-all duration-500 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-papel/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                
-                <div className="flex items-end justify-between mb-8 pb-4 border-b border-papel/10">
-                  <h3 className="titulo-display text-3xl text-papel">{p.nome}</h3>
-                  {!p.disponivel && (
-                    <span className="text-xs uppercase font-bold text-brasa bg-brasa/10 rounded-full px-3 py-1">
-                      esgotado
-                    </span>
-                  )}
+
+                <div className="flex items-center gap-5 mb-8 pb-6 border-b border-papel/10">
+                  <div className="relative h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-full overflow-hidden borda-fina bg-noite-2 shadow-[0_0_30px_-8px_var(--color-brasa)]">
+                    {p.foto_url ? (
+                      <Image src={p.foto_url} alt={p.nome} fill sizes="96px" className="object-cover" />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-papel/20">
+                        <Sandwich size={32} strokeWidth={1.2} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 flex items-end justify-between gap-3">
+                    <h3 className="titulo-display text-3xl text-papel">{p.nome}</h3>
+                    {!p.disponivel && (
+                      <span className="text-xs uppercase font-bold text-brasa bg-brasa/10 rounded-full px-3 py-1 whitespace-nowrap">
+                        esgotado
+                      </span>
+                    )}
+                  </div>
                 </div>
                 
                 <ul className="space-y-1">
