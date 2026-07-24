@@ -18,7 +18,9 @@ export default function AdminNav({ nome }: { nome: string }) {
     <>
       <header className="border-b-2 border-admin-borda px-4 py-3 flex items-center justify-between">
         <span className="font-bold">X Norte — Painel</span>
-        <span className="text-sm text-admin-texto/60">{nome}</span>
+        <Link href="/admin/conta" className="text-sm text-admin-texto/60 underline underline-offset-2">
+          {nome}
+        </Link>
       </header>
 
       <nav className="fixed bottom-0 inset-x-0 border-t-2 border-admin-borda bg-admin-bg flex z-20">
