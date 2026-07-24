@@ -181,7 +181,7 @@ create table xnorte.pedido_itens (
   pao_nome           text not null,
   carne_nome         text not null,
   carnes_composicao  text[],                       -- preenchido quando misto
-  molho_nome         text,
+  molhos_nomes       text[],                       -- molhos são à vontade, pode ter mais de um
   quantidade         int not null default 1 check (quantidade > 0),
   preco_unitario     numeric(10,2) not null,
   preco_total        numeric(10,2) not null,
@@ -353,28 +353,45 @@ create policy xnorte_fotos_delete_admin on storage.objects for delete
   to authenticated using (bucket_id = 'xnorte-cardapio' and xnorte.is_admin());
 
 -- ============ SEED ============
--- Só a linha do pão bola está confirmada com o cliente (brief seção 11).
--- Os demais pães entram com preco_base = null ("preço não definido"),
--- e o ajuste de carne foi cadastrado apenas para a combinação já validada.
--- NÃO assumir os demais valores — o painel deve sinalizar "preço não definido"
--- em vez de herdar um número chutado.
+-- Preços conferidos no cardápio físico do trailer (fotos enviadas pelo
+-- cliente em 2026-07-24). Pão Bola já vinha confirmado desde o brief
+-- (seção 11); Mini Baguete e Pão Francês (unidade + trio) vieram do
+-- cardápio impresso. Ainda em aberto (ver README "Pendente com o
+-- cliente"): ajuste próprio da linguiça, e se o desconto da costela
+-- (−R$ 3,00) vale para todos os pães ou só o pão bola.
 
 insert into xnorte.paes (nome, preco_base, ordem) values
   ('Pão Bola', 15.00, 1),
-  ('Mini Baguete 17cm', null, 2),
-  ('Pão Francês', null, 3);
+  ('Mini Baguete 17cm', 26.00, 2),
+  ('Pão Francês', 18.00, 3);
 
 -- "Contra filé" é a carne de referência (ajuste 0 = preço base do pão),
--- confirmado pelo cliente: pão bola + contra filé = R$ 15,00 (a "carne padrão"
--- do brief). Ajuste da linguiça ainda não foi confirmado (seção 11, pergunta 3);
--- entra como 0 por padrão do schema — sinalizar para o cliente revisar.
+-- confirmado pelo cliente: pão bola + contra filé = R$ 15,00. Costela
+-- confirmada no cardápio impresso (pão bola + costela = R$ 12,00). Ajuste
+-- da linguiça ainda não foi confirmado (seção 11, pergunta 3); entra como
+-- 0 por padrão — sinalizar para o cliente revisar. "Misto" permanece com
+-- 2 escolhas conforme o cardápio impresso ("2 tipos de carne").
 insert into xnorte.carnes (nome, descricao, ajuste, composta, qtd_escolhas, ordem) values
   ('Contra filé', null, 0, false, 0, 1),
   ('Costela', null, -3.00, false, 0, 2),
-  ('Linguiça', null, 0, false, 0, 3),
-  ('Misto', 'escolha 2 carnes', 1.00, true, 2, 4);
+  ('Linguiça', 'frango ou toscana', 0, false, 0, 3),
+  ('Misto', 'escolha 2 tipos de carne', 1.00, true, 2, 4);
 
+-- Molhos da casa: à vontade, sem custo extra, cliente pode escolher quantos
+-- quiser (confirmado pelo cliente — o site permite seleção múltipla).
+-- Vinagrete NÃO entra aqui: é um molho artesanal que já vai por padrão em
+-- todo lanche, não é uma opção escolhível.
 insert into xnorte.molhos (nome, cor_hex, ordem) values
-  ('Alho', '#F2C230', 1),
-  ('BBQ', '#E2451F', 2),
-  ('Vinagrete', '#1B62A8', 3);
+  ('Picante', '#D7263D', 1),
+  ('BBQ', '#8A4B08', 2),
+  ('Bacon', '#7A3E1D', 3),
+  ('Mostarda e mel', '#F2B705', 4),
+  ('Verde', '#4C9A2A', 5),
+  ('Alho', '#F2E9CF', 6);
+
+-- Trio: mesma fórmula do cardápio impresso (unidade + R$ 10,00). Pão Bola
+-- não tem opção de trio (confirmado pelo cliente).
+insert into xnorte.combos (nome, pao_id, quantidade, preco, permite_variar_carne, ordem)
+select 'Trio Mini Baguete', id, 3, 36.00, true, 1 from xnorte.paes where nome = 'Mini Baguete 17cm';
+insert into xnorte.combos (nome, pao_id, quantidade, preco, permite_variar_carne, ordem)
+select 'Trio Pão Francês', id, 3, 28.00, true, 2 from xnorte.paes where nome = 'Pão Francês';

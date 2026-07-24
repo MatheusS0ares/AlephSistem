@@ -16,7 +16,7 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
   const [pao, setPao] = useState<Pao | null>(null);
   const [carne, setCarne] = useState<Carne | null>(null);
   const [mistoEscolhas, setMistoEscolhas] = useState<string[]>([]);
-  const [molho, setMolho] = useState<Molho | null>(null);
+  const [molhosSelecionados, setMolhosSelecionados] = useState<Molho[]>([]);
   const [quantidade, setQuantidade] = useState(1);
   const [observacaoItem, setObservacaoItem] = useState("");
   const [carrinho, setCarrinho] = useState<ItemCarrinho[]>([]);
@@ -40,7 +40,7 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
     setPao(p);
     setCarne(null);
     setMistoEscolhas([]);
-    setMolho(null);
+    setMolhosSelecionados([]);
     setPasso(2);
   }
 
@@ -65,9 +65,14 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
     setPasso(3);
   }
 
-  function selecionarMolho(m: Molho) {
+  function alternarMolho(m: Molho) {
     if (!m.disponivel) return;
-    setMolho(m);
+    setMolhosSelecionados((atual) =>
+      atual.some((x) => x.id === m.id) ? atual.filter((x) => x.id !== m.id) : [...atual, m]
+    );
+  }
+
+  function confirmarMolhos() {
     setPasso(4);
   }
 
@@ -79,8 +84,8 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
       carneId: carne.id,
       carneNome: carne.nome,
       carnesComposicao: mistoEscolhas.length ? mistoEscolhas : undefined,
-      molhoId: molho?.id ?? null,
-      molhoNome: molho?.nome ?? null,
+      molhoIds: molhosSelecionados.map((m) => m.id),
+      molhoNomes: molhosSelecionados.map((m) => m.nome),
       quantidade,
       precoUnitario: precoAtual,
       observacao: observacaoItem.trim() || undefined,
@@ -89,7 +94,7 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
     setPao(null);
     setCarne(null);
     setMistoEscolhas([]);
-    setMolho(null);
+    setMolhosSelecionados([]);
     setQuantidade(1);
     setObservacaoItem("");
     setPasso(1);
@@ -137,7 +142,7 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
         {/* Ambient glow inside container */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-brasa-2/10 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
 
-        <IndicadorPassos passoAtual={pao ? (carne ? (molho ? 4 : 3) : 2) : 1} />
+        <IndicadorPassos passoAtual={passo} />
 
         <div className="relative z-10 space-y-12">
           <PassoPaes ativo={passo === 1} paes={cardapio.paes} selecionado={pao} onSelecionar={selecionarPao} />
@@ -162,11 +167,17 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
 
             {pao && carne && (!carne.composta || mistoEscolhas.length === carne.qtd_escolhas) && (
               <motion.div key="passo-molho" variants={fadeIn} initial="hidden" animate="visible" exit="exit">
-                <PassoMolhos ativo={passo === 3} molhos={cardapio.molhos} selecionado={molho} onSelecionar={selecionarMolho} />
+                <PassoMolhos
+                  ativo={passo === 3}
+                  molhos={cardapio.molhos}
+                  selecionados={molhosSelecionados}
+                  onAlternar={alternarMolho}
+                  onConfirmar={confirmarMolhos}
+                />
               </motion.div>
             )}
 
-            {pao && carne && molho && passo === 4 && (
+            {pao && carne && passo === 4 && (
               <motion.div key="passo-fim" variants={fadeIn} initial="hidden" animate="visible" exit="exit">
                 <div className="vidro borda-fina rounded-2xl p-6 space-y-6">
                   <div className="flex items-center justify-between">
@@ -240,7 +251,7 @@ export default function MontadorLanche({ cardapio }: { cardapio: Cardapio }) {
                       </strong>
                       <span className="text-papel/60">
                         {item.carneNome} {item.carnesComposicao ? `(${item.carnesComposicao.join(", ")})` : ""}
-                        {item.molhoNome ? ` — ${item.molhoNome}` : ""}
+                        {item.molhoNomes.length ? ` — ${item.molhoNomes.join(", ")}` : ""}
                       </span>
                       {item.observacao && <p className="text-xs text-lona mt-1 italic">&ldquo;{item.observacao}&rdquo;</p>}
                     </div>
@@ -540,39 +551,52 @@ function PassoCarnes({
 function PassoMolhos({
   ativo,
   molhos,
-  selecionado,
-  onSelecionar,
+  selecionados,
+  onAlternar,
+  onConfirmar,
 }: {
   ativo: boolean;
   molhos: Molho[];
-  selecionado: Molho | null;
-  onSelecionar: (m: Molho) => void;
+  selecionados: Molho[];
+  onAlternar: (m: Molho) => void;
+  onConfirmar: () => void;
 }) {
   return (
     <section className={`transition-opacity duration-500 ${ativo ? "opacity-100" : "opacity-30 pointer-events-none"}`}>
-      <h3 className="titulo-display text-2xl mb-5 text-papel">3. Escolha o molho</h3>
+      <h3 className="titulo-display text-2xl mb-1 text-papel">3. Escolha os molhos</h3>
+      <p className="text-sm text-papel/50 mb-5">À vontade, sem custo extra — escolha quantos quiser.</p>
       <div className="flex flex-wrap gap-3">
-        {molhos.map((m) => (
-          <button
-            key={m.id}
-            type="button"
-            disabled={!m.disponivel}
-            onClick={() => onSelecionar(m)}
-            className={`alvo-toque px-6 rounded-full border flex items-center gap-3 transition-all duration-300 h-12 ${
-              selecionado?.id === m.id
-                ? "border-brasa bg-brasa/10 shadow-[0_0_20px_-5px_var(--color-brasa)] text-papel"
-                : "borda-fina text-papel/70 bg-noite-2/50 hover:bg-noite hover:border-papel/30 hover:text-papel"
-            } ${!m.disponivel ? "opacity-30 grayscale" : ""}`}
-          >
-            {m.cor_hex && (
-              <span className="w-4 h-4 rounded-full inline-block shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]" style={{ backgroundColor: m.cor_hex }} />
-            )}
-            <span className="font-medium">{m.nome}</span>
-            {selecionado?.id === m.id && <Check size={16} className="text-brasa ml-1" />}
-            {!m.disponivel && <span className="text-xs uppercase text-brasa ml-2 font-bold">esgotado</span>}
-          </button>
-        ))}
+        {molhos.map((m) => {
+          const marcado = selecionados.some((x) => x.id === m.id);
+          return (
+            <button
+              key={m.id}
+              type="button"
+              disabled={!m.disponivel}
+              onClick={() => onAlternar(m)}
+              className={`alvo-toque px-6 rounded-full border flex items-center gap-3 transition-all duration-300 h-12 ${
+                marcado
+                  ? "border-brasa bg-brasa/10 shadow-[0_0_20px_-5px_var(--color-brasa)] text-papel"
+                  : "borda-fina text-papel/70 bg-noite-2/50 hover:bg-noite hover:border-papel/30 hover:text-papel"
+              } ${!m.disponivel ? "opacity-30 grayscale" : ""}`}
+            >
+              {m.cor_hex && (
+                <span className="w-4 h-4 rounded-full inline-block shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)]" style={{ backgroundColor: m.cor_hex }} />
+              )}
+              <span className="font-medium">{m.nome}</span>
+              {marcado && <Check size={16} className="text-brasa ml-1" />}
+              {!m.disponivel && <span className="text-xs uppercase text-brasa ml-2 font-bold">esgotado</span>}
+            </button>
+          );
+        })}
       </div>
+      <button
+        type="button"
+        onClick={onConfirmar}
+        className="alvo-toque mt-6 rounded-full bg-papel text-noite font-bold px-8 uppercase text-sm hover:bg-papel/90 transition-colors"
+      >
+        Continuar
+      </button>
     </section>
   );
 }

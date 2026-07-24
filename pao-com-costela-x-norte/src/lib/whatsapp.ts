@@ -5,7 +5,7 @@ function linhaItem(item: ItemCarrinho): string {
   const carne = item.carnesComposicao?.length
     ? `${item.carneNome} (${item.carnesComposicao.join(" + ")})`
     : item.carneNome;
-  const molho = item.molhoNome ? ` — ${item.molhoNome}` : "";
+  const molho = item.molhoNomes.length ? ` — ${item.molhoNomes.join(", ")}` : "";
   const total = item.precoUnitario * item.quantidade;
   return `${item.quantidade}x ${item.paoNome} — ${carne}${molho} — ${formatarPreco(total)}`;
 }

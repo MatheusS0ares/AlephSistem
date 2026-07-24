@@ -8,8 +8,9 @@ export const siteConfig = {
   cidade: "Setor Norte",
   referencia: "em frente à Padaria X Norte, quadra X, Setor Norte",
 
-  // TODO-CLIENTE (brief seção 11, perguntas 5–8): confirmar antes de publicar
-  telefoneWhatsApp: "5561900000000", // formato E.164 sem "+" para o link wa.me
+  telefoneWhatsApp: "5561999781007", // confirmado com o cliente (61) 99978-1007
+
+  // TODO-CLIENTE (brief seção 11, perguntas 5–7): confirmar antes de publicar
   enderecoRua: "Quadra X, Setor Norte",
   cep: "",
   latitude: undefined as number | undefined,

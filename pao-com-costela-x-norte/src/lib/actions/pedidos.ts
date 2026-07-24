@@ -18,7 +18,7 @@ function itensParaSnapshot(pedidoId: string, itens: ItemCarrinho[]) {
     pao_nome: i.paoNome,
     carne_nome: i.carneNome,
     carnes_composicao: i.carnesComposicao?.length ? i.carnesComposicao : null,
-    molho_nome: i.molhoNome,
+    molhos_nomes: i.molhoNomes.length ? i.molhoNomes : null,
     quantidade: i.quantidade,
     preco_unitario: i.precoUnitario,
     preco_total: i.precoUnitario * i.quantidade,

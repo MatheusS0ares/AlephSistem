@@ -1,11 +1,11 @@
 import ScrollReveal from "./ScrollReveal";
-import { Flame, CheckCircle2, Smartphone, MapPin } from "lucide-react";
+import { Sparkles, CheckCircle2, Smartphone, MapPin } from "lucide-react";
 
 const ITENS = [
   {
-    titulo: "Na brasa, na hora",
-    texto: "O pedido só vai pro pão depois que você manda — nada fica esperando debaixo de luz. Sabor de churrasco de verdade, selado no fogo.",
-    icone: Flame,
+    titulo: "Montado na hora",
+    texto: "O pedido só vai pro pão depois que você manda — nada fica esperando debaixo de luz. Molhos artesanais, do jeito que você escolher.",
+    icone: Sparkles,
     span: "sm:col-span-2 sm:row-span-2",
   },
   {

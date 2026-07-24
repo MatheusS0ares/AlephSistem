@@ -80,8 +80,8 @@ export type ItemCarrinho = {
   carneId: string;
   carneNome: string;
   carnesComposicao?: string[];
-  molhoId: string | null;
-  molhoNome: string | null;
+  molhoIds: string[];
+  molhoNomes: string[];
   quantidade: number;
   precoUnitario: number;
   observacao?: string;
@@ -112,7 +112,7 @@ export type PedidoItem = {
   pao_nome: string;
   carne_nome: string;
   carnes_composicao: string[] | null;
-  molho_nome: string | null;
+  molhos_nomes: string[] | null;
   quantidade: number;
   preco_unitario: number;
   preco_total: number;

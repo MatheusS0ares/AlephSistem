@@ -75,7 +75,8 @@ export default function CardapioCompleto({ cardapio }: { cardapio: Cardapio }) {
         {molhos.length > 0 && (
           <ScrollReveal atraso={200}>
             <div className="mt-16 text-center">
-              <h3 className="titulo-display text-2xl mb-6 text-papel/70">Molhos da casa</h3>
+              <h3 className="titulo-display text-2xl mb-2 text-papel/70">Molhos da casa</h3>
+              <p className="text-sm text-papel/40 mb-6">À vontade, sem custo extra — escolha quantos quiser. Vinagrete artesanal já vai de brinde em todo lanche.</p>
               <ul className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
                 {molhos.map((m) => (
                   <li

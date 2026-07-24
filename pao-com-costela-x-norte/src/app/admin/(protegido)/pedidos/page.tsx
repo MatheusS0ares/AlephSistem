@@ -23,7 +23,7 @@ export default async function PedidosDoDiaPage() {
                 {(pedido.pedido_itens ?? []).map((item) => (
                   <li key={item.id}>
                     {item.quantidade}x {item.pao_nome} — {item.carne_nome}
-                    {item.molho_nome ? ` — ${item.molho_nome}` : ""}
+                    {item.molhos_nomes?.length ? ` — ${item.molhos_nomes.join(", ")}` : ""}
                   </li>
                 ))}
               </ul>

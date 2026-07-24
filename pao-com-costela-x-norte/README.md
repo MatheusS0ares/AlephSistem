@@ -55,17 +55,16 @@ os demais.
 
 ## Pendente com o cliente (brief seção 11)
 
-O seed só tem a linha do pão bola confirmada. Enquanto não fechar, o
-sistema mostra "preço não definido" em vez de chutar valor:
+Preços de pães/carnes/molhos e o WhatsApp já foram confirmados com o
+cardápio físico do trailer (2026-07-24) e estão no seed de
+`supabase/schema.sql`. Ainda em aberto:
 
-1. Preço do Mini Baguete 17cm e do Pão Francês — vale para qual carne, ou é o mesmo pra qualquer uma?
-2. Desconto da costela (−R$ 3,00) vale em todos os pães ou só no pão bola?
-3. Linguiça tem ajuste próprio? (entrou como 0 por padrão — revisar em `/admin/cardapio`)
-4. Trio é 3 unidades iguais ou pode variar a carne? Por que pão bola não tem trio? *(painel já tem tela pra criar combos em `/admin/cardapio` — assim que a resposta chegar, é só cadastrar lá)*
-5. Faz entrega? Raio e taxa? (`siteConfig.fazEntrega = false` por enquanto)
-6. Horário e dias de funcionamento (`src/lib/site-config.ts`, placeholder "18h às 23h")
-7. Formas de pagamento aceitas (assumido dinheiro/pix/cartão)
-8. Número de WhatsApp oficial (`src/lib/site-config.ts`, placeholder — **trocar antes de publicar**)
+1. Desconto da costela (−R$ 3,00) vale em todos os pães ou só no pão bola? (hoje aplica em todos, via `ajuste` da carne)
+2. Linguiça tem ajuste próprio? (entrou como 0 por padrão — revisar em `/admin/cardapio`)
+3. Trio permite variar a carne entre as 3 unidades, ou é sempre a mesma? (hoje `permite_variar_carne = true` por padrão nos combos)
+4. Faz entrega? Raio e taxa? (`siteConfig.fazEntrega = false` por enquanto)
+5. Horário e dias de funcionamento (`src/lib/site-config.ts`, placeholder "18h às 23h")
+6. Formas de pagamento aceitas (assumido dinheiro/pix/cartão)
 
 Depois de fechar esses pontos, atualizar `src/lib/site-config.ts` e a
 tabela `carnes`/`paes` no painel (`/admin/cardapio`).

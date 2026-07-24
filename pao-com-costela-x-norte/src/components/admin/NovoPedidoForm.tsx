@@ -12,7 +12,7 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
   const [pao, setPao] = useState<Pao | null>(null);
   const [carne, setCarne] = useState<Carne | null>(null);
   const [mistoEscolhas, setMistoEscolhas] = useState<string[]>([]);
-  const [molho, setMolho] = useState<Molho | null>(null);
+  const [molhosSelecionados, setMolhosSelecionados] = useState<Molho[]>([]);
   const [quantidade, setQuantidade] = useState(1);
   const [formaPagamento, setFormaPagamento] = useState<FormaPagamento>("dinheiro");
   const [salvando, setSalvando] = useState(false);
@@ -41,9 +41,15 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
     setPao(null);
     setCarne(null);
     setMistoEscolhas([]);
-    setMolho(null);
+    setMolhosSelecionados([]);
     setQuantidade(1);
     setFormaPagamento("dinheiro");
+  }
+
+  function alternarMolho(m: Molho) {
+    setMolhosSelecionados((atual) =>
+      atual.some((x) => x.id === m.id) ? atual.filter((x) => x.id !== m.id) : [...atual, m]
+    );
   }
 
   async function salvar() {
@@ -57,8 +63,8 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
       carneId: carne.id,
       carneNome: carne.nome,
       carnesComposicao: mistoEscolhas.length ? mistoEscolhas : undefined,
-      molhoId: molho?.id ?? null,
-      molhoNome: molho?.nome ?? null,
+      molhoIds: molhosSelecionados.map((m) => m.id),
+      molhoNomes: molhosSelecionados.map((m) => m.nome),
       quantidade,
       precoUnitario: precoAtual,
     };
@@ -88,7 +94,7 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
             <button
               key={p.id}
               type="button"
-              onClick={() => { setPao(p); setCarne(null); setMistoEscolhas([]); setMolho(null); }}
+              onClick={() => { setPao(p); setCarne(null); setMistoEscolhas([]); setMolhosSelecionados([]); }}
               className={`alvo-toque border-2 text-sm font-bold ${pao?.id === p.id ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
             >
               {p.nome}
@@ -139,21 +145,14 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
 
       {prontoParaAdicionar && (
         <div>
-          <p className="text-sm font-bold uppercase text-admin-texto/60 mb-2">3. Molho</p>
+          <p className="text-sm font-bold uppercase text-admin-texto/60 mb-2">3. Molhos (à vontade)</p>
           <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => setMolho(null)}
-              className={`alvo-toque px-3 border-2 text-sm ${molho === null ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
-            >
-              Sem molho
-            </button>
             {cardapio.molhos.filter((m) => m.disponivel).map((m) => (
               <button
                 key={m.id}
                 type="button"
-                onClick={() => setMolho(m)}
-                className={`alvo-toque px-3 border-2 text-sm ${molho?.id === m.id ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
+                onClick={() => alternarMolho(m)}
+                className={`alvo-toque px-3 border-2 text-sm ${molhosSelecionados.some((x) => x.id === m.id) ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
               >
                 {m.nome}
               </button>
