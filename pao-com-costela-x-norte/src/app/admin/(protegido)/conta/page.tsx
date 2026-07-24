@@ -1,5 +1,6 @@
 import { getAdminUser } from "@/lib/supabase/server";
 import DefinirSenhaForm from "@/components/admin/DefinirSenhaForm";
+import LogoutButton from "@/components/admin/LogoutButton";
 
 export default async function ContaPage() {
   const admin = await getAdminUser();
@@ -12,6 +13,9 @@ export default async function ContaPage() {
         útil pra quem acessa o painel pelo celular do trailer no dia a dia.
       </p>
       <DefinirSenhaForm email={admin?.email ?? ""} />
+      <div className="pt-4 border-t-2 border-admin-borda">
+        <LogoutButton />
+      </div>
     </div>
   );
 }
