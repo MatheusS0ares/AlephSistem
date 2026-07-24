@@ -82,12 +82,12 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
   return (
     <div className="space-y-6">
       {naFila > 0 && (
-        <p className="text-xs bg-lona/20 border-2 border-lona px-3 py-2">
+        <p className="text-xs bg-lona/20 border-2 border-lona rounded-xl px-3 py-2">
           {naFila} pedido{naFila > 1 ? "s" : ""} aguardando sinal para sincronizar.
         </p>
       )}
 
-      <div>
+      <div className="card-admin p-4">
         <p className="text-sm font-bold uppercase text-admin-texto/60 mb-2">1. Pão</p>
         <div className="grid grid-cols-3 gap-2">
           {cardapio.paes.filter((p) => p.disponivel).map((p) => (
@@ -95,7 +95,7 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
               key={p.id}
               type="button"
               onClick={() => { setPao(p); setCarne(null); setMistoEscolhas([]); setMolhosSelecionados([]); }}
-              className={`alvo-toque border-2 text-sm font-bold ${pao?.id === p.id ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
+              className={`alvo-toque rounded-xl border-2 text-sm font-bold ${pao?.id === p.id ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
             >
               {p.nome}
             </button>
@@ -104,7 +104,7 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
       </div>
 
       {pao && (
-        <div>
+        <div className="card-admin p-4">
           <p className="text-sm font-bold uppercase text-admin-texto/60 mb-2">2. Carne</p>
           <div className="grid grid-cols-3 gap-2">
             {cardapio.carnes.filter((c) => c.disponivel).map((c) => (
@@ -112,7 +112,7 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
                 key={c.id}
                 type="button"
                 onClick={() => { setCarne(c); setMistoEscolhas([]); }}
-                className={`alvo-toque border-2 text-sm font-bold ${carne?.id === c.id ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
+                className={`alvo-toque rounded-xl border-2 text-sm font-bold ${carne?.id === c.id ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
               >
                 {c.nome}
               </button>
@@ -133,7 +133,7 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
                         : atual
                     )
                   }
-                  className={`alvo-toque px-3 border-2 text-xs ${mistoEscolhas.includes(c.nome) ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
+                  className={`alvo-toque px-3 rounded-full border-2 text-xs ${mistoEscolhas.includes(c.nome) ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
                 >
                   {c.nome}
                 </button>
@@ -144,7 +144,7 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
       )}
 
       {prontoParaAdicionar && (
-        <div>
+        <div className="card-admin p-4">
           <p className="text-sm font-bold uppercase text-admin-texto/60 mb-2">3. Molhos (à vontade)</p>
           <div className="flex flex-wrap gap-2">
             {cardapio.molhos.filter((m) => m.disponivel).map((m) => (
@@ -152,7 +152,7 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
                 key={m.id}
                 type="button"
                 onClick={() => alternarMolho(m)}
-                className={`alvo-toque px-3 border-2 text-sm ${molhosSelecionados.some((x) => x.id === m.id) ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
+                className={`alvo-toque px-3 rounded-full border-2 text-sm ${molhosSelecionados.some((x) => x.id === m.id) ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
               >
                 {m.nome}
               </button>
@@ -163,16 +163,16 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
 
       {prontoParaAdicionar && (
         <>
-          <div className="flex items-center justify-between">
+          <div className="card-admin p-4 flex items-center justify-between">
             <span className="text-sm font-bold uppercase text-admin-texto/60">Quantidade</span>
             <div className="flex items-center gap-3">
-              <button type="button" onClick={() => setQuantidade((q) => Math.max(1, q - 1))} className="alvo-toque bg-admin-borda font-bold text-xl px-4">−</button>
+              <button type="button" onClick={() => setQuantidade((q) => Math.max(1, q - 1))} className="alvo-toque bg-admin-borda rounded-full font-bold text-xl px-4">−</button>
               <span className="text-xl w-6 text-center">{quantidade}</span>
-              <button type="button" onClick={() => setQuantidade((q) => q + 1)} className="alvo-toque bg-admin-borda font-bold text-xl px-4">+</button>
+              <button type="button" onClick={() => setQuantidade((q) => q + 1)} className="alvo-toque bg-admin-borda rounded-full font-bold text-xl px-4">+</button>
             </div>
           </div>
 
-          <div>
+          <div className="card-admin p-4">
             <p className="text-sm font-bold uppercase text-admin-texto/60 mb-2">Pagamento</p>
             <div className="grid grid-cols-3 gap-2">
               {(["dinheiro", "pix", "cartao"] as const).map((f) => (
@@ -180,7 +180,7 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
                   key={f}
                   type="button"
                   onClick={() => setFormaPagamento(f)}
-                  className={`alvo-toque border-2 text-sm font-bold capitalize ${formaPagamento === f ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
+                  className={`alvo-toque rounded-xl border-2 text-sm font-bold capitalize ${formaPagamento === f ? "border-brasa bg-brasa/10" : "border-admin-borda"}`}
                 >
                   {f}
                 </button>
@@ -194,7 +194,7 @@ export default function NovoPedidoForm({ cardapio }: { cardapio: Cardapio }) {
             type="button"
             onClick={salvar}
             disabled={salvando}
-            className="alvo-toque w-full bg-brasa text-white font-bold uppercase text-lg py-4 disabled:opacity-50"
+            className="alvo-toque w-full bg-brasa text-white font-bold uppercase text-lg py-4 rounded-xl disabled:opacity-50"
           >
             {salvando ? "Salvando..." : `Salvar — ${formatarPreco((precoAtual ?? 0) * quantidade)}`}
           </button>

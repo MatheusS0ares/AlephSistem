@@ -91,15 +91,15 @@ export default function LoginForm() {
       </div>
 
       {!configurado ? (
-        <p className="text-center text-sm border-2 border-admin-borda p-6">
+        <p className="text-center text-sm card-admin p-6">
           Painel em configuração. Fale com quem cuida do sistema.
         </p>
       ) : enviado ? (
-        <p className="text-center text-sm border-2 border-brasa p-6">
+        <p className="text-center text-sm card-admin p-6" style={{ borderColor: "var(--color-brasa)" }}>
           Link enviado para <strong>{email}</strong>. Abra o e-mail no celular e toque no link.
         </p>
       ) : recuperado ? (
-        <p className="text-center text-sm border-2 border-brasa p-6">
+        <p className="text-center text-sm card-admin p-6" style={{ borderColor: "var(--color-brasa)" }}>
           Link de recuperação enviado para <strong>{email}</strong>. Abra o e-mail, toque no link e
           defina uma senha nova em &ldquo;Minha conta&rdquo;.
         </p>
@@ -135,7 +135,7 @@ export default function LoginForm() {
         </form>
       ) : (
         <>
-          <div className="flex border-2 border-admin-borda">
+          <div className="flex border-2 border-admin-borda rounded-xl overflow-hidden">
             <button
               type="button"
               onClick={() => { setModo("senha"); setErro(""); }}
@@ -160,7 +160,7 @@ export default function LoginForm() {
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="alvo-toque w-full border-2 border-admin-borda px-4 text-lg"
+              className="alvo-toque w-full border-2 border-admin-borda rounded-xl px-4 text-lg"
             />
             {modo === "senha" && (
               <input
@@ -170,14 +170,14 @@ export default function LoginForm() {
                 autoComplete="current-password"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
-                className="alvo-toque w-full border-2 border-admin-borda px-4 text-lg"
+                className="alvo-toque w-full border-2 border-admin-borda rounded-xl px-4 text-lg"
               />
             )}
             {erro && <p className="text-sm text-brasa">{erro}</p>}
             <button
               type="submit"
               disabled={carregando}
-              className="alvo-toque w-full bg-brasa text-white font-bold uppercase tracking-wide disabled:opacity-50"
+              className="alvo-toque w-full bg-brasa text-white font-bold uppercase tracking-wide rounded-xl disabled:opacity-50"
             >
               {carregando ? "Entrando..." : modo === "senha" ? "Entrar" : "Enviar link de acesso"}
             </button>
