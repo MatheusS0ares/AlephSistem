@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import Link from "next/link";
+import AdminSidebar from "@/components/portal/AdminSidebar";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -15,41 +15,32 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   if (profile?.tipo !== "admin") redirect("/portal");
 
-  const navLinks = [
-    { href: "/portal/admin",             label: "Dashboard" },
-    { href: "/portal/admin/professores", label: "Professores" },
-    { href: "/portal/admin/turmas",      label: "Turmas" },
-    { href: "/portal/admin/alunos",      label: "Alunos" },
-    { href: "/portal/admin/financeiro",  label: "Financeiro" },
-    { href: "/portal/admin/eventos",     label: "Eventos" },
-  ];
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const hojeStr = hoje.toISOString().slice(0, 10);
+
+  const [matriculasRes, eventosRes] = await Promise.all([
+    supabase.from("matriculas").select("id", { count: "exact", head: true }).eq("status", "pendente"),
+    supabase.from("eventos").select("id", { count: "exact", head: true })
+      .gte("data_evento", hojeStr).eq("ativo", true),
+  ]);
+
+  const pendentes = matriculasRes.count ?? 0;
+  const eventos   = eventosRes.count ?? 0;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "var(--color-blackout)" }}>
-      <header className="border-b" style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-header)" }}>
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <span className="text-xs tracking-[0.3em] uppercase" style={{ color: "var(--color-spot)", fontFamily: "var(--font-mono)" }}>
-              SDE Admin
-            </span>
-            <nav className="hidden sm:flex items-center gap-1">
-              {navLinks.map(({ href, label }) => (
-                <Link key={href} href={href}
-                  className="px-3 py-1.5 text-xs tracking-[0.12em] uppercase transition-colors duration-150"
-                  style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>
-                  {label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-xs" style={{ color: "var(--color-ash)" }}>{profile.nome}</span>
-            <Link href="/" className="text-xs" style={{ color: "var(--color-ash)" }}>← Site</Link>
-          </div>
-        </div>
-      </header>
+      <AdminSidebar nome={profile?.nome ?? ""} pendentes={pendentes} eventos={eventos} />
 
-      <main className="max-w-6xl mx-auto px-6 py-10">{children}</main>
+      {/* Desktop: left-pad for sidebar. Mobile: top-pad for topbar + bottom-pad for nav */}
+      <main
+        className="lg:pl-[220px] pt-12 pb-16 lg:pt-0 lg:pb-0"
+        style={{ minHeight: "100vh" }}
+      >
+        <div className="max-w-5xl mx-auto px-6 py-8 lg:py-10">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }
