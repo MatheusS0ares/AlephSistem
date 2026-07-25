@@ -15,9 +15,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   if (profile?.tipo !== "admin") redirect("/portal");
 
+  const navLinks = [
+    { href: "/portal/admin",            label: "Dashboard" },
+    { href: "/portal/admin/professores", label: "Professores" },
+    { href: "/portal/admin/turmas",      label: "Turmas" },
+    { href: "/portal/admin/alunos",      label: "Alunos" },
+    { href: "/portal/admin/financeiro",  label: "Financeiro" },
+  ];
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: "var(--color-blackout)" }}>
-      {/* Admin header */}
       <header className="border-b" style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-header)" }}>
         <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-6">
@@ -25,10 +32,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               SDE Admin
             </span>
             <nav className="hidden sm:flex items-center gap-1">
-              {[
-                { href: "/portal/admin", label: "Dashboard" },
-                { href: "/portal/admin/professores", label: "Professores" },
-              ].map(({ href, label }) => (
+              {navLinks.map(({ href, label }) => (
                 <Link key={href} href={href}
                   className="px-3 py-1.5 text-xs tracking-[0.12em] uppercase transition-colors duration-150"
                   style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>

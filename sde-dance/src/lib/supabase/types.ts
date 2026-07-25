@@ -1,5 +1,5 @@
 export type TipoUsuario      = "aluno" | "professor" | "admin";
-export type StatusMatricula  = "ativa" | "cancelada" | "trancada";
+export type StatusMatricula  = "ativa" | "inativa" | "pendente";
 export type StatusFinanceiro = "pendente" | "pago" | "atrasado";
 export type TipoLancamento   = "mensalidade" | "matricula_taxa";
 
@@ -26,7 +26,7 @@ export interface Database {
           id:         string;
           nome:       string;
           tipo:       TipoUsuario;
-          telefone:   string | null;
+          whatsapp:   string | null;
           foto_url:   string | null;
           ativo:      boolean;
           created_at: string;
@@ -43,17 +43,15 @@ export interface Database {
 
       turmas: {
         Row: {
-          id:                string;
-          nome:              string;
-          modalidade:        string;
-          dias_semana:       string[];
-          horario_inicio:    string;
-          horario_fim:       string;
-          professor_id:      string | null;
-          capacidade:        number;
-          valor_mensalidade: number;
-          ativa:             boolean;
-          created_at:        string;
+          id:           string;
+          nome:         string;
+          modalidade:   string;
+          dias_semana:  string;
+          hora:         string;
+          professor_id: string | null;
+          vagas_total:  number;
+          ativo:        boolean;
+          created_at:   string;
         };
         Insert: Omit<Database["sde_dance"]["Tables"]["turmas"]["Row"], "id" | "created_at">;
         Update: Partial<Database["sde_dance"]["Tables"]["turmas"]["Insert"]>;

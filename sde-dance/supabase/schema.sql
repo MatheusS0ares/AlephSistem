@@ -23,7 +23,7 @@ CREATE TABLE sde_dance.profiles (
   nome        TEXT        NOT NULL,
   tipo        TEXT        NOT NULL DEFAULT 'aluno'
                 CHECK (tipo IN ('admin','professor','aluno')),
-  telefone    TEXT,
+  whatsapp    TEXT,
   foto_url    TEXT,
   ativo       BOOLEAN     NOT NULL DEFAULT TRUE,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -47,17 +47,15 @@ CREATE TABLE sde_dance.professores (
 
 -- Turmas (aulas)
 CREATE TABLE sde_dance.turmas (
-  id                 UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  nome               TEXT        NOT NULL,
-  modalidade         TEXT        NOT NULL,
-  dias_semana        TEXT[]      NOT NULL DEFAULT '{}',
-  horario_inicio     TIME        NOT NULL,
-  horario_fim        TIME        NOT NULL,
-  professor_id       UUID        REFERENCES sde_dance.profiles(id) ON DELETE SET NULL,
-  capacidade         INT         NOT NULL DEFAULT 20,
-  valor_mensalidade  NUMERIC(10,2) NOT NULL DEFAULT 0,
-  ativa              BOOLEAN     NOT NULL DEFAULT TRUE,
-  created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  id           UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome         TEXT        NOT NULL,
+  modalidade   TEXT        NOT NULL,
+  dias_semana  TEXT        NOT NULL DEFAULT '',
+  hora         TEXT        NOT NULL DEFAULT '',
+  professor_id UUID        REFERENCES sde_dance.profiles(id) ON DELETE SET NULL,
+  vagas_total  INT         NOT NULL DEFAULT 20,
+  ativo        BOOLEAN     NOT NULL DEFAULT TRUE,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Matrículas (aluno ↔ turma)
@@ -65,8 +63,8 @@ CREATE TABLE sde_dance.matriculas (
   id           UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   aluno_id     UUID        NOT NULL REFERENCES sde_dance.profiles(id)  ON DELETE CASCADE,
   turma_id     UUID        NOT NULL REFERENCES sde_dance.turmas(id)    ON DELETE CASCADE,
-  status       TEXT        NOT NULL DEFAULT 'ativa'
-                 CHECK (status IN ('ativa','cancelada','trancada')),
+  status       TEXT        NOT NULL DEFAULT 'pendente'
+                 CHECK (status IN ('ativa','inativa','pendente')),
   data_inicio  DATE        NOT NULL DEFAULT CURRENT_DATE,
   created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (aluno_id, turma_id)
@@ -192,7 +190,7 @@ CREATE POLICY "professores_write_admin"
 -- TURMAS
 CREATE POLICY "turmas_select"
   ON sde_dance.turmas FOR SELECT
-  USING (ativa = TRUE OR sde_dance.is_tipo('admin') OR sde_dance.is_tipo('professor'));
+  USING (ativo = TRUE OR sde_dance.is_tipo('admin') OR sde_dance.is_tipo('professor'));
 
 CREATE POLICY "turmas_write_admin"
   ON sde_dance.turmas FOR ALL

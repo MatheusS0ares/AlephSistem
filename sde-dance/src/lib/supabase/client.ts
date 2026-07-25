@@ -7,7 +7,7 @@ export function createClient() {
   if (!url || !key) {
     throw new Error("SUPABASE_NOT_CONFIGURED");
   }
-  return createBrowserClient<Database>(url, key, {
+  return createBrowserClient<Database, "sde_dance">(url, key, {
     db: { schema: "sde_dance" },
   });
 }
