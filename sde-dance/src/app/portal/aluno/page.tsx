@@ -32,18 +32,27 @@ export default async function AlunoPage() {
     .limit(6);
 
   const pendente = lancamentos?.filter(l => l.status !== "pago").reduce((s, l) => s + l.valor, 0) ?? 0;
+  const primeiroNome = profile?.nome?.split(" ")[0];
 
   return (
     <div className="flex flex-col gap-8">
       {/* Header */}
-      <div>
-        <p className="eyebrow mb-1">Portal do Aluno</p>
-        <h1 className="text-2xl font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--color-bone)" }}>
-          Olá, {profile?.nome?.split(" ")[0]} 👋
-        </h1>
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <p className="eyebrow mb-1">Portal do Aluno</p>
+          <h1 className="text-2xl font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--color-bone)" }}>
+            Olá{primeiroNome ? `, ${primeiroNome}` : ""} 👋
+          </h1>
+        </div>
+        {!profile?.nome && (
+          <div className="px-4 py-3 border text-xs"
+            style={{ borderColor: "rgba(231,182,92,0.3)", backgroundColor: "rgba(231,182,92,0.05)", color: "var(--color-ash)" }}>
+            Seu perfil está incompleto. Entre em contato com a escola.
+          </div>
+        )}
       </div>
 
-      {/* Resumo financeiro */}
+      {/* Alerta financeiro */}
       {pendente > 0 && (
         <div className="flex items-center justify-between gap-4 px-5 py-4 border"
           style={{ borderColor: "rgba(231,182,92,0.4)", backgroundColor: "rgba(231,182,92,0.06)" }}>
@@ -60,13 +69,39 @@ export default async function AlunoPage() {
 
       {/* Turmas */}
       <div>
-        <h2 className="text-sm tracking-[0.2em] uppercase mb-4"
+        <h2 className="text-xs tracking-[0.2em] uppercase mb-4"
           style={{ color: "var(--color-spot)", fontFamily: "var(--font-mono)" }}>
           Minhas turmas
         </h2>
 
         {!matriculas?.length ? (
-          <EmptyState text="Você ainda não está matriculado em nenhuma turma." />
+          <div className="py-10 border flex flex-col items-center text-center gap-6"
+            style={{ borderColor: "var(--border-subtle)", borderStyle: "dashed" }}>
+            <div className="text-4xl" aria-hidden>💃</div>
+            <div>
+              <p className="text-sm font-semibold mb-2" style={{ color: "var(--color-bone)" }}>
+                Nenhuma turma ainda
+              </p>
+              <p className="text-xs leading-relaxed max-w-xs mx-auto" style={{ color: "var(--color-ash)" }}>
+                Para se matricular, peça à escola um link de acesso à turma desejada.
+              </p>
+            </div>
+            <ol className="w-full max-w-xs flex flex-col gap-3 text-left">
+              {[
+                "Peça o link de matrícula à secretaria",
+                "Clique no link recebido por WhatsApp ou e-mail",
+                "Confirme sua matrícula com 1 clique",
+              ].map((step, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="w-5 h-5 rounded-full flex items-center justify-center text-[0.65rem] shrink-0 mt-0.5"
+                    style={{ backgroundColor: "rgba(110,16,35,0.35)", color: "var(--color-spot)", fontFamily: "var(--font-mono)" }}>
+                    {i + 1}
+                  </span>
+                  <p className="text-xs leading-relaxed" style={{ color: "var(--color-ash)" }}>{step}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
         ) : (
           <ul className="grid sm:grid-cols-2 gap-4">
             {matriculas.map((m: any) => (
@@ -75,6 +110,9 @@ export default async function AlunoPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold text-sm" style={{ color: "var(--color-bone)" }}>{m.turmas?.nome}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>
+                      {m.turmas?.modalidade}
+                    </p>
                     <p className="text-xs mt-0.5" style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>
                       {m.turmas?.dias_semana} · {m.turmas?.hora}
                     </p>
@@ -96,11 +134,11 @@ export default async function AlunoPage() {
       {lancamentos && lancamentos.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm tracking-[0.2em] uppercase"
+            <h2 className="text-xs tracking-[0.2em] uppercase"
               style={{ color: "var(--color-spot)", fontFamily: "var(--font-mono)" }}>
               Últimos lançamentos
             </h2>
-            <a href="/portal/aluno/financeiro" className="text-xs"
+            <a href="/portal/aluno/financeiro" className="text-xs hover:underline"
               style={{ color: "var(--color-ash)" }}>Ver tudo →</a>
           </div>
           <div className="flex flex-col gap-2">
@@ -136,14 +174,6 @@ function LancamentoRow({ lancamento: l }: { lancamento: any }) {
           {l.status}
         </span>
       </div>
-    </div>
-  );
-}
-
-function EmptyState({ text }: { text: string }) {
-  return (
-    <div className="py-12 text-center border" style={{ borderColor: "var(--border-subtle)", borderStyle: "dashed" }}>
-      <p className="text-sm" style={{ color: "var(--color-ash)" }}>{text}</p>
     </div>
   );
 }
