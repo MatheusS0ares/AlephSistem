@@ -1,224 +1,229 @@
--- ═══════════════════════════════════════════════════════
--- SDE Dance — Esquema do banco de dados
--- Cole este SQL no Supabase → SQL Editor → Run
--- ═══════════════════════════════════════════════════════
+-- =============================================================
+--  SDE DANCE — Schema isolado no Supabase compartilhado
+--  Execute este arquivo no SQL Editor do Supabase
+-- =============================================================
 
--- ── Tipos ──────────────────────────────────────────────
+-- 1. Criar o schema
+CREATE SCHEMA IF NOT EXISTS sde_dance;
 
-create type tipo_usuario as enum ('aluno', 'professor', 'admin');
-create type status_matricula as enum ('ativa', 'inativa', 'pendente');
-create type tipo_lancamento as enum ('mensalidade', 'matricula_taxa');
-create type status_financeiro as enum ('pendente', 'pago', 'atrasado');
+-- 2. Permissões para as roles do Supabase
+GRANT USAGE ON SCHEMA sde_dance TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA sde_dance
+  GRANT ALL ON TABLES    TO authenticated, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA sde_dance
+  GRANT ALL ON SEQUENCES TO authenticated, service_role;
 
--- ── Profiles ───────────────────────────────────────────
--- Extensão da tabela auth.users do Supabase
+-- =============================================================
+--  TABELAS
+-- =============================================================
 
-create table profiles (
-  id         uuid primary key references auth.users(id) on delete cascade,
-  tipo       tipo_usuario not null default 'aluno',
-  nome       text not null,
-  whatsapp   text,
-  foto_url   text,
-  ativo      boolean not null default true,
-  created_at timestamptz not null default now()
+-- Perfis de usuário (espelha auth.users)
+CREATE TABLE sde_dance.profiles (
+  id          UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  nome        TEXT        NOT NULL,
+  tipo        TEXT        NOT NULL DEFAULT 'aluno'
+                CHECK (tipo IN ('admin','professor','aluno')),
+  telefone    TEXT,
+  foto_url    TEXT,
+  ativo       BOOLEAN     NOT NULL DEFAULT TRUE,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Auto-cria profile quando usuário se registra
-create or replace function handle_new_user()
-returns trigger language plpgsql security definer as $$
-begin
-  insert into profiles (id, nome, tipo)
-  values (
-    new.id,
-    coalesce(new.raw_user_meta_data->>'nome', split_part(new.email, '@', 1)),
-    coalesce((new.raw_user_meta_data->>'tipo')::tipo_usuario, 'aluno')
-  );
-  return new;
-end;
+-- Turmas (aulas)
+CREATE TABLE sde_dance.turmas (
+  id                 UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome               TEXT        NOT NULL,
+  modalidade         TEXT        NOT NULL,
+  dias_semana        TEXT[]      NOT NULL DEFAULT '{}',
+  horario_inicio     TIME        NOT NULL,
+  horario_fim        TIME        NOT NULL,
+  professor_id       UUID        REFERENCES sde_dance.profiles(id) ON DELETE SET NULL,
+  capacidade         INT         NOT NULL DEFAULT 20,
+  valor_mensalidade  NUMERIC(10,2) NOT NULL DEFAULT 0,
+  ativa              BOOLEAN     NOT NULL DEFAULT TRUE,
+  created_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Matrículas (aluno ↔ turma)
+CREATE TABLE sde_dance.matriculas (
+  id           UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  aluno_id     UUID        NOT NULL REFERENCES sde_dance.profiles(id)  ON DELETE CASCADE,
+  turma_id     UUID        NOT NULL REFERENCES sde_dance.turmas(id)    ON DELETE CASCADE,
+  status       TEXT        NOT NULL DEFAULT 'ativa'
+                 CHECK (status IN ('ativa','cancelada','trancada')),
+  data_inicio  DATE        NOT NULL DEFAULT CURRENT_DATE,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (aluno_id, turma_id)
+);
+
+-- Financeiro (mensalidades + taxa de matrícula)
+CREATE TABLE sde_dance.financeiro (
+  id              UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
+  aluno_id        UUID          NOT NULL REFERENCES sde_dance.profiles(id)   ON DELETE CASCADE,
+  matricula_id    UUID          REFERENCES sde_dance.matriculas(id)           ON DELETE SET NULL,
+  tipo            TEXT          NOT NULL DEFAULT 'mensalidade'
+                    CHECK (tipo IN ('mensalidade','matricula_taxa')),
+  valor           NUMERIC(10,2) NOT NULL,
+  vencimento      DATE          NOT NULL,
+  pago_em         DATE,
+  status          TEXT          NOT NULL DEFAULT 'pendente'
+                    CHECK (status IN ('pendente','pago','atrasado')),
+  mes_referencia  DATE,          -- primeiro dia do mês, ex: 2026-07-01
+  observacao      TEXT,
+  created_at      TIMESTAMPTZ   NOT NULL DEFAULT NOW()
+);
+
+-- Presenças por aula
+CREATE TABLE sde_dance.presencas (
+  id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  turma_id    UUID        NOT NULL REFERENCES sde_dance.turmas(id)   ON DELETE CASCADE,
+  aluno_id    UUID        NOT NULL REFERENCES sde_dance.profiles(id) ON DELETE CASCADE,
+  data_aula   DATE        NOT NULL,
+  presente    BOOLEAN     NOT NULL DEFAULT FALSE,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (turma_id, aluno_id, data_aula)
+);
+
+-- Links de matrícula (para aluno se cadastrar numa turma via link)
+CREATE TABLE sde_dance.links_matricula (
+  id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  turma_id    UUID        NOT NULL REFERENCES sde_dance.turmas(id) ON DELETE CASCADE,
+  criado_por  UUID        NOT NULL REFERENCES sde_dance.profiles(id),
+  token       TEXT        NOT NULL UNIQUE DEFAULT encode(gen_random_bytes(16), 'hex'),
+  ativo       BOOLEAN     NOT NULL DEFAULT TRUE,
+  validade    TIMESTAMPTZ,
+  usos        INT         NOT NULL DEFAULT 0,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- =============================================================
+--  TRIGGER: criar profile automaticamente no cadastro
+-- =============================================================
+
+CREATE OR REPLACE FUNCTION sde_dance.handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = sde_dance
+AS $$
+BEGIN
+  INSERT INTO sde_dance.profiles (id, nome, tipo)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'nome', split_part(NEW.email, '@', 1)),
+    COALESCE(NEW.raw_user_meta_data->>'tipo', 'aluno')
+  )
+  ON CONFLICT (id) DO NOTHING;
+  RETURN NEW;
+END;
 $$;
 
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function handle_new_user();
+CREATE OR REPLACE TRIGGER on_sde_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION sde_dance.handle_new_user();
 
--- ── Turmas ─────────────────────────────────────────────
+-- =============================================================
+--  ROW LEVEL SECURITY
+-- =============================================================
 
-create table turmas (
-  id           uuid primary key default gen_random_uuid(),
-  nome         text not null,
-  modalidade   text not null,
-  dias_semana  text not null,
-  hora         text not null,
-  professor_id uuid references profiles(id) on delete set null,
-  vagas_total  int not null default 20,
-  ativo        boolean not null default true,
-  created_at   timestamptz not null default now()
-);
+ALTER TABLE sde_dance.profiles        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sde_dance.turmas          ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sde_dance.matriculas      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sde_dance.financeiro      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sde_dance.presencas       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sde_dance.links_matricula ENABLE ROW LEVEL SECURITY;
 
--- ── Matrículas ─────────────────────────────────────────
-
-create table matriculas (
-  id          uuid primary key default gen_random_uuid(),
-  aluno_id    uuid not null references profiles(id) on delete cascade,
-  turma_id    uuid not null references turmas(id) on delete cascade,
-  status      status_matricula not null default 'pendente',
-  data_inicio date not null default current_date,
-  created_at  timestamptz not null default now(),
-  unique(aluno_id, turma_id)
-);
-
--- ── Financeiro ─────────────────────────────────────────
-
-create table financeiro (
-  id             uuid primary key default gen_random_uuid(),
-  aluno_id       uuid not null references profiles(id) on delete cascade,
-  matricula_id   uuid references matriculas(id) on delete set null,
-  tipo           tipo_lancamento not null,
-  valor          numeric(10,2) not null,
-  vencimento     date not null,
-  pago_em        date,
-  status         status_financeiro not null default 'pendente',
-  mes_referencia text,          -- ex: "2026-01"
-  observacao     text,
-  created_at     timestamptz not null default now()
-);
-
--- Auto-atualiza status para 'atrasado' se vencido e não pago
-create or replace function atualizar_status_financeiro()
-returns void language sql security definer as $$
-  update financeiro
-  set status = 'atrasado'
-  where status = 'pendente'
-    and vencimento < current_date;
+-- Helper: verifica se o usuário logado tem o tipo desejado
+CREATE OR REPLACE FUNCTION sde_dance.is_tipo(t TEXT)
+RETURNS BOOLEAN
+LANGUAGE sql STABLE SECURITY DEFINER
+SET search_path = sde_dance
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM sde_dance.profiles
+    WHERE id = auth.uid() AND tipo = t AND ativo = TRUE
+  );
 $$;
 
--- ── Links de Matrícula ─────────────────────────────────
+-- PROFILES
+CREATE POLICY "profiles_select_own"
+  ON sde_dance.profiles FOR SELECT
+  USING (auth.uid() = id OR sde_dance.is_tipo('admin'));
 
-create table links_matricula (
-  id          uuid primary key default gen_random_uuid(),
-  turma_id    uuid not null references turmas(id) on delete cascade,
-  criado_por  uuid not null references profiles(id),
-  token       text unique not null default encode(gen_random_bytes(12), 'hex'),
-  ativo       boolean not null default true,
-  validade    timestamptz,
-  usos        int not null default 0,
-  created_at  timestamptz not null default now()
-);
+CREATE POLICY "profiles_insert_trigger"
+  ON sde_dance.profiles FOR INSERT
+  WITH CHECK (auth.uid() = id);
 
--- ═══════════════════════════════════════════════════════
--- Row Level Security (RLS)
--- ═══════════════════════════════════════════════════════
+CREATE POLICY "profiles_update"
+  ON sde_dance.profiles FOR UPDATE
+  USING (auth.uid() = id OR sde_dance.is_tipo('admin'));
 
-alter table profiles       enable row level security;
-alter table turmas         enable row level security;
-alter table matriculas     enable row level security;
-alter table financeiro     enable row level security;
-alter table links_matricula enable row level security;
+CREATE POLICY "profiles_delete_admin"
+  ON sde_dance.profiles FOR DELETE
+  USING (sde_dance.is_tipo('admin'));
 
--- ── Função auxiliar ──
+-- TURMAS
+CREATE POLICY "turmas_select"
+  ON sde_dance.turmas FOR SELECT
+  USING (ativa = TRUE OR sde_dance.is_tipo('admin') OR sde_dance.is_tipo('professor'));
 
-create or replace function meu_tipo()
-returns tipo_usuario language sql security definer stable as $$
-  select tipo from profiles where id = auth.uid()
-$$;
+CREATE POLICY "turmas_write_admin"
+  ON sde_dance.turmas FOR ALL
+  USING (sde_dance.is_tipo('admin'));
 
--- ── Policies: profiles ──
-
-create policy "Vejo meu próprio perfil"
-  on profiles for select using (id = auth.uid());
-
-create policy "Admin vê todos os profiles"
-  on profiles for select using (meu_tipo() = 'admin');
-
-create policy "Professor vê alunos de suas turmas"
-  on profiles for select using (
-    meu_tipo() = 'professor'
-    and exists (
-      select 1 from matriculas m
-      join turmas t on t.id = m.turma_id
-      where m.aluno_id = profiles.id
-        and t.professor_id = auth.uid()
-    )
+-- MATRICULAS
+CREATE POLICY "matriculas_select"
+  ON sde_dance.matriculas FOR SELECT
+  USING (
+    auth.uid() = aluno_id
+    OR sde_dance.is_tipo('admin')
+    OR sde_dance.is_tipo('professor')
   );
 
-create policy "Atualizo meu próprio perfil"
-  on profiles for update using (id = auth.uid());
+CREATE POLICY "matriculas_write_admin"
+  ON sde_dance.matriculas FOR ALL
+  USING (sde_dance.is_tipo('admin'));
 
-create policy "Admin atualiza qualquer perfil"
-  on profiles for update using (meu_tipo() = 'admin');
+-- FINANCEIRO
+CREATE POLICY "financeiro_select"
+  ON sde_dance.financeiro FOR SELECT
+  USING (auth.uid() = aluno_id OR sde_dance.is_tipo('admin'));
 
--- ── Policies: turmas ──
+CREATE POLICY "financeiro_write_admin"
+  ON sde_dance.financeiro FOR ALL
+  USING (sde_dance.is_tipo('admin'));
 
-create policy "Qualquer autenticado vê turmas ativas"
-  on turmas for select using (ativo = true and auth.uid() is not null);
-
-create policy "Admin vê todas as turmas"
-  on turmas for select using (meu_tipo() = 'admin');
-
-create policy "Admin gerencia turmas"
-  on turmas for all using (meu_tipo() = 'admin');
-
-create policy "Professor vê suas turmas"
-  on turmas for select using (professor_id = auth.uid());
-
--- ── Policies: matrículas ──
-
-create policy "Aluno vê suas matrículas"
-  on matriculas for select using (aluno_id = auth.uid());
-
-create policy "Professor vê matrículas de suas turmas"
-  on matriculas for select using (
-    exists (
-      select 1 from turmas t
-      where t.id = matriculas.turma_id
-        and t.professor_id = auth.uid()
-    )
+-- PRESENCAS
+CREATE POLICY "presencas_select"
+  ON sde_dance.presencas FOR SELECT
+  USING (
+    auth.uid() = aluno_id
+    OR sde_dance.is_tipo('admin')
+    OR sde_dance.is_tipo('professor')
   );
 
-create policy "Admin vê todas as matrículas"
-  on matriculas for select using (meu_tipo() = 'admin');
+CREATE POLICY "presencas_write"
+  ON sde_dance.presencas FOR ALL
+  USING (sde_dance.is_tipo('admin') OR sde_dance.is_tipo('professor'));
 
-create policy "Admin gerencia matrículas"
-  on matriculas for all using (meu_tipo() = 'admin');
+-- LINKS_MATRICULA
+CREATE POLICY "links_select_admin"
+  ON sde_dance.links_matricula FOR SELECT
+  USING (sde_dance.is_tipo('admin'));
 
-create policy "Aluno se matricula via link"
-  on matriculas for insert with check (aluno_id = auth.uid());
+CREATE POLICY "links_write_admin"
+  ON sde_dance.links_matricula FOR ALL
+  USING (sde_dance.is_tipo('admin'));
 
--- ── Policies: financeiro ──
+-- =============================================================
+--  INDICES
+-- =============================================================
 
-create policy "Aluno vê seu financeiro"
-  on financeiro for select using (aluno_id = auth.uid());
-
-create policy "Admin vê todo financeiro"
-  on financeiro for select using (meu_tipo() = 'admin');
-
-create policy "Admin gerencia financeiro"
-  on financeiro for all using (meu_tipo() = 'admin');
-
--- ── Policies: links_matricula ──
-
-create policy "Links ativos são públicos para leitura"
-  on links_matricula for select using (ativo = true);
-
-create policy "Professor cria links de suas turmas"
-  on links_matricula for insert with check (
-    criado_por = auth.uid()
-    and meu_tipo() in ('professor', 'admin')
-  );
-
-create policy "Professor desativa seus links"
-  on links_matricula for update using (criado_por = auth.uid());
-
-create policy "Admin gerencia todos os links"
-  on links_matricula for all using (meu_tipo() = 'admin');
-
--- ═══════════════════════════════════════════════════════
--- Dados iniciais (opcional — ajuste conforme necessário)
--- ═══════════════════════════════════════════════════════
-
--- Crie primeiro a conta da Camila em Authentication → Users,
--- depois rode o UPDATE abaixo substituindo o e-mail dela:
---
--- update profiles
--- set tipo = 'admin', nome = 'Camila Graner'
--- where id = (select id from auth.users where email = 'camila@sdedance.com.br');
+CREATE INDEX idx_sde_matriculas_aluno   ON sde_dance.matriculas (aluno_id);
+CREATE INDEX idx_sde_matriculas_turma   ON sde_dance.matriculas (turma_id);
+CREATE INDEX idx_sde_financeiro_aluno   ON sde_dance.financeiro (aluno_id);
+CREATE INDEX idx_sde_financeiro_status  ON sde_dance.financeiro (status);
+CREATE INDEX idx_sde_financeiro_mes     ON sde_dance.financeiro (mes_referencia);
+CREATE INDEX idx_sde_presencas_turma    ON sde_dance.presencas  (turma_id, data_aula);
+CREATE INDEX idx_sde_presencas_aluno    ON sde_dance.presencas  (aluno_id);
