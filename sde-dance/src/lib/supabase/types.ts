@@ -31,15 +31,39 @@ export interface Database {
           ativo:      boolean;
           created_at: string;
         };
-        Insert: Omit<Database["sde_dance"]["Tables"]["profiles"]["Row"], "created_at">;
-        Update: Partial<Database["sde_dance"]["Tables"]["profiles"]["Insert"]>;
+        Insert: {
+          id:       string;
+          nome:     string;
+          tipo?:    TipoUsuario;
+          whatsapp?: string | null;
+          foto_url?: string | null;
+          ativo?:   boolean;
+        };
+        Update: {
+          nome?:     string;
+          tipo?:     TipoUsuario;
+          whatsapp?: string | null;
+          foto_url?: string | null;
+          ativo?:    boolean;
+        };
         Relationships: [];
       };
 
       professores: {
         Row:    ProfData;
-        Insert: Omit<ProfData, "id" | "created_at">;
-        Update: Partial<Omit<ProfData, "id" | "created_at">>;
+        Insert: {
+          nome:          string;
+          papel?:        string;
+          modalidades?:  string[];
+          bio?:          string | null;
+          citacao?:      string | null;
+          foto_url?:     string | null;
+          instagram?:    string | null;
+          ordem?:        number;
+          destaque?:     boolean;
+          ativo?:        boolean;
+        };
+        Update: Partial<Database["sde_dance"]["Tables"]["professores"]["Insert"]>;
         Relationships: [];
       };
 
@@ -55,8 +79,24 @@ export interface Database {
           ativo:        boolean;
           created_at:   string;
         };
-        Insert: Omit<Database["sde_dance"]["Tables"]["turmas"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["sde_dance"]["Tables"]["turmas"]["Insert"]>;
+        Insert: {
+          nome:          string;
+          modalidade:    string;
+          dias_semana?:  string;
+          hora?:         string;
+          professor_id?: string | null;
+          vagas_total?:  number;
+          ativo?:        boolean;
+        };
+        Update: {
+          nome?:         string;
+          modalidade?:   string;
+          dias_semana?:  string;
+          hora?:         string;
+          professor_id?: string | null;
+          vagas_total?:  number;
+          ativo?:        boolean;
+        };
         Relationships: [
           {
             foreignKeyName: "turmas_professor_id_fkey";
@@ -77,8 +117,16 @@ export interface Database {
           data_inicio: string;
           created_at:  string;
         };
-        Insert: Omit<Database["sde_dance"]["Tables"]["matriculas"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["sde_dance"]["Tables"]["matriculas"]["Insert"]>;
+        Insert: {
+          aluno_id:    string;
+          turma_id:    string;
+          status?:     StatusMatricula;
+          data_inicio?: string;
+        };
+        Update: {
+          status?:     StatusMatricula;
+          data_inicio?: string;
+        };
         Relationships: [
           {
             foreignKeyName: "matriculas_aluno_id_fkey";
@@ -111,8 +159,28 @@ export interface Database {
           observacao:     string | null;
           created_at:     string;
         };
-        Insert: Omit<Database["sde_dance"]["Tables"]["financeiro"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["sde_dance"]["Tables"]["financeiro"]["Insert"]>;
+        Insert: {
+          aluno_id:       string;
+          valor:          number;
+          vencimento:     string;
+          matricula_id?:  string | null;
+          tipo?:          TipoLancamento;
+          pago_em?:       string | null;
+          status?:        StatusFinanceiro;
+          mes_referencia?: string | null;
+          observacao?:    string | null;
+        };
+        Update: {
+          aluno_id?:      string;
+          matricula_id?:  string | null;
+          tipo?:          TipoLancamento;
+          valor?:         number;
+          vencimento?:    string;
+          pago_em?:       string | null;
+          status?:        StatusFinanceiro;
+          mes_referencia?: string | null;
+          observacao?:    string | null;
+        };
         Relationships: [
           {
             foreignKeyName: "financeiro_aluno_id_fkey";
@@ -133,8 +201,15 @@ export interface Database {
           presente:   boolean;
           created_at: string;
         };
-        Insert: Omit<Database["sde_dance"]["Tables"]["presencas"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["sde_dance"]["Tables"]["presencas"]["Insert"]>;
+        Insert: {
+          turma_id:   string;
+          aluno_id:   string;
+          data_aula:  string;
+          presente?:  boolean;
+        };
+        Update: {
+          presente?: boolean;
+        };
         Relationships: [];
       };
 
@@ -149,8 +224,16 @@ export interface Database {
           usos:        number;
           created_at:  string;
         };
-        Insert: Omit<Database["sde_dance"]["Tables"]["links_matricula"]["Row"], "id" | "created_at" | "usos">;
-        Update: Partial<Database["sde_dance"]["Tables"]["links_matricula"]["Insert"]>;
+        Insert: {
+          turma_id:   string;
+          criado_por: string;
+          ativo?:     boolean;
+          validade?:  string | null;
+        };
+        Update: {
+          ativo?:    boolean;
+          validade?: string | null;
+        };
         Relationships: [];
       };
     };
