@@ -1,0 +1,15 @@
+name: Deploy SDE Dance
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'sde-dance/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel Deploy
+        run: curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_SDE }}"
