@@ -32,12 +32,12 @@ export interface Database {
           created_at: string;
         };
         Insert: {
-          id:       string;
-          nome:     string;
-          tipo?:    TipoUsuario;
+          id:        string;
+          nome:      string;
+          tipo?:     TipoUsuario;
           whatsapp?: string | null;
           foto_url?: string | null;
-          ativo?:   boolean;
+          ativo?:    boolean;
         };
         Update: {
           nome?:     string;
@@ -52,16 +52,16 @@ export interface Database {
       professores: {
         Row:    ProfData;
         Insert: {
-          nome:          string;
-          papel?:        string;
-          modalidades?:  string[];
-          bio?:          string | null;
-          citacao?:      string | null;
-          foto_url?:     string | null;
-          instagram?:    string | null;
-          ordem?:        number;
-          destaque?:     boolean;
-          ativo?:        boolean;
+          nome:         string;
+          papel?:       string;
+          modalidades?: string[];
+          bio?:         string | null;
+          citacao?:     string | null;
+          foto_url?:    string | null;
+          instagram?:   string | null;
+          ordem?:       number;
+          destaque?:    boolean;
+          ativo?:       boolean;
         };
         Update: Partial<Database["sde_dance"]["Tables"]["professores"]["Insert"]>;
         Relationships: [];
@@ -118,13 +118,13 @@ export interface Database {
           created_at:  string;
         };
         Insert: {
-          aluno_id:    string;
-          turma_id:    string;
-          status?:     StatusMatricula;
+          aluno_id:     string;
+          turma_id:     string;
+          status?:      StatusMatricula;
           data_inicio?: string;
         };
         Update: {
-          status?:     StatusMatricula;
+          status?:      StatusMatricula;
           data_inicio?: string;
         };
         Relationships: [
@@ -147,39 +147,39 @@ export interface Database {
 
       financeiro: {
         Row: {
-          id:             string;
-          aluno_id:       string;
-          matricula_id:   string | null;
-          tipo:           TipoLancamento;
-          valor:          number;
-          vencimento:     string;
-          pago_em:        string | null;
-          status:         StatusFinanceiro;
-          mes_referencia: string | null;
-          observacao:     string | null;
-          created_at:     string;
+          id:              string;
+          aluno_id:        string;
+          matricula_id:    string | null;
+          tipo:            TipoLancamento;
+          valor:           number;
+          vencimento:      string;
+          pago_em:         string | null;
+          status:          StatusFinanceiro;
+          mes_referencia:  string | null;
+          observacao:      string | null;
+          created_at:      string;
         };
         Insert: {
-          aluno_id:       string;
-          valor:          number;
-          vencimento:     string;
-          matricula_id?:  string | null;
-          tipo?:          TipoLancamento;
-          pago_em?:       string | null;
-          status?:        StatusFinanceiro;
+          aluno_id:        string;
+          valor:           number;
+          vencimento:      string;
+          matricula_id?:   string | null;
+          tipo?:           TipoLancamento;
+          pago_em?:        string | null;
+          status?:         StatusFinanceiro;
           mes_referencia?: string | null;
-          observacao?:    string | null;
+          observacao?:     string | null;
         };
         Update: {
-          aluno_id?:      string;
-          matricula_id?:  string | null;
-          tipo?:          TipoLancamento;
-          valor?:         number;
-          vencimento?:    string;
-          pago_em?:       string | null;
-          status?:        StatusFinanceiro;
+          aluno_id?:       string;
+          matricula_id?:   string | null;
+          tipo?:           TipoLancamento;
+          valor?:          number;
+          vencimento?:     string;
+          pago_em?:        string | null;
+          status?:         StatusFinanceiro;
           mes_referencia?: string | null;
-          observacao?:    string | null;
+          observacao?:     string | null;
         };
         Relationships: [
           {
@@ -202,10 +202,10 @@ export interface Database {
           created_at: string;
         };
         Insert: {
-          turma_id:   string;
-          aluno_id:   string;
-          data_aula:  string;
-          presente?:  boolean;
+          turma_id:  string;
+          aluno_id:  string;
+          data_aula: string;
+          presente?: boolean;
         };
         Update: {
           presente?: boolean;
@@ -238,6 +238,11 @@ export interface Database {
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      [fn: string]: {
+        Args:    Record<string, unknown>;
+        Returns: unknown;
+      };
+    };
   };
 }
