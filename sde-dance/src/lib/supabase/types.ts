@@ -1,7 +1,22 @@
-export type TipoUsuario     = "aluno" | "professor" | "admin";
-export type StatusMatricula = "ativa" | "cancelada" | "trancada";
+export type TipoUsuario      = "aluno" | "professor" | "admin";
+export type StatusMatricula  = "ativa" | "cancelada" | "trancada";
 export type StatusFinanceiro = "pendente" | "pago" | "atrasado";
-export type TipoLancamento  = "mensalidade" | "matricula_taxa";
+export type TipoLancamento   = "mensalidade" | "matricula_taxa";
+
+export type ProfData = {
+  id: string;
+  nome: string;
+  papel: string;
+  modalidades: string[];
+  bio: string | null;
+  citacao: string | null;
+  foto_url: string | null;
+  instagram: string | null;
+  ordem: number;
+  destaque: boolean;
+  ativo: boolean;
+  created_at?: string;
+};
 
 export interface Database {
   sde_dance: {
@@ -18,6 +33,12 @@ export interface Database {
         };
         Insert: Omit<Database["sde_dance"]["Tables"]["profiles"]["Row"], "created_at">;
         Update: Partial<Database["sde_dance"]["Tables"]["profiles"]["Insert"]>;
+      };
+
+      professores: {
+        Row:    ProfData;
+        Insert: Omit<ProfData, "id" | "created_at">;
+        Update: Partial<Omit<ProfData, "id" | "created_at">>;
       };
 
       turmas: {

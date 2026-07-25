@@ -29,6 +29,22 @@ CREATE TABLE sde_dance.profiles (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Professores (gerenciado pelo admin, independente de login)
+CREATE TABLE sde_dance.professores (
+  id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome        TEXT        NOT NULL,
+  papel       TEXT        NOT NULL DEFAULT '',
+  modalidades TEXT[]      NOT NULL DEFAULT '{}',
+  bio         TEXT,
+  citacao     TEXT,
+  foto_url    TEXT,
+  instagram   TEXT,
+  ordem       INT         NOT NULL DEFAULT 0,
+  destaque    BOOLEAN     NOT NULL DEFAULT TRUE,
+  ativo       BOOLEAN     NOT NULL DEFAULT TRUE,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- Turmas (aulas)
 CREATE TABLE sde_dance.turmas (
   id                 UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -68,7 +84,7 @@ CREATE TABLE sde_dance.financeiro (
   pago_em         DATE,
   status          TEXT          NOT NULL DEFAULT 'pendente'
                     CHECK (status IN ('pendente','pago','atrasado')),
-  mes_referencia  DATE,          -- primeiro dia do mês, ex: 2026-07-01
+  mes_referencia  DATE,
   observacao      TEXT,
   created_at      TIMESTAMPTZ   NOT NULL DEFAULT NOW()
 );
@@ -84,7 +100,7 @@ CREATE TABLE sde_dance.presencas (
   UNIQUE (turma_id, aluno_id, data_aula)
 );
 
--- Links de matrícula (para aluno se cadastrar numa turma via link)
+-- Links de matrícula
 CREATE TABLE sde_dance.links_matricula (
   id          UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   turma_id    UUID        NOT NULL REFERENCES sde_dance.turmas(id) ON DELETE CASCADE,
@@ -128,6 +144,7 @@ CREATE OR REPLACE TRIGGER on_sde_auth_user_created
 -- =============================================================
 
 ALTER TABLE sde_dance.profiles        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sde_dance.professores     ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sde_dance.turmas          ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sde_dance.matriculas      ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sde_dance.financeiro      ENABLE ROW LEVEL SECURITY;
@@ -161,6 +178,15 @@ CREATE POLICY "profiles_update"
 
 CREATE POLICY "profiles_delete_admin"
   ON sde_dance.profiles FOR DELETE
+  USING (sde_dance.is_tipo('admin'));
+
+-- PROFESSORES: leitura pública para ativos, escrita apenas admin
+CREATE POLICY "professores_select"
+  ON sde_dance.professores FOR SELECT
+  USING (ativo = TRUE OR sde_dance.is_tipo('admin'));
+
+CREATE POLICY "professores_write_admin"
+  ON sde_dance.professores FOR ALL
   USING (sde_dance.is_tipo('admin'));
 
 -- TURMAS
@@ -217,13 +243,14 @@ CREATE POLICY "links_write_admin"
   USING (sde_dance.is_tipo('admin'));
 
 -- =============================================================
---  INDICES
+--  ÍNDICES
 -- =============================================================
 
-CREATE INDEX idx_sde_matriculas_aluno   ON sde_dance.matriculas (aluno_id);
-CREATE INDEX idx_sde_matriculas_turma   ON sde_dance.matriculas (turma_id);
-CREATE INDEX idx_sde_financeiro_aluno   ON sde_dance.financeiro (aluno_id);
-CREATE INDEX idx_sde_financeiro_status  ON sde_dance.financeiro (status);
-CREATE INDEX idx_sde_financeiro_mes     ON sde_dance.financeiro (mes_referencia);
-CREATE INDEX idx_sde_presencas_turma    ON sde_dance.presencas  (turma_id, data_aula);
-CREATE INDEX idx_sde_presencas_aluno    ON sde_dance.presencas  (aluno_id);
+CREATE INDEX idx_sde_professores_ordem  ON sde_dance.professores (ordem);
+CREATE INDEX idx_sde_matriculas_aluno   ON sde_dance.matriculas  (aluno_id);
+CREATE INDEX idx_sde_matriculas_turma   ON sde_dance.matriculas  (turma_id);
+CREATE INDEX idx_sde_financeiro_aluno   ON sde_dance.financeiro  (aluno_id);
+CREATE INDEX idx_sde_financeiro_status  ON sde_dance.financeiro  (status);
+CREATE INDEX idx_sde_financeiro_mes     ON sde_dance.financeiro  (mes_referencia);
+CREATE INDEX idx_sde_presencas_turma    ON sde_dance.presencas   (turma_id, data_aula);
+CREATE INDEX idx_sde_presencas_aluno    ON sde_dance.presencas   (aluno_id);
