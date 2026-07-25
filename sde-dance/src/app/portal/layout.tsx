@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import PortalNav from "@/components/portal/PortalNav";
 
@@ -6,7 +5,11 @@ export default async function PortalLayout({ children }: { children: React.React
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) redirect("/portal/login");
+  // When unauthenticated, render children directly so /portal/login doesn't
+  // redirect to itself. Each protected page has its own auth redirect.
+  if (!user) {
+    return <>{children}</>;
+  }
 
   const { data: profile } = await supabase
     .from("profiles")
