@@ -3,8 +3,8 @@ import ScrollReveal from "./ScrollReveal";
 
 const FOTOS = [
   { src: "/fotos-landing/IMG_3466.jpeg", alt: "Combo X Norte com batata chips e refrigerante", span: "sm:col-span-2 sm:row-span-2" },
-  { src: "/fotos-landing/IMG_3465.jpeg", alt: "Pão com costela e queijo derretido da X Norte", span: "sm:col-span-2 sm:row-span-1" },
-  { src: "/fotos-landing/IMG_3468.jpeg", alt: "Pão com costela e vinagrete fresco da X Norte", span: "sm:col-span-2 sm:row-span-1" },
+  { src: "/fotos-landing/pao-frances.jpg", alt: "Pão com costela da X Norte", span: "sm:col-span-2 sm:row-span-1" },
+  { src: "/fotos-landing/acao-preparo.jpeg", alt: "Carne sendo preparada na chapa", span: "sm:col-span-2 sm:row-span-1" },
 ];
 
 export default function VitrineFotos() {
@@ -17,7 +17,7 @@ export default function VitrineFotos() {
             <h2 className="titulo-display text-4xl sm:text-6xl mb-3">
               Direto da <span className="texto-marcador text-3xl sm:text-5xl">chapa</span>
             </h2>
-            <p className="text-papel/60 font-light text-lg">Sem filtro, sem photoshop — é assim que sai pra você.</p>
+            <p className="text-papel/60 font-light text-lg">Visual de dar água na boca — do jeito que sai pra você.</p>
           </div>
         </ScrollReveal>
 
