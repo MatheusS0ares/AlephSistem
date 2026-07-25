@@ -1,9 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
+import ConvidarAlunoForm from "@/components/portal/ConvidarAlunoForm";
 
 export default async function AdminAlunosPage({
   searchParams,
-}: { searchParams: Promise<{ q?: string; status?: string }> }) {
+}: { searchParams: Promise<{ q?: string; status?: string; convidar?: string }> }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/portal/login");
@@ -11,7 +13,7 @@ export default async function AdminAlunosPage({
   const { data: me } = await supabase.from("profiles").select("tipo").eq("id", user.id).single();
   if ((me as any)?.tipo !== "admin") redirect("/portal");
 
-  const { q, status } = await searchParams;
+  const { q, status, convidar } = await searchParams;
 
   // Todos os alunos com turmas matriculadas
   const { data: rawAlunos } = await supabase
@@ -62,6 +64,18 @@ export default async function AdminAlunosPage({
             Alunos
           </h1>
         </div>
+        <div className="flex gap-2 flex-wrap items-start">
+          <Link
+            href={convidar === "1" ? "/portal/admin/alunos" : "/portal/admin/alunos?convidar=1"}
+            className="px-3 py-1.5 text-xs border transition-colors hover:opacity-80"
+            style={{
+              borderColor: convidar === "1" ? "var(--color-spot)" : "var(--border-mid)",
+              color: convidar === "1" ? "var(--color-spot)" : "var(--color-ash)",
+              backgroundColor: convidar === "1" ? "rgba(231,182,92,0.08)" : "transparent",
+              fontFamily: "var(--font-mono)",
+            }}>
+            {convidar === "1" ? "✕ Fechar" : "+ Convidar aluno"}
+          </Link>
         <form className="flex gap-2 flex-wrap">
           <input name="q" defaultValue={q} placeholder="Buscar por nome…"
             className="px-3 py-1.5 text-sm border bg-transparent outline-none"
@@ -85,7 +99,25 @@ export default async function AdminAlunosPage({
             </a>
           )}
         </form>
+        </div>
       </div>
+
+      {/* Convidar aluno (inline) */}
+      {convidar === "1" && (
+        <section className="p-5 border flex flex-col gap-4"
+          style={{ borderColor: "rgba(231,182,92,0.3)", backgroundColor: "var(--bg-card)" }}>
+          <div>
+            <h2 className="text-xs tracking-[0.15em] uppercase mb-1"
+              style={{ color: "var(--color-spot)", fontFamily: "var(--font-mono)" }}>
+              Convidar novo aluno
+            </h2>
+            <p className="text-xs" style={{ color: "var(--color-ash)" }}>
+              O aluno recebe um e-mail para criar a própria senha e acessar o portal.
+            </p>
+          </div>
+          <ConvidarAlunoForm />
+        </section>
+      )}
 
       {/* Chips de resumo */}
       <div className="flex gap-4 flex-wrap">

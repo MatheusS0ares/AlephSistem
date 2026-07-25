@@ -11,6 +11,8 @@ export default async function AdminDashboard() {
   const mesLabel = hoje.toLocaleDateString("pt-BR", { month: "long" });
   const dataLabel = hoje.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
 
+  const hojeStr = hoje.toISOString().slice(0, 10);
+
   const [
     { count: totalAlunos },
     { count: totalTurmas },
@@ -18,6 +20,7 @@ export default async function AdminDashboard() {
     { data: rawMats },
     { data: rawTurmas },
     { data: rawPend },
+    { data: rawEventos },
   ] = await Promise.all([
     supabase.from("profiles").select("*", { count: "exact", head: true }).eq("tipo", "aluno").eq("ativo", true),
     supabase.from("turmas").select("*", { count: "exact", head: true }).eq("ativo", true),
@@ -31,6 +34,10 @@ export default async function AdminDashboard() {
     supabase.from("matriculas")
       .select("id, turma_id, profiles!matriculas_aluno_id_fkey(nome), turmas(nome)")
       .eq("status", "pendente").order("created_at", { ascending: false }).limit(8),
+    supabase.from("eventos")
+      .select("id, nome, tipo, data_evento, horario, local")
+      .eq("ativo", true).gte("data_evento", hojeStr)
+      .order("data_evento").limit(4),
   ]);
 
   const fin = (rawFin as any[] | null) ?? [];
@@ -41,6 +48,12 @@ export default async function AdminDashboard() {
   const mats    = (rawMats   as any[] | null) ?? [];
   const turmas  = (rawTurmas as any[] | null) ?? [];
   const pending = (rawPend   as any[] | null) ?? [];
+  const eventos = (rawEventos as any[] | null) ?? [];
+
+  const tipoEvento: Record<string, string> = {
+    espetaculo: "Espetáculo", workshop: "Workshop",
+    aula_aberta: "Aula aberta", outro: "Outro",
+  };
 
   const fmt = (v: number) => `R$ ${v.toFixed(2).replace(".", ",")}`;
 
@@ -60,9 +73,10 @@ export default async function AdminDashboard() {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <NavBtn href="/portal/admin/alunos"     label="+ Aluno" />
-          <NavBtn href="/portal/admin/turmas"     label="+ Turma" />
-          <NavBtn href="/portal/admin/financeiro" label="Financeiro" accent />
+          <NavBtn href="/portal/admin/alunos?convidar=1" label="+ Aluno" />
+          <NavBtn href="/portal/admin/turmas"            label="+ Turma" />
+          <NavBtn href="/portal/admin/eventos/novo"      label="+ Evento" />
+          <NavBtn href="/portal/admin/financeiro"        label="Financeiro" accent />
         </div>
       </div>
 
@@ -103,6 +117,43 @@ export default async function AdminDashboard() {
           </div>
         </section>
       )}
+
+      {/* Próximos eventos */}
+      <section>
+        <SectionHead title="Próximos Eventos" href="/portal/admin/eventos" linkLabel="Ver todos" />
+        {eventos.length === 0 ? (
+          <Empty text="Nenhum evento agendado." action={{ href: "/portal/admin/eventos/novo", label: "Criar evento" }} />
+        ) : (
+          <div className="flex flex-col gap-2 mt-3">
+            {eventos.map((e: any) => {
+              const dataFmt = e.data_evento
+                ? new Date(e.data_evento + "T12:00:00").toLocaleDateString("pt-BR", { day: "numeric", month: "short", year: "numeric" })
+                : "Data a definir";
+              return (
+                <Link key={e.id} href={`/portal/admin/eventos/${e.id}`}
+                  className="flex items-center justify-between gap-4 px-4 py-3 border transition-colors hover:border-[var(--color-spot)]"
+                  style={{ borderColor: "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-[0.6rem] px-1.5 py-0.5 border uppercase"
+                        style={{ color: "var(--color-spot)", borderColor: "rgba(231,182,92,0.3)", fontFamily: "var(--font-mono)" }}>
+                        {tipoEvento[e.tipo] ?? e.tipo}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold truncate" style={{ color: "var(--color-bone)" }}>{e.nome}</p>
+                    <p className="text-xs" style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>
+                      {dataFmt}{e.horario ? ` · ${e.horario}` : ""}{e.local ? ` · ${e.local}` : ""}
+                    </p>
+                  </div>
+                  <span className="text-xs shrink-0" style={{ color: "var(--color-spot)", fontFamily: "var(--font-mono)" }}>
+                    Gerenciar →
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
       {/* Turmas e ocupação */}
       <section>

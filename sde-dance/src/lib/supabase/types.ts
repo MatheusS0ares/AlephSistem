@@ -2,6 +2,7 @@ export type TipoUsuario      = "aluno" | "professor" | "admin";
 export type StatusMatricula  = "ativa" | "inativa" | "pendente";
 export type StatusFinanceiro = "pendente" | "pago" | "atrasado";
 export type TipoLancamento   = "mensalidade" | "matricula_taxa";
+export type TipoEvento       = "espetaculo" | "workshop" | "aula_aberta" | "outro";
 
 export type ProfData = {
   id: string;
@@ -235,6 +236,88 @@ export interface Database {
           validade?: string | null;
         };
         Relationships: [];
+      };
+
+      eventos: {
+        Row: {
+          id:          string;
+          nome:        string;
+          tipo:        TipoEvento;
+          data_evento: string | null;
+          horario:     string | null;
+          local:       string | null;
+          descricao:   string | null;
+          vagas:       number | null;
+          ativo:       boolean;
+          created_at:  string;
+        };
+        Insert: {
+          nome:         string;
+          tipo?:        TipoEvento;
+          data_evento?: string | null;
+          horario?:     string | null;
+          local?:       string | null;
+          descricao?:   string | null;
+          vagas?:       number | null;
+          ativo?:       boolean;
+        };
+        Update: {
+          nome?:        string;
+          tipo?:        TipoEvento;
+          data_evento?: string | null;
+          horario?:     string | null;
+          local?:       string | null;
+          descricao?:   string | null;
+          vagas?:       number | null;
+          ativo?:       boolean;
+        };
+        Relationships: [];
+      };
+
+      evento_inscricoes: {
+        Row: {
+          id:         string;
+          evento_id:  string;
+          aluno_id:   string;
+          turma_id:   string | null;
+          confirmado: boolean;
+          observacao: string | null;
+          created_at: string;
+        };
+        Insert: {
+          evento_id:   string;
+          aluno_id:    string;
+          turma_id?:   string | null;
+          confirmado?: boolean;
+          observacao?: string | null;
+        };
+        Update: {
+          confirmado?: boolean;
+          observacao?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "evento_inscricoes_evento_id_fkey";
+            columns: ["evento_id"];
+            isOneToOne: false;
+            referencedRelation: "eventos";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "evento_inscricoes_aluno_id_fkey";
+            columns: ["aluno_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "evento_inscricoes_turma_id_fkey";
+            columns: ["turma_id"];
+            isOneToOne: false;
+            referencedRelation: "turmas";
+            referencedColumns: ["id"];
+          }
+        ];
       };
     };
     Views: Record<string, never>;
