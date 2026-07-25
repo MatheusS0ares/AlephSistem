@@ -16,11 +16,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (profile?.tipo !== "admin") redirect("/portal");
 
   const navLinks = [
-    { href: "/portal/admin",            label: "Dashboard" },
+    { href: "/portal/admin",             label: "Dashboard" },
     { href: "/portal/admin/professores", label: "Professores" },
     { href: "/portal/admin/turmas",      label: "Turmas" },
     { href: "/portal/admin/alunos",      label: "Alunos" },
     { href: "/portal/admin/financeiro",  label: "Financeiro" },
+    { href: "/portal/admin/eventos",     label: "Eventos" },
   ];
 
   return (
