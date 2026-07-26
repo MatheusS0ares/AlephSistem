@@ -50,6 +50,73 @@ export default async function AdminDashboard() {
   const fmt = (v: number) =>
     v === 0 ? "R$ 0" : `R$ ${v.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
+  const sistemaVazio = (totalAlunos ?? 0) === 0 && (totalTurmas ?? 0) === 0 && eventos.length === 0;
+
+  if (sistemaVazio) {
+    return (
+      <div className="flex flex-col gap-8 max-w-2xl">
+        <div>
+          <p className="eyebrow mb-2">Bem-vindo</p>
+          <h1 className="text-2xl font-bold" style={{ fontFamily: "var(--font-display)", color: "var(--color-bone)" }}>
+            Primeiros passos
+          </h1>
+          <p className="text-sm mt-1" style={{ color: "var(--color-ash)" }}>
+            Siga os passos abaixo para configurar o sistema da SDE Dance.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {[
+            {
+              n: 1, title: "Criar uma turma",
+              desc: "Configure nome, modalidade, horário e número de vagas. A turma é o ponto central do sistema — alunos se matriculam nela.",
+              href: "/portal/admin/turmas", label: "Criar turma",
+            },
+            {
+              n: 2, title: "Convidar um professor",
+              desc: "Adicione os professores para que possam ver e gerenciar suas turmas diretamente pelo portal.",
+              href: "/portal/admin/professores/novo", label: "Adicionar professor",
+            },
+            {
+              n: 3, title: "Convidar alunos",
+              desc: "Envie um convite por e-mail. O aluno recebe o link, cria a senha e já tem acesso ao portal.",
+              href: "/portal/admin/alunos?convidar=1", label: "Convidar aluno",
+              accent: true,
+            },
+            {
+              n: 4, title: "Criar um evento ou espetáculo",
+              desc: "Registre o próximo espetáculo, workshop ou aula aberta. Você poderá inscrever turmas inteiras com um clique.",
+              href: "/portal/admin/eventos/novo", label: "Criar evento",
+            },
+          ].map(({ n, title, desc, href, label, accent }) => (
+            <div key={n} className="flex gap-4 p-5 border"
+              style={{ borderColor: accent ? "rgba(231,182,92,0.35)" : "var(--border-subtle)", backgroundColor: "var(--bg-card)" }}>
+              <div className="flex items-center justify-center w-8 h-8 rounded-full shrink-0 text-sm font-bold mt-0.5"
+                style={{ backgroundColor: accent ? "rgba(231,182,92,0.15)" : "rgba(140,128,137,0.15)", color: accent ? "var(--color-spot)" : "var(--color-ash)", fontFamily: "var(--font-display)" }}>
+                {n}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm mb-1" style={{ color: "var(--color-bone)", fontFamily: "var(--font-display)" }}>{title}</p>
+                <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--color-ash)" }}>{desc}</p>
+                <Link href={href}
+                  className="inline-block text-xs px-4 py-2 border"
+                  style={{ borderColor: accent ? "var(--color-spot)" : "var(--border-mid)", color: accent ? "var(--color-spot)" : "var(--color-ash)", fontFamily: "var(--font-mono)" }}>
+                  {label} →
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="p-4 border text-xs leading-relaxed"
+          style={{ borderColor: "var(--border-subtle)", color: "var(--color-ash)", borderStyle: "dashed" }}>
+          <strong style={{ color: "var(--color-bone)" }}>Dica:</strong> Você pode usar o menu lateral para navegar entre as seções a qualquer momento.
+          Em caso de dúvida, clique em qualquer seção — cada uma tem instruções na própria tela.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8">
 

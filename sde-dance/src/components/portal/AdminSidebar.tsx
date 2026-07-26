@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type Props = {
@@ -89,6 +89,41 @@ const NAV = [
   },
 ];
 
+function ThemeToggle() {
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("sde_theme") as "dark" | "light" | null;
+    const pref  = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    setTheme(saved ?? pref);
+  }, []);
+
+  function toggle() {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    localStorage.setItem("sde_theme", next);
+    document.documentElement.dataset.theme = next;
+  }
+
+  return (
+    <button onClick={toggle} className="sde-sb-exit" title={theme === "dark" ? "Modo claro" : "Modo escuro"}>
+      {theme === "dark" ? (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+          <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+        </svg>
+      ) : (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
 export default function AdminSidebar({ nome, pendentes, eventos }: Props) {
   const pathname  = usePathname();
   const router    = useRouter();
@@ -145,6 +180,7 @@ export default function AdminSidebar({ nome, pendentes, eventos }: Props) {
             <span className="sde-sb-nome">{primeiroNome}</span>
             <span className="sde-sb-role">Administrador</span>
           </div>
+          <ThemeToggle />
           <button onClick={logout} disabled={out} className="sde-sb-exit" title="Sair">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -161,10 +197,11 @@ export default function AdminSidebar({ nome, pendentes, eventos }: Props) {
           <span style={{ fontFamily: "var(--font-display)", fontSize: "0.9rem", fontWeight: 700, color: "var(--color-bone)", letterSpacing: "-0.01em" }}>SDE Dance</span>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.58rem", letterSpacing: "0.16em", textTransform: "uppercase" as const, color: "var(--color-spot)" }}>Admin</span>
         </a>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <div className="sde-sb-avatar" style={{ width: "1.8rem", height: "1.8rem", fontSize: "0.8rem" }}>
             {initial}
           </div>
+          <ThemeToggle />
           <button onClick={logout} disabled={out} className="sde-sb-exit">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
