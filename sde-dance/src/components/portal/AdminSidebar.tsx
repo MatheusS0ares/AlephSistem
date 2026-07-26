@@ -155,15 +155,16 @@ export default function AdminSidebar({ nome, pendentes, eventos }: Props) {
         </div>
       </aside>
 
-      {/* ── Mobile top bar (logo + nome) ── */}
+      {/* ── Mobile top bar (logo + avatar + logout) ── */}
       <header className="sde-topbar lg:hidden">
-        <a href="/" className="flex flex-col leading-none">
-          <span className="sde-sb-brand" style={{ fontSize: "0.85rem" }}>SDE Dance</span>
+        <a href="/" className="flex items-center gap-2">
+          <span style={{ fontFamily: "var(--font-display)", fontSize: "0.9rem", fontWeight: 700, color: "var(--color-bone)", letterSpacing: "-0.01em" }}>SDE Dance</span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.58rem", letterSpacing: "0.16em", textTransform: "uppercase" as const, color: "var(--color-spot)" }}>Admin</span>
         </a>
-        <div className="flex items-center gap-3">
-          <span className="text-xs" style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>
-            {primeiroNome}
-          </span>
+        <div className="flex items-center gap-2">
+          <div className="sde-sb-avatar" style={{ width: "1.8rem", height: "1.8rem", fontSize: "0.8rem" }}>
+            {initial}
+          </div>
           <button onClick={logout} disabled={out} className="sde-sb-exit">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
