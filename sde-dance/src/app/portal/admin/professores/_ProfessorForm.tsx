@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { ProfData } from "@/lib/supabase/types";
 
@@ -12,6 +13,7 @@ type Props = {
 export default function ProfessorForm({ prof, action }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(formData: FormData) {
     setPending(true);
@@ -21,6 +23,8 @@ export default function ProfessorForm({ prof, action }: Props) {
       if (result?.error) {
         setErrorMsg(result.error);
         setPending(false);
+      } else {
+        router.push("/portal/admin/professores");
       }
     } catch {
       setErrorMsg("Erro inesperado. Tente novamente.");
