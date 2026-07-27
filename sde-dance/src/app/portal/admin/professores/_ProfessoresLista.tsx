@@ -14,20 +14,21 @@ export default function ProfessoresLista() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase
-      .from("professores")
-      .select("id,nome,papel,modalidades,ativo,ordem")
-      .order("ordem")
-      .then(({ data, error }) => {
+    (async () => {
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from("professores")
+          .select("id,nome,papel,modalidades,ativo,ordem")
+          .order("ordem");
         if (error) setError(error.message);
         else setProfessores((data ?? []) as Prof[]);
-        setLoading(false);
-      })
-      .catch(e => {
+      } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
+      } finally {
         setLoading(false);
-      });
+      }
+    })();
   }, []);
 
   if (loading) {
