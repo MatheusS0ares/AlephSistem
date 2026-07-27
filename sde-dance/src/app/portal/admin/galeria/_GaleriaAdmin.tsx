@@ -28,7 +28,7 @@ export default function GaleriaAdmin({ fotos: initialFotos }: { fotos: Foto[] })
       const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
       const { error } = await supabase.storage
-        .from("sde-dance")
+        .from("Sde-dance")
         .upload(`galeria/${path}`, file, { upsert: true });
 
       if (error) {
@@ -36,7 +36,7 @@ export default function GaleriaAdmin({ fotos: initialFotos }: { fotos: Foto[] })
         continue;
       }
 
-      const { data } = supabase.storage.from("sde-dance").getPublicUrl(`galeria/${path}`);
+      const { data } = supabase.storage.from("Sde-dance").getPublicUrl(`galeria/${path}`);
       const url = data.publicUrl;
 
       const fd = new FormData();
