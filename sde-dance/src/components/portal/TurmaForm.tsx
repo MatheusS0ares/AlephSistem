@@ -24,6 +24,7 @@ export default function TurmaForm({
   const isEdit = Boolean(turma);
   const [loading, setLoading] = useState(false);
   const [ok, setOk] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
   const [form, setForm] = useState({
     nome:         turma?.nome ?? "",
     modalidade:   turma?.modalidade ?? "",
@@ -42,6 +43,7 @@ export default function TurmaForm({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    setErr(null);
     const supabase = createClient();
     const payload = {
       nome: form.nome,
@@ -54,15 +56,23 @@ export default function TurmaForm({
     };
 
     if (isEdit && turma) {
-      await supabase.from("turmas").update(payload).eq("id", turma.id);
-      router.refresh();
-      setOk(true);
-      setTimeout(() => setOk(false), 2500);
+      const { error } = await supabase.from("turmas").update(payload).eq("id", turma.id);
+      if (error) {
+        setErr(error.message);
+      } else {
+        router.refresh();
+        setOk(true);
+        setTimeout(() => setOk(false), 2500);
+      }
     } else {
       const { error } = await supabase.from("turmas").insert(payload);
-      if (!error) {
-        router.push("/portal/admin/turmas");
+      if (error) {
+        setErr(error.message);
+      } else {
+        setForm({ nome: "", modalidade: "", dias_semana: "", hora: "", professor_id: "", vagas_total: "20", ativo: true });
         router.refresh();
+        setOk(true);
+        setTimeout(() => setOk(false), 2500);
       }
     }
     setLoading(false);
@@ -107,13 +117,22 @@ export default function TurmaForm({
         </label>
       )}
 
+      {err && (
+        <p className="text-xs px-3 py-2 border"
+          style={{ color: "#ef4444", borderColor: "rgba(239,68,68,0.3)", backgroundColor: "rgba(239,68,68,0.06)", fontFamily: "var(--font-mono)" }}>
+          Erro: {err}
+        </p>
+      )}
+
       <button type="submit" disabled={loading}
         className="py-2 text-sm border transition-colors hover:opacity-90 disabled:opacity-40"
         style={{
-          borderColor: "var(--color-spot)", color: "var(--color-bone)",
-          backgroundColor: "rgba(231,182,92,0.08)", fontFamily: "var(--font-mono)",
+          borderColor: ok ? "#4ade80" : "var(--color-spot)",
+          color: ok ? "#4ade80" : "var(--color-bone)",
+          backgroundColor: ok ? "rgba(74,222,128,0.08)" : "rgba(231,182,92,0.08)",
+          fontFamily: "var(--font-mono)",
         }}>
-        {loading ? "Salvando…" : ok ? "✓ Salvo!" : isEdit ? "Salvar alterações" : "Criar turma"}
+        {loading ? "Salvando…" : ok ? "✓ Turma criada!" : isEdit ? "Salvar alterações" : "Criar turma"}
       </button>
     </form>
   );
