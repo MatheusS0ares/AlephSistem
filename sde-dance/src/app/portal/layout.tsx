@@ -5,8 +5,6 @@ export default async function PortalLayout({ children }: { children: React.React
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // When unauthenticated, render children directly so /portal/login doesn't
-  // redirect to itself. Each protected page has its own auth redirect.
   if (!user) {
     return <>{children}</>;
   }
@@ -17,8 +15,19 @@ export default async function PortalLayout({ children }: { children: React.React
     .eq("id", user.id)
     .single();
 
+  // Admin has its own sidebar — skip portal nav entirely
+  if (profile?.tipo === "admin") {
+    return (
+      <div data-portal="admin" className="min-h-screen flex flex-col"
+        style={{ backgroundColor: "var(--color-blackout)" }}>
+        {children}
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: "var(--color-blackout)" }}>
+    <div data-portal="true" className="min-h-screen flex flex-col"
+      style={{ backgroundColor: "var(--color-blackout)" }}>
       <PortalNav tipo={profile?.tipo ?? "aluno"} nome={profile?.nome ?? ""} />
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 lg:px-8 py-8">
         {children}

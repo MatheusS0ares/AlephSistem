@@ -16,6 +16,7 @@ export default function Header() {
 
   return (
     <header
+      id="site-header"
       className="fixed top-0 left-0 right-0 z-40 transition-all duration-300"
       style={{
         backgroundColor: scrolled ? "var(--bg-header)" : "transparent",

@@ -3,6 +3,7 @@ import { site } from "@/config/site";
 export default function WhatsAppFloat() {
   return (
     <a
+      id="wa-float"
       href={site.contact.whatsapp}
       target="_blank"
       rel="noopener noreferrer"
