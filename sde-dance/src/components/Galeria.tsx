@@ -5,7 +5,9 @@ import Image from "next/image";
 import { site } from "@/config/site";
 import { gsap, ScrollTrigger, registerGsap, prefersReducedMotion } from "@/lib/gsap";
 
-export default function Galeria() {
+type FotoItem = { src: string; alt: string };
+
+export default function Galeria({ images }: { images?: FotoItem[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLUListElement>(null);
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
@@ -52,7 +54,8 @@ export default function Galeria() {
     };
   }, [lightbox]);
 
-  const hasImages = site.galeria.length > 0;
+  const fotos = images ?? site.galeria;
+  const hasImages = fotos.length > 0;
 
   return (
     <section
@@ -82,7 +85,7 @@ export default function Galeria() {
             className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"
             aria-label="Galeria de fotos SDE Dance"
           >
-            {site.galeria.map((foto, i) => (
+            {fotos.map((foto, i) => (
               <li
                 key={foto.src}
                 className="relative aspect-square overflow-hidden cursor-pointer group"

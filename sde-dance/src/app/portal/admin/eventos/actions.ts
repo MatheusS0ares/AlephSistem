@@ -21,6 +21,7 @@ export async function createEvento(formData: FormData) {
   const horario     = (formData.get("horario") as string) || null;
   const local       = (formData.get("local") as string) || null;
   const descricao   = (formData.get("descricao") as string) || null;
+  const imagem_url  = (formData.get("imagem_url") as string) || null;
   const vagasRaw    = formData.get("vagas") as string;
   const vagas       = vagasRaw ? parseInt(vagasRaw) : null;
 
@@ -34,6 +35,7 @@ export async function createEvento(formData: FormData) {
     local,
     descricao,
     vagas,
+    imagem_url,
   }).select("id").single();
 
   if (error || !data) return;
@@ -50,12 +52,13 @@ export async function updateEvento(id: string, formData: FormData) {
   const horario     = (formData.get("horario") as string) || null;
   const local       = (formData.get("local") as string) || null;
   const descricao   = (formData.get("descricao") as string) || null;
+  const imagem_url  = (formData.get("imagem_url") as string) || null;
   const vagasRaw    = formData.get("vagas") as string;
   const vagas       = vagasRaw ? parseInt(vagasRaw) : null;
   const ativo       = formData.get("ativo") === "1";
 
   await supabase.from("eventos").update({
-    nome, tipo: tipo as any, data_evento, horario, local, descricao, vagas, ativo,
+    nome, tipo: tipo as any, data_evento, horario, local, descricao, vagas, imagem_url, ativo,
   }).eq("id", id);
 
   revalidatePath(`/portal/admin/eventos/${id}`);

@@ -12,6 +12,7 @@ import FAQ from "@/components/FAQ";
 import MatriculaForm from "@/components/MatriculaForm";
 import Contato from "@/components/Contato";
 import Marquee from "@/components/ui/Marquee";
+import { createClient } from "@/lib/supabase/server";
 
 const MARQUEE_SEASON = [
   "TEMPORADA 2026", "SDE DANCE", "BALLET", "CONTEMPORÂNEO",
@@ -23,7 +24,17 @@ const MARQUEE_ESPETACULO = [
   "NEVER STOP", "TEATRO SESC GAMA", "2026", "SALA DE ENSAIO",
 ];
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: galeriaRows } = await supabase
+    .from("galeria")
+    .select("src, alt")
+    .eq("ativo", true)
+    .order("ordem")
+    .order("created_at");
+
+  const galeriaImages = galeriaRows ?? [];
+
   return (
     <>
       <Hero />
@@ -43,7 +54,7 @@ export default function Home() {
       <Timeline />
       <Marquee items={MARQUEE_SEASON} speed={55} />
       <Sobre />
-      <Galeria />
+      <Galeria images={galeriaImages} />
       <Marquee items={MARQUEE_SEASON} speed={40} />
       <FAQ />
       <MatriculaForm />

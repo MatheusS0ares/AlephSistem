@@ -8,6 +8,7 @@ import {
   ToggleConfirmadoBtn,
   RemoverInscricaoBtn,
 } from "@/components/portal/EventoActionsClient";
+import ImageUpload from "@/components/portal/ImageUpload";
 
 const INPUT_CLS = "w-full px-3 py-2 text-sm border bg-transparent outline-none";
 const INPUT_STY: { [k: string]: string } = {
@@ -167,6 +168,13 @@ export default async function EventoDetailPage({
             <textarea name="descricao" rows={3} defaultValue={evento.descricao ?? ""}
               placeholder="Descrição" className={INPUT_CLS}
               style={{ ...INPUT_STY, resize: "vertical" } as any} />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs tracking-[0.1em] uppercase"
+                style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>
+                Imagem do evento
+              </label>
+              <ImageUpload bucket="imagens-eventos" fieldName="imagem_url" defaultUrl={evento.imagem_url ?? ""} />
+            </div>
             <label className="flex items-center gap-2 text-sm cursor-pointer"
               style={{ color: "var(--color-ash)" }}>
               <input type="checkbox" name="ativo" value="1" defaultChecked={evento.ativo} />

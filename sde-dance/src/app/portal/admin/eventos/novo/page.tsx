@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { createEvento } from "../actions";
 import Link from "next/link";
+import ImageUpload from "@/components/portal/ImageUpload";
 
 const INPUT_CLS = "w-full px-3 py-2 text-sm border bg-transparent outline-none";
 const INPUT_STY: { [k: string]: string } = {
@@ -88,6 +89,14 @@ export default async function NovoEventoPage() {
             style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>Descrição / Observações</label>
           <textarea name="descricao" rows={4} placeholder="Informações adicionais, figurino, horário de chegada…"
             className={INPUT_CLS} style={{ ...INPUT_STY, resize: "vertical" } as any} />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs tracking-[0.1em] uppercase"
+            style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>
+            Imagem do evento
+          </label>
+          <ImageUpload bucket="imagens-eventos" fieldName="imagem_url" />
         </div>
 
         <div className="flex gap-3 pt-2">
