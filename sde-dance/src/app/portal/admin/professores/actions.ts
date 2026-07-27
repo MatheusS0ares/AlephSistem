@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function upsertProfessor(id: string | null, formData: FormData): Promise<{ error: string } | void> {
+export async function upsertProfessor(id: string | null, formData: FormData): Promise<{ error: string } | null> {
   const supabase = await createClient();
 
   const raw = {
