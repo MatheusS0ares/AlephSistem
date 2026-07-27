@@ -1,24 +1,7 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import { deleteProfessor } from "./actions";
-import type { ProfData } from "@/lib/supabase/types";
+import ProfessoresLista from "./_ProfessoresLista";
 
-export default async function AdminProfessoresPage() {
-  let professores: Pick<ProfData, "id"|"nome"|"papel"|"modalidades"|"ativo"|"ordem">[] = [];
-  let queryError: string | null = null;
-
-  try {
-    const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("professores")
-      .select("id,nome,papel,modalidades,ativo,ordem")
-      .order("ordem");
-    if (error) queryError = error.message;
-    else professores = (data ?? []) as typeof professores;
-  } catch (e) {
-    queryError = e instanceof Error ? e.message : String(e);
-  }
-
+export default function AdminProfessoresPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -32,67 +15,7 @@ export default async function AdminProfessoresPage() {
           + Novo professor
         </Link>
       </div>
-
-      {queryError && (
-        <p className="text-xs px-3 py-2 border mb-6"
-          style={{ color: "#ef4444", borderColor: "rgba(239,68,68,0.3)", backgroundColor: "rgba(239,68,68,0.06)", fontFamily: "var(--font-mono)" }}>
-          Erro Supabase: {queryError}
-        </p>
-      )}
-
-      {!professores?.length ? (
-        <div className="py-16 text-center border" style={{ borderColor: "var(--border-subtle)" }}>
-          <p className="text-sm" style={{ color: "var(--color-ash)" }}>Nenhum professor cadastrado ainda.</p>
-          <Link href="/portal/admin/professores/novo" className="text-sm mt-3 inline-block"
-            style={{ color: "var(--color-spot)" }}>Adicionar o primeiro →</Link>
-        </div>
-      ) : (
-        <div className="border" style={{ borderColor: "var(--border-subtle)" }}>
-          {(professores as Pick<ProfData, "id"|"nome"|"papel"|"modalidades"|"ativo"|"ordem">[]).map((prof, i) => (
-            <div key={prof.id} className={`flex items-center gap-4 px-5 py-4 ${
-              i > 0 ? "border-t" : ""
-            }`} style={{ borderColor: "var(--border-subtle)" }}>
-              {/* Order badge */}
-              <span className="text-xs w-6 text-center shrink-0" style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>
-                {prof.ordem}
-              </span>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium" style={{ color: "var(--color-bone)" }}>{prof.nome}</p>
-                <p className="text-xs mt-0.5" style={{ color: "var(--color-ash)" }}>{prof.papel}</p>
-                {prof.modalidades.length > 0 && (
-                  <p className="text-xs mt-1" style={{ color: "rgba(140,128,137,0.6)" }}>
-                    {prof.modalidades.join(" · ")}
-                  </p>
-                )}
-              </div>
-
-              {/* Status */}
-              <span className="text-[0.65rem] px-2 py-0.5 shrink-0" style={{
-                fontFamily: "var(--font-mono)",
-                backgroundColor: prof.ativo ? "rgba(110,16,35,0.2)" : "rgba(140,128,137,0.1)",
-                color: prof.ativo ? "var(--color-spot)" : "var(--color-ash)",
-              }}>
-                {prof.ativo ? "ativo" : "inativo"}
-              </span>
-
-              {/* Actions */}
-              <div className="flex items-center gap-3 shrink-0">
-                <Link href={`/portal/admin/professores/${prof.id}`}
-                  className="text-xs transition-colors" style={{ color: "var(--color-ash)" }}>Editar</Link>
-                <form action={deleteProfessor.bind(null, prof.id)}>
-                  <button type="submit"
-                    className="text-xs transition-colors" style={{ color: "rgba(239,68,68,0.7)" }}
-                    onClick={e => { if (!confirm(`Excluir ${prof.nome}?`)) e.preventDefault(); }}>
-                    Excluir
-                  </button>
-                </form>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <ProfessoresLista />
     </div>
   );
 }
