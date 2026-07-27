@@ -34,10 +34,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
       {/* Desktop: left-pad for sidebar. Mobile: top-pad for topbar + bottom-pad for nav */}
       <main
-        className="lg:pl-[220px] pt-12 pb-16 lg:pt-0 lg:pb-0"
+        className="lg:pl-[220px] pt-[52px] pb-[72px] lg:pt-0 lg:pb-0"
         style={{ minHeight: "100vh" }}
       >
-        <div className="max-w-5xl mx-auto px-6 py-8 lg:py-10">
+        <div className="max-w-5xl mx-auto px-4 lg:px-6 py-6 lg:py-10">
           {children}
         </div>
       </main>
