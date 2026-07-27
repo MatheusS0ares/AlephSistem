@@ -4,15 +4,18 @@ import { useActionState, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { ProfData } from "@/lib/supabase/types";
 
+type ActionResult = { error: string } | null;
+
 type Props = {
   prof?: ProfData;
-  action: (formData: FormData) => Promise<void>;
+  action: (formData: FormData) => Promise<ActionResult>;
 };
 
 export default function ProfessorForm({ prof, action }: Props) {
-  const [state, formAction, pending] = useActionState(async (_: unknown, formData: FormData) => {
-    return await action(formData);
-  }, null);
+  const [state, formAction, pending] = useActionState<ActionResult, FormData>(
+    (_, formData) => action(formData),
+    null,
+  );
 
   const field = (name: keyof ProfData) => (prof ? String(prof[name] ?? "") : "");
 
@@ -51,7 +54,7 @@ export default function ProfessorForm({ prof, action }: Props) {
         <Check name="ativo"    label="Ativo (aparece no site)" defaultChecked={prof?.ativo ?? true} />
       </div>
 
-      {state && "error" in state && (
+      {state?.error && (
         <p className="text-xs px-3 py-2 border"
           style={{ color: "#ef4444", borderColor: "rgba(239,68,68,0.3)", backgroundColor: "rgba(239,68,68,0.06)", fontFamily: "var(--font-mono)" }}>
           Erro: {state.error}
