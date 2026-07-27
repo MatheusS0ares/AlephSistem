@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function upsertProfessor(id: string | null, formData: FormData) {
+export async function upsertProfessor(id: string | null, formData: FormData): Promise<{ error: string } | void> {
   const supabase = await createClient();
 
   const raw = {
@@ -23,10 +23,10 @@ export async function upsertProfessor(id: string | null, formData: FormData) {
 
   if (id) {
     const { error } = await supabase.from("professores").update(raw).eq("id", id);
-    if (error) throw new Error(error.message);
+    if (error) return { error: error.message };
   } else {
     const { error } = await supabase.from("professores").insert(raw);
-    if (error) throw new Error(error.message);
+    if (error) return { error: error.message };
   }
 
   revalidatePath("/");
