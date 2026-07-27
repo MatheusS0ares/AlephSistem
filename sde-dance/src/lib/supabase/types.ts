@@ -238,6 +238,30 @@ export interface Database {
         Relationships: [];
       };
 
+      galeria: {
+        Row: {
+          id:         string;
+          src:        string;
+          alt:        string;
+          ordem:      number;
+          ativo:      boolean;
+          created_at: string;
+        };
+        Insert: {
+          src:    string;
+          alt?:   string;
+          ordem?: number;
+          ativo?: boolean;
+        };
+        Update: {
+          src?:   string;
+          alt?:   string;
+          ordem?: number;
+          ativo?: boolean;
+        };
+        Relationships: [];
+      };
+
       eventos: {
         Row: {
           id:          string;
@@ -248,28 +272,31 @@ export interface Database {
           local:       string | null;
           descricao:   string | null;
           vagas:       number | null;
+          imagem_url:  string | null;
           ativo:       boolean;
           created_at:  string;
         };
         Insert: {
-          nome:         string;
-          tipo?:        TipoEvento;
-          data_evento?: string | null;
-          horario?:     string | null;
-          local?:       string | null;
-          descricao?:   string | null;
-          vagas?:       number | null;
-          ativo?:       boolean;
+          nome:          string;
+          tipo?:         TipoEvento;
+          data_evento?:  string | null;
+          horario?:      string | null;
+          local?:        string | null;
+          descricao?:    string | null;
+          vagas?:        number | null;
+          imagem_url?:   string | null;
+          ativo?:        boolean;
         };
         Update: {
-          nome?:        string;
-          tipo?:        TipoEvento;
-          data_evento?: string | null;
-          horario?:     string | null;
-          local?:       string | null;
-          descricao?:   string | null;
-          vagas?:       number | null;
-          ativo?:       boolean;
+          nome?:         string;
+          tipo?:         TipoEvento;
+          data_evento?:  string | null;
+          horario?:      string | null;
+          local?:        string | null;
+          descricao?:    string | null;
+          vagas?:        number | null;
+          imagem_url?:   string | null;
+          ativo?:        boolean;
         };
         Relationships: [];
       };
