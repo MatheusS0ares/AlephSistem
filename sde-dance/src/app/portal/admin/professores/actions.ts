@@ -22,9 +22,11 @@ export async function upsertProfessor(id: string | null, formData: FormData) {
   };
 
   if (id) {
-    await supabase.from("professores").update(raw).eq("id", id);
+    const { error } = await supabase.from("professores").update(raw).eq("id", id);
+    if (error) throw new Error(error.message);
   } else {
-    await supabase.from("professores").insert(raw);
+    const { error } = await supabase.from("professores").insert(raw);
+    if (error) throw new Error(error.message);
   }
 
   revalidatePath("/");
