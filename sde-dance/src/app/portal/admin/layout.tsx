@@ -19,14 +19,20 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   hoje.setHours(0, 0, 0, 0);
   const hojeStr = hoje.toISOString().slice(0, 10);
 
-  const [matriculasRes, eventosRes] = await Promise.all([
-    supabase.from("matriculas").select("id", { count: "exact", head: true }).eq("status", "pendente"),
-    supabase.from("eventos").select("id", { count: "exact", head: true })
-      .gte("data_evento", hojeStr).eq("ativo", true),
-  ]);
+  let pendentes = 0;
+  let eventos   = 0;
 
-  const pendentes = matriculasRes.count ?? 0;
-  const eventos   = eventosRes.count ?? 0;
+  try {
+    const [matriculasRes, eventosRes] = await Promise.all([
+      supabase.from("matriculas").select("id", { count: "exact", head: true }).eq("status", "pendente"),
+      supabase.from("eventos").select("id", { count: "exact", head: true })
+        .gte("data_evento", hojeStr).eq("ativo", true),
+    ]);
+    pendentes = matriculasRes.count ?? 0;
+    eventos   = eventosRes.count ?? 0;
+  } catch {
+    // tabelas ainda não criadas — sidebar renderiza com contadores zerados
+  }
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "var(--color-blackout)" }}>
