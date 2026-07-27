@@ -10,8 +10,8 @@ type Props = {
 };
 
 export default function ProfessorForm({ prof, action }: Props) {
-  const [, formAction, pending] = useActionState(async (_: unknown, formData: FormData) => {
-    await action(formData);
+  const [state, formAction, pending] = useActionState(async (_: unknown, formData: FormData) => {
+    return await action(formData);
   }, null);
 
   const field = (name: keyof ProfData) => (prof ? String(prof[name] ?? "") : "");
@@ -50,6 +50,13 @@ export default function ProfessorForm({ prof, action }: Props) {
         <Check name="destaque" label="Destaque na página" defaultChecked={prof?.destaque ?? true} />
         <Check name="ativo"    label="Ativo (aparece no site)" defaultChecked={prof?.ativo ?? true} />
       </div>
+
+      {state && "error" in state && (
+        <p className="text-xs px-3 py-2 border"
+          style={{ color: "#ef4444", borderColor: "rgba(239,68,68,0.3)", backgroundColor: "rgba(239,68,68,0.06)", fontFamily: "var(--font-mono)" }}>
+          Erro: {state.error}
+        </p>
+      )}
 
       <div className="flex items-center gap-4 pt-4 border-t" style={{ borderColor: "var(--border-subtle)" }}>
         <button type="submit" disabled={pending}
