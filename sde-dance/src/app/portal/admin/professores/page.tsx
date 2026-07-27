@@ -4,12 +4,11 @@ import { deleteProfessor } from "./actions";
 import type { ProfData } from "@/lib/supabase/types";
 
 export default async function AdminProfessoresPage() {
-  const supabase = await createClient();
-
   let professores: Pick<ProfData, "id"|"nome"|"papel"|"modalidades"|"ativo"|"ordem">[] = [];
   let queryError: string | null = null;
 
   try {
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("professores")
       .select("id,nome,papel,modalidades,ativo,ordem")
