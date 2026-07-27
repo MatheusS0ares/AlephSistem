@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export async function upsertProfessor(id: string | null, formData: FormData): Promise<{ error: string } | null> {
   const supabase = await createClient();
@@ -31,7 +30,7 @@ export async function upsertProfessor(id: string | null, formData: FormData): Pr
 
   revalidatePath("/");
   revalidatePath("/portal/admin/professores");
-  redirect("/portal/admin/professores");
+  return null;
 }
 
 export async function deleteProfessor(id: string) {
