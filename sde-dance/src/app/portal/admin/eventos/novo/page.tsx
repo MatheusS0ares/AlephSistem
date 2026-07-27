@@ -96,7 +96,7 @@ export default async function NovoEventoPage() {
             style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>
             Imagem do evento
           </label>
-          <ImageUpload bucket="imagens-eventos" fieldName="imagem_url" />
+          <ImageUpload bucket="sde-dance" folder="eventos" fieldName="imagem_url" />
         </div>
 
         <div className="flex gap-3 pt-2">

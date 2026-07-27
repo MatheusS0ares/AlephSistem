@@ -82,7 +82,7 @@ function FotoUpload({ defaultUrl }: { defaultUrl: string }) {
     const path = `professores/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
-      .from("fotos-professores")
+      .from("sde-dance")
       .upload(path, file, { upsert: true });
 
     if (uploadError) {
@@ -91,7 +91,7 @@ function FotoUpload({ defaultUrl }: { defaultUrl: string }) {
       return;
     }
 
-    const { data } = supabase.storage.from("fotos-professores").getPublicUrl(path);
+    const { data } = supabase.storage.from("sde-dance").getPublicUrl(path);
     setPreview(data.publicUrl);
     if (hiddenRef.current) hiddenRef.current.value = data.publicUrl;
     setUploading(false);

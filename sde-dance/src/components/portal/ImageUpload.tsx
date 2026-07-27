@@ -5,12 +5,13 @@ import { createClient } from "@/lib/supabase/client";
 
 type Props = {
   bucket: string;
+  folder?: string;
   fieldName: string;
   defaultUrl?: string;
   previewShape?: "square" | "circle";
 };
 
-export default function ImageUpload({ bucket, fieldName, defaultUrl = "", previewShape = "square" }: Props) {
+export default function ImageUpload({ bucket, folder = "", fieldName, defaultUrl = "", previewShape = "square" }: Props) {
   const [preview, setPreview] = useState(defaultUrl);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +26,8 @@ export default function ImageUpload({ bucket, fieldName, defaultUrl = "", previe
 
     const supabase = createClient();
     const ext = file.name.split(".").pop() ?? "jpg";
-    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const path = folder ? `${folder}/${filename}` : filename;
 
     const { error: uploadError } = await supabase.storage
       .from(bucket)

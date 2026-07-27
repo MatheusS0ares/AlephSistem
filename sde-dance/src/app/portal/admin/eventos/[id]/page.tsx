@@ -173,7 +173,7 @@ export default async function EventoDetailPage({
                 style={{ color: "var(--color-ash)", fontFamily: "var(--font-mono)" }}>
                 Imagem do evento
               </label>
-              <ImageUpload bucket="imagens-eventos" fieldName="imagem_url" defaultUrl={evento.imagem_url ?? ""} />
+              <ImageUpload bucket="sde-dance" folder="eventos" fieldName="imagem_url" defaultUrl={evento.imagem_url ?? ""} />
             </div>
             <label className="flex items-center gap-2 text-sm cursor-pointer"
               style={{ color: "var(--color-ash)" }}>
