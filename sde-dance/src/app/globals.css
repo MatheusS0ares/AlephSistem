@@ -171,6 +171,10 @@ body.loading {
   50% { transform: translateY(-6px); }
 }
 
+/* ── Portal: esconde chrome do site de marketing ── */
+html:has([data-portal]) #site-header { display: none !important; }
+html:has([data-portal="admin"]) #wa-float { display: none !important; }
+
 /* ── Admin Portal Sidebar ── */
 :root,
 [data-theme="dark"] {
