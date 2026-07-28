@@ -26,8 +26,8 @@ export default function ProfessorForm({ prof, action }: Props) {
       } else {
         router.push("/portal/admin/professores");
       }
-    } catch {
-      setErrorMsg("Erro inesperado. Tente novamente.");
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : String(err));
       setPending(false);
     }
   }
@@ -89,11 +89,10 @@ export default function ProfessorForm({ prof, action }: Props) {
 }
 
 function FotoUpload({ defaultUrl }: { defaultUrl: string }) {
-  const [preview, setPreview] = useState(defaultUrl);
+  const [fotoUrl, setFotoUrl] = useState(defaultUrl);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const hiddenRef = useRef<HTMLInputElement>(null);
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -117,31 +116,27 @@ function FotoUpload({ defaultUrl }: { defaultUrl: string }) {
     }
 
     const { data } = supabase.storage.from("Sde-dance").getPublicUrl(path);
-    setPreview(data.publicUrl);
-    if (hiddenRef.current) hiddenRef.current.value = data.publicUrl;
+    setFotoUrl(data.publicUrl);
     setUploading(false);
   }
 
   function remove() {
-    setPreview("");
-    if (hiddenRef.current) hiddenRef.current.value = "";
+    setFotoUrl("");
     if (fileRef.current) fileRef.current.value = "";
   }
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Preview circular */}
-      {preview && (
+      {fotoUrl && (
         <img
-          src={preview}
+          src={fotoUrl}
           alt="Foto do professor"
           className="w-20 h-20 object-cover rounded-full border"
           style={{ borderColor: "var(--border-mid)" }}
         />
       )}
 
-      {/* Hidden input — valor submetido pelo form */}
-      <input ref={hiddenRef} type="hidden" name="foto_url" defaultValue={defaultUrl} />
+      <input type="hidden" name="foto_url" value={fotoUrl} onChange={() => {}} />
 
       {/* Botões */}
       <div className="flex items-center gap-3 flex-wrap">
@@ -166,11 +161,11 @@ function FotoUpload({ defaultUrl }: { defaultUrl: string }) {
                 <circle cx="8.5" cy="8.5" r="1.5" />
                 <path d="M21 15l-5-5L5 21" />
               </svg>
-              {preview ? "Trocar foto" : "Escolher da galeria"}
+              {fotoUrl ? "Trocar foto" : "Escolher da galeria"}
             </>
           )}
         </button>
-        {preview && !uploading && (
+        {fotoUrl && !uploading && (
           <button
             type="button"
             onClick={remove}
