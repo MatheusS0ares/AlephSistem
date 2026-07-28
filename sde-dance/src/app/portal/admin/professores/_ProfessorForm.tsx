@@ -13,11 +13,13 @@ type Props = {
 export default function ProfessorForm({ prof, action }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [fotoUrl, setFotoUrl] = useState(prof?.foto_url ?? "");
   const router = useRouter();
 
   async function handleSubmit(formData: FormData) {
     setPending(true);
     setErrorMsg(null);
+    formData.set("foto_url", fotoUrl);
     try {
       const result = await action(formData);
       if (result?.error) {
@@ -56,7 +58,7 @@ export default function ProfessorForm({ prof, action }: Props) {
         <Input name="citacao" defaultValue={field("citacao")} />
       </Row>
       <Row label="Foto do Professor">
-        <FotoUpload defaultUrl={field("foto_url")} />
+        <FotoUpload defaultUrl={prof?.foto_url ?? ""} onUrlChange={setFotoUrl} />
       </Row>
       <Row label="Instagram" hint="Sem @">
         <Input name="instagram" defaultValue={field("instagram")} />
@@ -88,8 +90,8 @@ export default function ProfessorForm({ prof, action }: Props) {
   );
 }
 
-function FotoUpload({ defaultUrl }: { defaultUrl: string }) {
-  const [fotoUrl, setFotoUrl] = useState(defaultUrl);
+function FotoUpload({ defaultUrl, onUrlChange }: { defaultUrl: string; onUrlChange: (url: string) => void }) {
+  const [preview, setPreview] = useState(defaultUrl);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -116,27 +118,27 @@ function FotoUpload({ defaultUrl }: { defaultUrl: string }) {
     }
 
     const { data } = supabase.storage.from("Sde-dance").getPublicUrl(path);
-    setFotoUrl(data.publicUrl);
+    setPreview(data.publicUrl);
+    onUrlChange(data.publicUrl);
     setUploading(false);
   }
 
   function remove() {
-    setFotoUrl("");
+    setPreview("");
+    onUrlChange("");
     if (fileRef.current) fileRef.current.value = "";
   }
 
   return (
     <div className="flex flex-col gap-3">
-      {fotoUrl && (
+      {preview && (
         <img
-          src={fotoUrl}
+          src={preview}
           alt="Foto do professor"
           className="w-20 h-20 object-cover rounded-full border"
           style={{ borderColor: "var(--border-mid)" }}
         />
       )}
-
-      <input type="hidden" name="foto_url" value={fotoUrl} onChange={() => {}} />
 
       {/* Botões */}
       <div className="flex items-center gap-3 flex-wrap">
@@ -161,11 +163,11 @@ function FotoUpload({ defaultUrl }: { defaultUrl: string }) {
                 <circle cx="8.5" cy="8.5" r="1.5" />
                 <path d="M21 15l-5-5L5 21" />
               </svg>
-              {fotoUrl ? "Trocar foto" : "Escolher da galeria"}
+              {preview ? "Trocar foto" : "Escolher da galeria"}
             </>
           )}
         </button>
-        {fotoUrl && !uploading && (
+        {preview && !uploading && (
           <button
             type="button"
             onClick={remove}
